@@ -7,9 +7,17 @@
         <p class="brand-tag">Transfer Command Center</p>
       </div>
     </div>
+    <div class="account">
+      <div>
+        <p class="account-label">Account holder</p>
+        <p class="account-name">Veda Chatiyode</p>
+      </div>
+      <button class="logout ghost" type="button">Log out</button>
+    </div>
     <div class="topbar-actions">
-      <button class="ghost" type="button">New Transfer</button>
-      <button class="primary" type="button">Download Report</button>
+      <button class="ghost" type="button">History</button>
+      <button class="primary" type="button">New Transfer</button>
+      <button class="ghost" type="button">Log out</button>
     </div>
   </header>
 
@@ -17,9 +25,13 @@
     <section class="card highlights">
       <h1>Today at a glance</h1>
       <p>Live status of your payout corridors and risk posture.</p>
+      <div class="balance">
+        <p class="balance-label">Current balance</p>
+        <p class="balance-value">₹2,48,930.50</p>
+      </div>
       <div class="metrics">
         <div class="metric">
-          <p class="metric-value">$4.2M</p>
+          <p class="metric-value">₹4.2M</p>
           <p class="metric-label">Processed today</p>
         </div>
         <div class="metric">
@@ -54,36 +66,6 @@
       </div>
     </section>
 
-    <section class="card activity">
-      <div class="card-header">
-        <h2>Recent activity</h2>
-        <button class="link" type="button">View all</button>
-      </div>
-      <div class="activity-list">
-        <div class="activity-item">
-          <div>
-            <p class="activity-title">PayFid Corridor - Kenya</p>
-            <p class="activity-meta">Transfer #PF-43920 · 9 minutes ago</p>
-          </div>
-          <span class="status success">Completed</span>
-        </div>
-        <div class="activity-item">
-          <div>
-            <p class="activity-title">Supplier payout - Mexico</p>
-            <p class="activity-meta">Transfer #PF-43918 · 22 minutes ago</p>
-          </div>
-          <span class="status pending">In review</span>
-        </div>
-        <div class="activity-item">
-          <div>
-            <p class="activity-title">Treasury sweep - EUR</p>
-            <p class="activity-meta">Transfer #PF-43911 · 47 minutes ago</p>
-          </div>
-          <span class="status risk">Flagged</span>
-        </div>
-      </div>
-    </section>
-
     <section class="card insights">
       <h2>Compliance insights</h2>
       <p>Automated checks across 14 sanction lists in the last hour.</p>
@@ -103,4 +85,11 @@
       </div>
     </section>
   </main>
+
+  <nav class="bottom-nav">
+    <button type="button" class="nav-item active">Dashboard</button>
+    <button type="button" class="nav-item">History</button>
+    <button type="button" class="nav-item">New Transfer</button>
+    <button type="button" class="nav-item logout">Log out</button>
+  </nav>
 </section>

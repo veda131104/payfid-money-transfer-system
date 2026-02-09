@@ -59,6 +59,34 @@
   flex-wrap: wrap;
 }
 
+.account {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(33, 90, 102, 0.12);
+  box-shadow: 0 10px 20px rgba(22, 42, 52, 0.08);
+}
+
+.account-label {
+  margin: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #7a8891;
+}
+
+.account-name {
+  margin: 0.15rem 0 0;
+  font-weight: 700;
+}
+
+.logout {
+  font-weight: 700;
+}
+
 .primary,
 .ghost {
   border-radius: 999px;
@@ -106,6 +134,31 @@
 .highlights p {
   margin: 0 0 1.25rem;
   color: #52616a;
+}
+
+.balance {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 1.25rem;
+  border-radius: 18px;
+  background: #f7f4f0;
+  border: 1px solid rgba(29, 59, 79, 0.08);
+  margin-bottom: 1.5rem;
+}
+
+.balance-label {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.7rem;
+  color: #6c7a82;
+}
+
+.balance-value {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .metrics {
@@ -264,6 +317,43 @@
   font-size: 0.8rem;
 }
 
+.bottom-nav {
+  position: sticky;
+  bottom: 1.5rem;
+  margin-top: 2rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.75rem 1.25rem;
+  border-radius: 999px;
+  border: 1px solid rgba(33, 90, 102, 0.12);
+  box-shadow: 0 16px 36px rgba(22, 42, 52, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.nav-item {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #4d5c64;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+}
+
+.nav-item.active {
+  background: #1d3b4f;
+  color: #fefbf6;
+}
+
+.nav-item.logout {
+  background: #fde7e7;
+  color: #8f2d2d;
+}
+
 @media (max-width: 1100px) {
   .highlights,
   .flow,
@@ -285,5 +375,15 @@
   .activity-item {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .account {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .bottom-nav {
+    position: static;
+    border-radius: 24px;
   }
 }
