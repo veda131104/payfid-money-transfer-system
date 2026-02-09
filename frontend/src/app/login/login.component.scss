@@ -1,0 +1,341 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Space+Grotesk:wght@400;500;600&display=swap');
+
+:host {
+  color: #111a1f;
+  display: block;
+  min-height: 100vh;
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+}
+
+.login-shell {
+  min-height: 100vh;
+  background: radial-gradient(circle at top left, #f6efe7 0%, #f7f4f0 30%, #ecf1f4 100%);
+  position: relative;
+  overflow: hidden;
+  padding: 3.5rem clamp(1.5rem, 4vw, 4rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ambient-orbit {
+  position: absolute;
+  inset: -40% -20% auto auto;
+  width: 70vw;
+  height: 70vw;
+  background: conic-gradient(from 90deg, rgba(46, 107, 121, 0.15), rgba(245, 187, 124, 0.2), rgba(46, 107, 121, 0.1));
+  filter: blur(0.5rem);
+  border-radius: 50%;
+  opacity: 0.85;
+  animation: orbit 18s linear infinite;
+}
+
+.login-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(280px, 1.1fr) minmax(260px, 0.9fr);
+  gap: clamp(2rem, 4vw, 4rem);
+  max-width: 1100px;
+  width: 100%;
+}
+
+.login-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  animation: rise 0.9s ease-out;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.brand-mark {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 1rem;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, #215a66, #1d3b4f);
+  color: #fefbf6;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  box-shadow: 0 18px 28px rgba(29, 59, 79, 0.25);
+}
+
+.brand-name {
+  font-weight: 600;
+  margin: 0;
+}
+
+.brand-tag {
+  margin: 0.1rem 0 0;
+  color: #516069;
+  font-size: 0.9rem;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  box-shadow: 0 26px 70px rgba(22, 42, 52, 0.16);
+  border: 1px solid rgba(33, 90, 102, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card-header h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(1.9rem, 3vw, 2.4rem);
+  margin: 0.25rem 0 0.5rem;
+  color: #122028;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  color: #7b8a93;
+  margin: 0;
+}
+
+.subcopy {
+  margin: 0;
+  color: #55626a;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #3a4a52;
+}
+
+.field input {
+  border-radius: 14px;
+  border: 1px solid rgba(33, 90, 102, 0.2);
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  background: #f9fbfc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: #1d3b4f;
+  box-shadow: 0 0 0 3px rgba(29, 59, 79, 0.2);
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4d5b62;
+}
+
+.checkbox input {
+  accent-color: #215a66;
+}
+
+.link {
+  border: none;
+  background: none;
+  color: #1d3b4f;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+}
+
+.primary {
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #215a66, #1d3b4f);
+  color: #fefbf6;
+  padding: 0.95rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 18px 40px rgba(29, 59, 79, 0.28);
+}
+
+.ghost {
+  border-radius: 14px;
+  border: 1px solid rgba(29, 59, 79, 0.2);
+  background: #f6f3ef;
+  padding: 0.85rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #1d3b4f;
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #8a97a0;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(29, 59, 79, 0.12);
+}
+
+.divider span {
+  position: relative;
+  padding: 0 0.75rem;
+  background: #ffffff;
+}
+
+.oauth {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.oauth button {
+  border-radius: 12px;
+  border: 1px solid rgba(33, 90, 102, 0.18);
+  background: #f7f4f0;
+  padding: 0.6rem 0.25rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.footnote {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #55626a;
+}
+
+.login-story {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: rise 1.1s ease-out;
+}
+
+.story-card {
+  padding: 2rem;
+  border-radius: 24px;
+  background: linear-gradient(160deg, #1d3b4f, #215a66);
+  color: #f7f4f0;
+  box-shadow: 0 28px 60px rgba(20, 42, 55, 0.25);
+}
+
+.story-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.6rem;
+  margin: 0 0 0.5rem;
+}
+
+.story-copy {
+  margin: 0 0 1.5rem;
+  color: rgba(247, 244, 240, 0.85);
+}
+
+.story-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.metric-value {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.metric-label {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(247, 244, 240, 0.7);
+}
+
+.story-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.story-item {
+  padding: 1.25rem 1.5rem;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(29, 59, 79, 0.08);
+  box-shadow: 0 12px 30px rgba(33, 90, 102, 0.1);
+}
+
+.story-kicker {
+  margin: 0 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.65rem;
+  color: #4b5b63;
+}
+
+@media (max-width: 980px) {
+  .login-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .login-story {
+    order: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .login-shell {
+    padding: 2.5rem 1.25rem;
+  }
+
+  .oauth {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
