@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 
 export interface SignupPayload {
   name: string;
@@ -11,83 +13,39 @@ export interface LoginPayload {
   password: string;
 }
 
-export interface AuthUser {
+export interface AuthResponse {
   name: string;
   email: string;
-  password: string;
-  createdAt: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly usersKey = 'auth_users';
+  private readonly baseUrl = 'http://localhost:8080/api/v1/auth';
   private readonly sessionKey = 'auth_session';
 
-  signup(payload: SignupPayload): boolean {
-    const users = this.loadUsers();
-    const email = payload.email.trim().toLowerCase();
+  constructor(private readonly http: HttpClient) {}
 
-    const exists = users.some(user => user.email.toLowerCase() === email);
-    if (exists) {
-      return false;
-    }
-
-    const user: AuthUser = {
-      name: payload.name.trim(),
-      email: payload.email.trim(),
-      password: payload.password,
-      createdAt: new Date().toISOString()
-    };
-
-    users.push(user);
-    this.saveUsers(users);
-    return true;
+  signup(payload: SignupPayload): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.baseUrl}/signup`, payload);
   }
 
-  login(payload: LoginPayload): boolean {
-    const users = this.loadUsers();
-    const email = payload.email.trim().toLowerCase();
-    const user = users.find(candidate => candidate.email.toLowerCase() === email);
-    if (!user) {
-      return false;
-    }
-
-    if (user.password !== payload.password) {
-      return false;
-    }
-
-    this.saveSession({ name: user.name, email: user.email });
-    return true;
+  login(payload: LoginPayload): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.baseUrl}/login`, payload)
+      .pipe(tap(response => this.saveSession(response)));
   }
 
-  private loadUsers(): AuthUser[] {
-    if (typeof localStorage === 'undefined') {
-      return [];
-    }
-
-    const stored = localStorage.getItem(this.usersKey);
-    if (!stored) {
-      return [];
-    }
-
-    try {
-      return JSON.parse(stored) as AuthUser[];
-    } catch {
-      return [];
-    }
-  }
-
-  private saveUsers(users: AuthUser[]): void {
+  clearSession(): void {
     if (typeof localStorage === 'undefined') {
       return;
     }
 
-    localStorage.setItem(this.usersKey, JSON.stringify(users));
+    localStorage.removeItem(this.sessionKey);
   }
 
-  private saveSession(session: { name: string; email: string }): void {
+  private saveSession(session: AuthResponse): void {
     if (typeof localStorage === 'undefined') {
       return;
     }

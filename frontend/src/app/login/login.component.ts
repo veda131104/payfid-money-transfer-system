@@ -31,7 +31,7 @@ export class LoginComponent {
   ) {
     this.form = this.fb.nonNullable.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(8)]]
     });
   }
 
@@ -42,13 +42,13 @@ export class LoginComponent {
     }
 
     const { email, password } = this.form.getRawValue();
-    const authenticated = this.authService.login({ email, password });
-    if (!authenticated) {
-      this.form.get('email')?.setErrors({ invalidLogin: true });
-      this.form.get('password')?.setErrors({ invalidLogin: true });
-      return;
-    }
-
-    this.router.navigate(['/dashboard']);
+    this.authService.login({ email, password }).subscribe({
+      next: () => this.router.navigate(['/dashboard']),
+      error: () => {
+        this.form.get('email')?.setErrors({ invalidLogin: true });
+        this.form.get('password')?.setErrors({ invalidLogin: true });
+      }
+    });
   }
 }
+

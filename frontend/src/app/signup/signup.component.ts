@@ -54,13 +54,16 @@ export class SignupComponent {
     }
 
     const { name, email, password } = this.form.getRawValue();
-    const created = this.authService.signup({ name, email, password });
-    if (!created) {
-      this.form.get('email')?.setErrors({ emailTaken: true });
-      return;
-    }
-
-    this.router.navigate(['/']);
+    this.authService.signup({ name, email, password }).subscribe({
+      next: () => this.router.navigate(['/']),
+      error: error => {
+        if (error?.status === 409) {
+          this.form.get('email')?.setErrors({ emailTaken: true });
+          return;
+        }
+        this.form.setErrors({ signupFailed: true });
+      }
+    });
   }
 }
 
@@ -72,4 +75,3 @@ function passwordsMatch(control: AbstractControl): ValidationErrors | null {
   }
   return password === confirmPassword ? null : { passwordMismatch: true };
 }
-
