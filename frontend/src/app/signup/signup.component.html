@@ -1,0 +1,76 @@
+<section class="signup-shell">
+  <div class="ambient-orbit"></div>
+  <div class="signup-grid">
+    <div class="signup-panel">
+      <div class="brand">
+        <span class="brand-mark">PF</span>
+        <div>
+          <p class="brand-name">PayFid</p>
+          <p class="brand-tag">Secure access to global payouts</p>
+        </div>
+      </div>
+
+      <mat-card class="card">
+        <header class="card-header">
+          <div class="headline">
+            <h1>Create your <span class="brand-accent">PayFid</span> account</h1>
+          </div>
+        </header>
+
+        <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Full name</mat-label>
+            <input
+              matInput
+              type="text"
+              placeholder="Aarav Sharma"
+              autocomplete="name"
+              formControlName="name"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Email address</mat-label>
+            <input
+              matInput
+              type="email"
+              placeholder="you@company.com"
+              autocomplete="email"
+              formControlName="email"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Password</mat-label>
+            <input
+              matInput
+              type="password"
+              placeholder="Create a strong password"
+              autocomplete="new-password"
+              formControlName="password"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Confirm password</mat-label>
+            <input
+              matInput
+              type="password"
+              placeholder="Re-enter your password"
+              autocomplete="new-password"
+              formControlName="confirmPassword"
+            />
+          </mat-form-field>
+
+          <button class="primary" type="submit" mat-flat-button>Create account</button>
+          <button class="ghost" type="button" mat-stroked-button>Sign up with Passkey</button>
+        </form>
+
+        <p class="footnote">
+          Already have an account?
+          <a class="link" mat-button routerLink="/">Sign in</a>
+        </p>
+      </mat-card>
+    </div>
+  </div>
+</section>

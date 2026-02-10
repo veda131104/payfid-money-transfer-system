@@ -111,13 +111,13 @@
 }
 
 .topbar-actions button.ghost.active {
-  background: #ad00ad !important;
-  border-color: #ad00ad !important;
+  background: #1c5d5e !important;
+  border-color: #1c5d5e !important;
   color: #fefbf6 !important;
 }
 
 .topbar-actions button.primary.active {
-  background: #ad00ad !important;
+  background: #1c5d5e !important;
   color: #fefbf6 !important;
   box-shadow: 0 12px 28px rgba(173, 0, 173, 0.25) !important;
 }
@@ -359,7 +359,7 @@
 }
 
 .nav-item.active {
-  background: #ad00ad;
+  background: #1c5d5e;
   color: #fefbf6;
 }
 
@@ -446,7 +446,7 @@
   width: 100%;
   padding: 1rem 1.25rem;
   font-size: 1rem;
-  border: 2px solid #ad00ad;
+  border: 2px solid #1c5d5e;
   border-radius: 14px;
   background: #ffffff;
   color: #111a1f;
@@ -498,7 +498,7 @@
 .from-account {
   margin: 0 -1.5rem 1.5rem -1.5rem;
   padding: 1.25rem 1.5rem;
-  background: #ad00ad;
+  background: #1c5d5e;
   border-radius: 20px 20px 0 0;
   border: none;
   width: calc(100% + 3rem);
@@ -571,8 +571,8 @@
   width: 4rem;
   height: 4rem;
   border: 4px solid rgba(173, 0, 173, 0.2);
-  border-top-color: #ad00ad;
-  border-right-color: #ad00ad;
+  border-top-color: #1c5d5e;
+  border-right-color: #1c5d5e;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -715,7 +715,7 @@
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
-  background: #ad00ad;
+  background: #1c5d5e;
   color: #ffffff;
   display: flex;
   align-items: center;

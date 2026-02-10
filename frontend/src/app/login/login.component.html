@@ -12,17 +12,19 @@
 
       <mat-card class="card">
         <header class="card-header">
-          <p class="eyebrow">Welcome back</p>
           <h1>Sign in to PayFid</h1>
-          <p class="subcopy">
-            Move funds across borders with clarity, control, and real-time tracking.
-          </p>
         </header>
 
-        <form class="form">
+        <form class="form" [formGroup]="form" (ngSubmit)="submit()">
           <mat-form-field appearance="outline" class="field">
             <mat-label>Email address</mat-label>
-            <input matInput type="email" placeholder="you@company.com" autocomplete="email" />
+            <input
+              matInput
+              type="email"
+              placeholder="you@company.com"
+              autocomplete="email"
+              formControlName="email"
+            />
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="field">
@@ -32,6 +34,7 @@
               type="password"
               placeholder="Enter your password"
               autocomplete="current-password"
+              formControlName="password"
             />
           </mat-form-field>
 
@@ -58,7 +61,8 @@
         </form>
 
         <p class="footnote">
-          New to PayFid? <button class="link" type="button" mat-button>Create an account</button>
+          New to PayFid?
+          <a class="link" mat-button routerLink="/signup">Create an account</a>
         </p>
       </mat-card>
     </div>
