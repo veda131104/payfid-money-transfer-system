@@ -19,47 +19,42 @@
 
         <form class="form" [formGroup]="form" (ngSubmit)="submit()">
           <mat-form-field appearance="outline" class="field">
-            <mat-label>Full name</mat-label>
-            <input
-              matInput
-              type="text"
-              placeholder="Aarav Sharma"
-              autocomplete="name"
-              formControlName="name"
-            />
+            <mat-label>Username</mat-label>
+            <input matInput type="text" placeholder="Pick a unique username" autocomplete="username"
+              formControlName="username" />
+            @if (form.get('username')?.hasError('required')) {
+            <mat-error>Username is required</mat-error>
+            }
+            @if (form.get('username')?.hasError('minlength')) {
+            <mat-error>Must be at least 3 characters</mat-error>
+            }
+            @if (form.get('username')?.hasError('usernameTaken')) {
+            <mat-error>This username is already taken</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="field">
-            <mat-label>Email address</mat-label>
-            <input
-              matInput
-              type="email"
-              placeholder="you@company.com"
-              autocomplete="email"
-              formControlName="email"
-            />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="field">
-            <mat-label>Password</mat-label>
-            <input
-              matInput
-              type="password"
-              placeholder="Create a strong password"
-              autocomplete="new-password"
-              formControlName="password"
-            />
+            <mat-label>Create new password</mat-label>
+            <input matInput type="password" placeholder="At least 8 characters" autocomplete="new-password"
+              formControlName="password" />
+            @if (form.get('password')?.hasError('required')) {
+            <mat-error>Password is required</mat-error>
+            }
+            @if (form.get('password')?.hasError('minlength')) {
+            <mat-error>Password must be at least 8 characters</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="field">
             <mat-label>Confirm password</mat-label>
-            <input
-              matInput
-              type="password"
-              placeholder="Re-enter your password"
-              autocomplete="new-password"
-              formControlName="confirmPassword"
-            />
+            <input matInput type="password" placeholder="Re-enter your password" autocomplete="new-password"
+              formControlName="confirmPassword" />
+            @if (form.get('confirmPassword')?.hasError('required')) {
+            <mat-error>Please confirm your password</mat-error>
+            }
+            @if (form.get('confirmPassword')?.hasError('passwordMismatch')) {
+            <mat-error>Passwords do not match</mat-error>
+            }
           </mat-form-field>
 
           <button class="primary" type="submit" mat-flat-button>Create account</button>

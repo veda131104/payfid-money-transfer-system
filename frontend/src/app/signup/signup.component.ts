@@ -38,8 +38,7 @@ export class SignupComponent {
   ) {
     this.form = this.fb.nonNullable.group(
       {
-        name: ['', [Validators.required, Validators.minLength(2)]],
-        email: ['', [Validators.required, Validators.email]],
+        username: ['', [Validators.required, Validators.minLength(3)]],
         password: ['', [Validators.required, Validators.minLength(8)]],
         confirmPassword: ['', [Validators.required]]
       },
@@ -50,17 +49,23 @@ export class SignupComponent {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      alert('Please fill in all fields correctly.');
       return;
     }
 
-    const { name, email, password } = this.form.getRawValue();
-    this.authService.signup({ name, email, password }).subscribe({
-      next: () => this.router.navigate(['/']),
+    const { username, password } = this.form.getRawValue();
+    this.authService.signup({ name: username, password }).subscribe({
+      next: () => {
+        alert('Signup successful!');
+        this.router.navigate(['/dashboard']);
+      },
       error: error => {
         if (error?.status === 409) {
-          this.form.get('email')?.setErrors({ emailTaken: true });
+          alert('Username is already taken.');
+          this.form.get('username')?.setErrors({ usernameTaken: true });
           return;
         }
+        alert('Signup failed. Please try again.');
         this.form.setErrors({ signupFailed: true });
       }
     });

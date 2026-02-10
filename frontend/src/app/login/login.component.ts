@@ -30,7 +30,7 @@ export class LoginComponent {
     private readonly router: Router
   ) {
     this.form = this.fb.nonNullable.group({
-      email: ['', [Validators.required, Validators.email]],
+      name: ['', [Validators.required, Validators.minLength(3)]],
       password: ['', [Validators.required, Validators.minLength(8)]]
     });
   }
@@ -38,14 +38,16 @@ export class LoginComponent {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      alert('Please enter your username and password.');
       return;
     }
 
-    const { email, password } = this.form.getRawValue();
-    this.authService.login({ email, password }).subscribe({
+    const { name, password } = this.form.getRawValue();
+    this.authService.login({ name, password }).subscribe({
       next: () => this.router.navigate(['/dashboard']),
       error: () => {
-        this.form.get('email')?.setErrors({ invalidLogin: true });
+        alert('Invalid username or password.');
+        this.form.get('name')?.setErrors({ invalidLogin: true });
         this.form.get('password')?.setErrors({ invalidLogin: true });
       }
     });

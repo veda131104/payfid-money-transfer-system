@@ -4,18 +4,16 @@ import { Observable, tap } from 'rxjs';
 
 export interface SignupPayload {
   name: string;
-  email: string;
   password: string;
 }
 
 export interface LoginPayload {
-  email: string;
+  name: string;
   password: string;
 }
 
 export interface AuthResponse {
   name: string;
-  email: string;
 }
 
 @Injectable({
@@ -25,10 +23,12 @@ export class AuthService {
   private readonly baseUrl = 'http://localhost:8080/api/v1/auth';
   private readonly sessionKey = 'auth_session';
 
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   signup(payload: SignupPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.baseUrl}/signup`, payload);
+    return this.http
+      .post<AuthResponse>(`${this.baseUrl}/signup`, payload)
+      .pipe(tap(response => this.saveSession(response)));
   }
 
   login(payload: LoginPayload): Observable<AuthResponse> {
