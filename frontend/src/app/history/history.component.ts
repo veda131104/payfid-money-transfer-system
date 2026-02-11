@@ -1,7 +1,6 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
-import { ChangeDetectorRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { TransactionService, Transaction } from '../services/transaction.service';
@@ -17,6 +16,7 @@ import { Subject, filter, switchMap, takeUntil, of, tap } from 'rxjs';
   styleUrl: './history.component.scss'
 })
 export class HistoryComponent implements OnInit, OnDestroy {
+  private cdr = inject(ChangeDetectorRef);
   private destroy$ = new Subject<void>();
   private refresh$ = new Subject<void>();
   routerLinkActiveOptions = { exact: true };
@@ -35,8 +35,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     private router: Router,
     private transactionService: TransactionService,
     private accountSetupService: AccountSetupService,
-    private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {

@@ -35,4 +35,8 @@ export class AccountSetupService {
   getAccountByNumber(accountNumber: string): Observable<any> {
     return this.http.get(`http://localhost:8080/api/v1/accounts/number/${accountNumber}`);
   }
+
+  setPin(userName: string, pin: string): Observable<any> {
+    return this.http.post(`${this.base}/user/${userName}/pin`, { pin });
+  }
 }

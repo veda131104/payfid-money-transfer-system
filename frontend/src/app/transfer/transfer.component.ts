@@ -1,4 +1,4 @@
-import { Component, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -15,6 +15,7 @@ import { AccountSetupService } from '../services/account-setup.service';
   styleUrl: './transfer.component.scss',
 })
 export class TransferComponent {
+  private cdr = inject(ChangeDetectorRef);
   accountNumber: string = '';
   amount: string = '';
   description: string = '';
@@ -31,6 +32,7 @@ export class TransferComponent {
   pinLoading: boolean = false;
   pinVisible: boolean = false;
   pinErrorTimer: any = null;
+  userPin: string = '';
   routerLinkActiveOptions = { exact: true };
 
   // Personalized data
@@ -39,8 +41,6 @@ export class TransferComponent {
 
   constructor(
     private router: Router,
-    private ngZone: NgZone,
-    private cdr: ChangeDetectorRef,
     private transactionService: TransactionService,
     private authService: AuthService,
     private accountSetupService: AccountSetupService
@@ -54,6 +54,7 @@ export class TransferComponent {
         next: (details: any) => {
           if (details) {
             this.myAccountNumber = details.accountNumber;
+            this.userPin = details.pin || '1234'; // Fallback to 1234 if not set
             this.cdr.detectChanges();
           }
         },
@@ -146,7 +147,7 @@ export class TransferComponent {
       return;
     }
 
-    const CORRECT_PIN = '1234';
+    const CORRECT_PIN = this.userPin;
     if (this.pin !== CORRECT_PIN) {
       // Add failed transaction to history
       const failedTxn: Transaction = {

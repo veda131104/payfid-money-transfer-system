@@ -35,9 +35,16 @@
         </div>
       </div>
       @if (!isEditing) {
-      <button class="edit-button" type="button" mat-stroked-button (click)="onEditProfile()">
-        {{ isNewUser ? 'Account Setup' : 'Edit Profile' }}
-      </button>
+      <div class="profile-actions">
+        <button class="edit-button" type="button" mat-stroked-button (click)="onEditProfile()">
+          {{ isNewUser ? 'Account Setup' : 'Edit Profile' }}
+        </button>
+        @if (!isNewUser) {
+        <button class="pin-button" type="button" mat-stroked-button (click)="onOpenPinModal()">
+          Set PIN
+        </button>
+        }
+      </div>
       } @else {
       <div class="edit-actions">
         <button mat-flat-button color="primary" (click)="onSave()" [disabled]="profileForm.invalid">Save</button>
@@ -45,6 +52,34 @@
       </div>
       }
     </mat-card>
+
+    <!-- PIN Modal -->
+    <div class="modal-overlay" *ngIf="isPinModalOpen">
+      <div class="modal-card" [formGroup]="pinForm">
+        <h3>Set Transaction PIN</h3>
+        <p>Enter a 4-digit PIN for securing your transfers.</p>
+        <mat-form-field appearance="outline">
+          <mat-label>New PIN</mat-label>
+          <input matInput type="password" maxlength="4" placeholder="1234" formControlName="pin"
+            (input)="pinForm.get('pin')?.setValue($any($event.target).value)">
+          @if (pinForm.get('pin')?.invalid && (pinForm.get('pin')?.dirty || pinForm.get('pin')?.touched)) {
+          <mat-error>
+            @if (pinForm.get('pin')?.hasError('required')) { PIN is required }
+            @if (pinForm.get('pin')?.hasError('pattern')) { PIN must be 4 digits }
+          </mat-error>
+          }
+          @if (pinError) {
+          <mat-hint color="warn" style="color: #f44336; font-size: 0.75rem; margin-top: 4px; display: block;">
+            {{ pinError }}
+          </mat-hint>
+          }
+        </mat-form-field>
+        <div class="modal-actions">
+          <button mat-flat-button color="primary" [disabled]="pinForm.invalid" (click)="onSavePin()">Save PIN</button>
+          <button mat-button (click)="onClosePinModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
 
     <form [formGroup]="profileForm">
       <mat-card class="card account-details">
