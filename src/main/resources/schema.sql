@@ -62,3 +62,21 @@ CREATE TABLE IF NOT EXISTS auth_users (
 
 CREATE INDEX idx_auth_users_email ON auth_users(email);
 
+-- Auth Tokens Table
+CREATE TABLE IF NOT EXISTS auth_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    token VARCHAR(1000) NOT NULL UNIQUE,
+    token_type VARCHAR(50) NOT NULL DEFAULT 'BEARER',
+    is_valid BOOLEAN NOT NULL DEFAULT TRUE,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_used TIMESTAMP,
+    revoked_at TIMESTAMP,
+    CONSTRAINT fk_auth_tokens_user FOREIGN KEY (user_id) REFERENCES auth_users(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_auth_tokens_user_id ON auth_tokens(user_id);
+CREATE INDEX idx_auth_tokens_token ON auth_tokens(token);
+CREATE INDEX idx_auth_tokens_expires_at ON auth_tokens(expires_at);
+

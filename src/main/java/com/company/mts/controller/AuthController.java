@@ -2,6 +2,7 @@ package com.company.mts.controller;
 
 import com.company.mts.dto.AuthResponse;
 import com.company.mts.dto.LoginRequest;
+import com.company.mts.dto.LoginResponse;
 import com.company.mts.dto.SignupRequest;
 import com.company.mts.entity.AuthUser;
 import com.company.mts.service.AuthService;
@@ -27,8 +28,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        AuthUser user = authService.login(request);
-        return ResponseEntity.ok(new AuthResponse(user.getName(), user.getEmail()));
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse loginResponse = authService.login(request);
+        return ResponseEntity.ok(loginResponse);
     }
 }
