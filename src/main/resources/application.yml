@@ -22,6 +22,18 @@ spring:
     console:
       enabled: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: samyukthajagannath@gmail.com
+    password: yjxq yqrf ctwl fruh
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 logging:
   level:
     com.company.mts: DEBUG

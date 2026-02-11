@@ -111,13 +111,13 @@
 }
 
 .topbar-actions button.ghost.active {
-  background: #ad00ad !important;
-  border-color: #ad00ad !important;
+  background: #1c5d5e !important;
+  border-color: #1c5d5e !important;
   color: #fefbf6 !important;
 }
 
 .topbar-actions button.primary.active {
-  background: #ad00ad !important;
+  background: #1c5d5e !important;
   color: #fefbf6 !important;
   box-shadow: 0 12px 28px rgba(173, 0, 173, 0.25) !important;
 }
@@ -359,7 +359,7 @@
 }
 
 .nav-item.active {
-  background: #ad00ad;
+  background: #1c5d5e;
   color: #fefbf6;
 }
 
@@ -470,11 +470,11 @@
 }
 
 .transaction-item.debit {
-  border-left-color: #ad00ad;
+  border-left-color: #1c5d5e;
 }
 
 .transaction-item.credit {
-  border-left-color: #ad00ad;
+  border-left-color: #1c5d5e;
 }
 
 /* Failed transaction accents */
@@ -497,11 +497,11 @@
 }
 
 .transaction-arrow.debit {
-  background: linear-gradient(135deg, #ad00ad, #909090);
+  background: linear-gradient(135deg, #1c5d5e, #909090);
 }
 
 .transaction-arrow.credit {
-  background: linear-gradient(135deg, #ad00ad, #909090);
+  background: linear-gradient(135deg, #1c5d5e, #909090);
 }
 
 .transaction-arrow.failed {
@@ -636,7 +636,7 @@
 }
 
 .close-button:hover {
-  background: #ad00ad;
+  background: #1c5d5e;
   color: #ffffff;
 }
 
@@ -653,11 +653,11 @@
 }
 
 .detail-header.debit {
-  background: linear-gradient(135deg, #ad00ad, #909090);
+  background: linear-gradient(135deg, #1c5d5e, #909090);
 }
 
 .detail-header.credit {
-  background: linear-gradient(135deg, #ad00ad, #909090);
+  background: linear-gradient(135deg, #1c5d5e, #909090);
 }
 
 .detail-arrow {
@@ -846,3 +846,4 @@
   color: #808080;
   font-weight: 400;
 }
+

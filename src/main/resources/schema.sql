@@ -50,3 +50,15 @@ CREATE INDEX idx_status ON transaction_logs(status);
 COMMENT ON TABLE accounts IS 'Stores bank account information';
 COMMENT ON TABLE transaction_logs IS 'Audit trail for all transactions';
 COMMENT ON COLUMN transaction_logs.idempotency_key IS 'Unique key to prevent duplicate transactions';
+
+-- Auth Users Table
+CREATE TABLE IF NOT EXISTS auth_users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_auth_users_email ON auth_users(email);
+

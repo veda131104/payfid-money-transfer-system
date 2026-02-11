@@ -1,0 +1,71 @@
+<section class="signup-shell">
+  <div class="ambient-orbit"></div>
+  <div class="signup-grid">
+    <div class="signup-panel">
+      <div class="brand">
+        <span class="brand-mark">PF</span>
+        <div>
+          <p class="brand-name">PayFid</p>
+          <p class="brand-tag">Secure access to global payouts</p>
+        </div>
+      </div>
+
+      <mat-card class="card">
+        <header class="card-header">
+          <div class="headline">
+            <h1>Create your <span class="brand-accent">PayFid</span> account</h1>
+          </div>
+        </header>
+
+        <form class="form" [formGroup]="form" (ngSubmit)="submit()">
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Username</mat-label>
+            <input matInput type="text" placeholder="Pick a unique username" autocomplete="username"
+              formControlName="username" />
+            @if (form.get('username')?.hasError('required')) {
+            <mat-error>Username is required</mat-error>
+            }
+            @if (form.get('username')?.hasError('minlength')) {
+            <mat-error>Must be at least 3 characters</mat-error>
+            }
+            @if (form.get('username')?.hasError('usernameTaken')) {
+            <mat-error>This username is already taken</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Create new password</mat-label>
+            <input matInput type="password" placeholder="At least 8 characters" autocomplete="new-password"
+              formControlName="password" />
+            @if (form.get('password')?.hasError('required')) {
+            <mat-error>Password is required</mat-error>
+            }
+            @if (form.get('password')?.hasError('minlength')) {
+            <mat-error>Password must be at least 8 characters</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="field">
+            <mat-label>Confirm password</mat-label>
+            <input matInput type="password" placeholder="Re-enter your password" autocomplete="new-password"
+              formControlName="confirmPassword" />
+            @if (form.get('confirmPassword')?.hasError('required')) {
+            <mat-error>Please confirm your password</mat-error>
+            }
+            @if (form.get('confirmPassword')?.hasError('passwordMismatch')) {
+            <mat-error>Passwords do not match</mat-error>
+            }
+          </mat-form-field>
+
+          <button class="primary" type="submit" mat-flat-button>Create account</button>
+          <button class="ghost" type="button" mat-stroked-button>Sign up with Passkey</button>
+        </form>
+
+        <p class="footnote">
+          Already have an account?
+          <a class="link" mat-button routerLink="/">Sign in</a>
+        </p>
+      </mat-card>
+    </div>
+  </div>
+</section>

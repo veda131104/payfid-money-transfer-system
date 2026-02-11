@@ -1,0 +1,47 @@
+<mat-card>
+  <h2>Account Setup</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field appearance="fill" class="full">
+      <mat-label>Account Number</mat-label>
+      <input matInput formControlName="accountNumber" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full">
+      <mat-label>Bank Name</mat-label>
+      <input matInput formControlName="bankName" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full">
+      <mat-label>IFSC Code</mat-label>
+      <input matInput formControlName="ifscCode" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full">
+      <mat-label>Phone / Email (for OTP)</mat-label>
+      <input matInput formControlName="contact" />
+    </mat-form-field>
+
+    <div class="otp-row">
+      <button mat-raised-button type="button" (click)="sendOtp()">Send OTP</button>
+      <mat-form-field appearance="fill" class="otp-field">
+        <input matInput placeholder="Enter OTP" formControlName="otp" />
+      </mat-form-field>
+      <button mat-raised-button type="button" (click)="verifyOtp()">Verify</button>
+    </div>
+
+    <mat-form-field appearance="fill" class="full">
+      <mat-label>Credit Card Number</mat-label>
+      <input matInput formControlName="creditCardNumber" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full">
+      <mat-label>CVV</mat-label>
+      <input matInput formControlName="cvv" />
+    </mat-form-field>
+
+    <div class="actions">
+      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Complete Setup</button>
+    </div>
+  </form>
+</mat-card>
