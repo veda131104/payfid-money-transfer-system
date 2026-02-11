@@ -14,7 +14,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 10)
+    @Column(unique = true, nullable = false, length = 12)
     private String accountNumber;
 
     @Column(nullable = false)
@@ -40,7 +40,7 @@ public class Account {
     }
 
     public Account(Long id, String accountNumber, String holderName, BigDecimal balance,
-                   AccountStatus status, Integer version, LocalDateTime createdAt, LocalDateTime lastUpdated) {
+            AccountStatus status, Integer version, LocalDateTime createdAt, LocalDateTime lastUpdated) {
         this.id = id;
         this.accountNumber = accountNumber;
         this.holderName = holderName;
@@ -184,7 +184,8 @@ public class Account {
      */
     public void close() {
         if (!this.balance.equals(BigDecimal.ZERO)) {
-            throw new IllegalStateException("Cannot close account with non-zero balance. Current balance: " + this.balance);
+            throw new IllegalStateException(
+                    "Cannot close account with non-zero balance. Current balance: " + this.balance);
         }
         this.status = AccountStatus.CLOSED;
         this.lastUpdated = LocalDateTime.now();
@@ -244,8 +245,7 @@ public class Account {
         if (this.balance.compareTo(amount) < 0) {
             throw new InsufficientBalanceException(
                     String.format("Insufficient balance. Available: %.2f, Required: %.2f",
-                            this.balance, amount)
-            );
+                            this.balance, amount));
         }
     }
 

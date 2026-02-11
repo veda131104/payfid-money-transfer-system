@@ -2,6 +2,7 @@ package com.company.mts.controller;
 
 import com.company.mts.dto.IdempotentTransferRequest;
 import com.company.mts.dto.TransactionDTO;
+import com.company.mts.dto.TransferByAccountNumberRequest;
 import com.company.mts.service.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -35,16 +36,38 @@ public class TransferController {
                 request.getToAccountId(),
                 request.getAmount(),
                 request.getIdempotencyKey(),
-                request.getDescription()
-        );
+                request.getDescription());
 
         TransferResponse response = new TransferResponse(
                 "Transfer completed successfully",
                 transaction.getId(),
                 transaction.getAmount(),
                 transaction.getStatus().toString(),
-                transaction.getIdempotencyKey()
-        );
+                transaction.getIdempotencyKey());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    /**
+     * Execute transfer using account numbers
+     * POST /api/v1/transfers/by-account
+     */
+    @PostMapping("/by-account")
+    public ResponseEntity<TransferResponse> executeTransferByAccountNumber(
+            @Valid @RequestBody TransferByAccountNumberRequest request) {
+
+        TransactionDTO transaction = transactionService.executeTransferByAccountNumber(
+                request.getFromAccountNumber(),
+                request.getToAccountNumber(),
+                request.getAmount(),
+                "Transfer from frontend");
+
+        TransferResponse response = new TransferResponse(
+                "Transfer completed successfully",
+                transaction.getId(),
+                transaction.getAmount(),
+                transaction.getStatus().toString(),
+                null);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -82,8 +105,7 @@ public class TransferController {
         TransactionHistoryResponse response = new TransactionHistoryResponse(
                 accountId,
                 transactions.size(),
-                transactions
-        );
+                transactions);
 
         return ResponseEntity.ok(response);
     }
@@ -110,7 +132,7 @@ public class TransferController {
         private String idempotencyKey;
 
         public TransferResponse(String message, Long transactionId, java.math.BigDecimal amount,
-                                String status, String idempotencyKey) {
+                String status, String idempotencyKey) {
             this.message = message;
             this.transactionId = transactionId;
             this.amount = amount;
@@ -166,7 +188,7 @@ public class TransferController {
         private List<TransactionDTO> transactions;
 
         public TransactionHistoryResponse(Long accountId, int totalTransactions,
-                                          List<TransactionDTO> transactions) {
+                List<TransactionDTO> transactions) {
             this.accountId = accountId;
             this.totalTransactions = totalTransactions;
             this.transactions = transactions;

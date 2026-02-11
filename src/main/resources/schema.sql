@@ -5,7 +5,7 @@
 -- Accounts Table
 CREATE TABLE IF NOT EXISTS accounts (
                                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                        account_number VARCHAR(10) NOT NULL UNIQUE,
+                                        account_number VARCHAR(12) NOT NULL UNIQUE,
     holder_name VARCHAR(255) NOT NULL,
     balance DECIMAL(19, 2) NOT NULL DEFAULT 0.00,
     status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS accounts (
 -- Bank Details Table
 CREATE TABLE IF NOT EXISTS bank_details (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    account_number VARCHAR(20) NOT NULL UNIQUE,
+    account_number VARCHAR(12) NOT NULL UNIQUE,
     bank_name VARCHAR(255) NOT NULL,
     ifsc_code VARCHAR(20) NOT NULL,
     branch_name VARCHAR(255),

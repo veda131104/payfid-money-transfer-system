@@ -2,7 +2,10 @@ package com.company.mts.controller;
 
 import com.company.mts.dto.AccountSetupRequest;
 import com.company.mts.dto.AccountSetupResponse;
+import com.company.mts.entity.Account;
+import com.company.mts.entity.AccountStatus;
 import com.company.mts.entity.BankDetails;
+import com.company.mts.repository.AccountRepository;
 import com.company.mts.service.BankDetailsService;
 import com.company.mts.service.EmailService;
 import org.springframework.http.HttpStatus;
@@ -18,12 +21,15 @@ public class AccountSetupController {
 
     private final BankDetailsService service;
     private final EmailService emailService;
+    private final AccountRepository accountRepository;
     // Simple in-memory OTP store for demo purposes
     private final Map<String, String> otpStore = new HashMap<>();
 
-    public AccountSetupController(BankDetailsService service, EmailService emailService) {
+    public AccountSetupController(BankDetailsService service, EmailService emailService,
+            AccountRepository accountRepository) {
         this.service = service;
         this.emailService = emailService;
+        this.accountRepository = accountRepository;
     }
 
     @PostMapping
@@ -45,6 +51,17 @@ public class AccountSetupController {
                 .build();
 
         BankDetails saved = service.save(details);
+
+        // SYNC: Create an Account entry if it doesn't exist
+        if (!accountRepository.existsByAccountNumber(saved.getAccountNumber())) {
+            Account account = Account.builder()
+                    .accountNumber(saved.getAccountNumber())
+                    .holderName(saved.getUserName())
+                    .balance(new java.math.BigDecimal("10000.00")) // Initial balance for new users
+                    .status(AccountStatus.ACTIVE)
+                    .build();
+            accountRepository.save(account);
+        }
 
         AccountSetupResponse resp = new AccountSetupResponse(saved.getId(), saved.getAccountNumber(),
                 saved.getUpiId());

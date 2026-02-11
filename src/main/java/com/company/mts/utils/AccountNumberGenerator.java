@@ -5,11 +5,11 @@ import java.security.SecureRandom;
 public class AccountNumberGenerator {
 
     private static final SecureRandom random = new SecureRandom();
-    private static final int ACCOUNT_NUMBER_LENGTH = 10;
+    private static final int ACCOUNT_NUMBER_LENGTH = 12;
 
     /**
-     * Generate a random 10-digit account number
-     * Format: XXXXXXXXXX (10 digits)
+     * Generate a random 12-digit account number
+     * Format: XXXXXXXXXXXX (12 digits)
      */
     public static String generate() {
         StringBuilder accountNumber = new StringBuilder(ACCOUNT_NUMBER_LENGTH);
@@ -17,7 +17,7 @@ public class AccountNumberGenerator {
         // First digit should not be 0
         accountNumber.append(random.nextInt(9) + 1);
 
-        // Remaining 9 digits can be 0-9
+        // Remaining 11 digits can be 0-9
         for (int i = 1; i < ACCOUNT_NUMBER_LENGTH; i++) {
             accountNumber.append(random.nextInt(10));
         }
@@ -56,6 +56,6 @@ public class AccountNumberGenerator {
             return false;
         }
 
-        return accountNumber.matches("\\d{10}");
+        return accountNumber.matches("\\d{12}");
     }
 }

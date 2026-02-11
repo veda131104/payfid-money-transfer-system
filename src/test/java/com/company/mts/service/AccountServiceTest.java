@@ -35,7 +35,7 @@ class AccountServiceTest {
     void setUp() {
         testAccount = Account.builder()
                 .id(1L)
-                .accountNumber("1234567890")
+                .accountNumber("123456789012")
                 .holderName("John Doe")
                 .balance(new BigDecimal("1000.00"))
                 .status(AccountStatus.ACTIVE)
@@ -155,7 +155,7 @@ class AccountServiceTest {
         // Arrange
         Account toAccount = Account.builder()
                 .id(2L)
-                .accountNumber("2345678901")
+                .accountNumber("234567890123")
                 .holderName("Jane Smith")
                 .balance(new BigDecimal("500.00"))
                 .status(AccountStatus.ACTIVE)

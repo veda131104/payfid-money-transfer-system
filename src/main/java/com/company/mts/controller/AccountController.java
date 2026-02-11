@@ -1,6 +1,7 @@
 package com.company.mts.controller;
 
 import com.company.mts.dto.AccountBalanceDTO;
+import com.company.mts.dto.TransferByAccountNumberRequest;
 import com.company.mts.entity.Account;
 import com.company.mts.service.AccountService;
 import org.springframework.http.HttpStatus;
@@ -24,8 +25,7 @@ public class AccountController {
     public ResponseEntity<Account> createAccount(@RequestBody CreateAccountRequest request) {
         Account account = accountService.createAccount(
                 request.getHolderName(),
-                request.getInitialBalance()
-        );
+                request.getInitialBalance());
         return new ResponseEntity<>(account, HttpStatus.CREATED);
     }
 
@@ -50,8 +50,7 @@ public class AccountController {
                 account.getAccountNumber(),
                 account.getHolderName(),
                 account.getBalance(),
-                account.getStatus().toString()
-        );
+                account.getStatus().toString());
 
         return ResponseEntity.ok(balanceDTO);
     }
@@ -106,14 +105,12 @@ public class AccountController {
         accountService.transfer(
                 request.getFromAccountId(),
                 request.getToAccountId(),
-                request.getAmount()
-        );
+                request.getAmount());
 
         TransferResponse response = new TransferResponse(
                 "Transfer successful",
                 request.getAmount(),
-                true
-        );
+                true);
         return ResponseEntity.ok(response);
     }
 
@@ -127,14 +124,12 @@ public class AccountController {
         accountService.transferByAccountNumber(
                 request.getFromAccountNumber(),
                 request.getToAccountNumber(),
-                request.getAmount()
-        );
+                request.getAmount());
 
         TransferResponse response = new TransferResponse(
                 "Transfer successful",
                 request.getAmount(),
-                true
-        );
+                true);
         return ResponseEntity.ok(response);
     }
 

@@ -1,4 +1,4 @@
-package com.company.mts.controller;
+package com.company.mts.dto;
 
 import java.math.BigDecimal;
 
