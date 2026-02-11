@@ -70,19 +70,11 @@
             <scope>runtime</scope>
         </dependency>
 
-
-            <!-- Other dependencies like spring-boot-starter-web, etc. -->
-
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-starter-security</artifactId>-->
-<!--            </dependency>-->
-
+        <!-- Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-
 
         <!-- Test -->
         <dependency>

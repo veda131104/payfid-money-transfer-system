@@ -28,23 +28,23 @@ public class AuthService {
     private JwtTokenProvider tokenProvider;
 
     public AuthUser signup(SignupRequest request) {
-        String name = request.getName().trim();
-        if (authUserRepository.existsByNameIgnoreCase(name)) {
-            throw new DuplicateUserException("Username already in use");
+        String email = request.getEmail().trim().toLowerCase();
+        if (authUserRepository.existsByEmailIgnoreCase(email)) {
+            throw new DuplicateUserException("Email already in use");
         }
 
         AuthUser user = new AuthUser();
         user.setName(request.getName());
         user.setEmail(email);
-        user.setPassword(request.getPassword());
-        log.info("Saving new user to database: name={}", name);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        log.info("Saving new user to database: email={}", email);
         return authUserRepository.save(user);
     }
 
     public LoginResponse login(LoginRequest request) {
         AuthUser user = authUserRepository
-                .findByNameIgnoreCase(request.getName().trim())
-                .orElseThrow(() -> new InvalidCredentialsException("Invalid username or password"));
+                .findByEmailIgnoreCase(request.getEmail().trim())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
 
         // Verify password with BCrypt
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
