@@ -23,6 +23,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class LoginComponent {
   form!: FormGroup;
+  loading = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -30,7 +31,7 @@ export class LoginComponent {
     private readonly router: Router
   ) {
     this.form = this.fb.nonNullable.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]]
     });
   }
@@ -38,16 +39,21 @@ export class LoginComponent {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      alert('Please enter your username and password.');
+      alert('Please enter a valid email and password (min 8 chars).');
       return;
     }
 
-    const { name, password } = this.form.getRawValue();
-    this.authService.login({ name, password }).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+    this.loading = true;
+    const { email, password } = this.form.getRawValue();
+    this.authService.login({ email, password }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/dashboard']);
+      },
       error: () => {
-        alert('Invalid username or password.');
-        this.form.get('name')?.setErrors({ invalidLogin: true });
+        this.loading = false;
+        alert('Invalid email or password.');
+        this.form.get('email')?.setErrors({ invalidLogin: true });
         this.form.get('password')?.setErrors({ invalidLogin: true });
       }
     });

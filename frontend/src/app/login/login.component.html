@@ -17,11 +17,14 @@
 
         <form class="form" [formGroup]="form" (ngSubmit)="submit()">
           <mat-form-field appearance="outline" class="field">
-            <mat-label>Username</mat-label>
-            <input matInput type="text" placeholder="Enter your username" autocomplete="username"
-              formControlName="name" />
-            @if (form.get('name')?.hasError('required')) {
-            <mat-error>Username is required</mat-error>
+            <mat-label>Email</mat-label>
+            <input matInput type="email" placeholder="Enter your email" autocomplete="email"
+              formControlName="email" />
+            @if (form.get('email')?.hasError('required')) {
+            <mat-error>Email is required</mat-error>
+            }
+            @if (form.get('email')?.hasError('email')) {
+            <mat-error>Please enter a valid email</mat-error>
             }
           </mat-form-field>
 
@@ -31,6 +34,9 @@
               formControlName="password" />
             @if (form.get('password')?.hasError('required')) {
             <mat-error>Password is required</mat-error>
+            }
+            @if (form.get('password')?.hasError('minlength')) {
+            <mat-error>Password must be at least 8 characters</mat-error>
             }
           </mat-form-field>
 
@@ -42,7 +48,9 @@
             <button class="link" type="button" mat-button>Forgot password?</button>
           </div>
 
-          <button class="primary" type="submit" mat-flat-button>Sign in</button>
+          <button class="primary" type="submit" mat-flat-button [disabled]="loading">
+            {{loading ? 'Signing in...' : 'Sign in'}}
+          </button>
           <button class="ghost" type="button" mat-stroked-button>Use a passkey</button>
 
           <div class="divider">

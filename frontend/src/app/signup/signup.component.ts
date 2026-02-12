@@ -30,6 +30,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class SignupComponent {
   form!: FormGroup;
+  loading = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -38,7 +39,8 @@ export class SignupComponent {
   ) {
     this.form = this.fb.nonNullable.group(
       {
-        username: ['', [Validators.required, Validators.minLength(3)]],
+        name: ['', [Validators.required, Validators.minLength(3)]],
+        email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(8)]],
         confirmPassword: ['', [Validators.required]]
       },
@@ -53,16 +55,19 @@ export class SignupComponent {
       return;
     }
 
-    const { username, password } = this.form.getRawValue();
-    this.authService.signup({ name: username, password }).subscribe({
+    this.loading = true;
+    const { name, email, password } = this.form.getRawValue();
+    this.authService.signup({ name, email, password }).subscribe({
       next: () => {
-        alert('Signup successful!');
-        this.router.navigate(['/dashboard']);
+        this.loading = false;
+        alert('Signup successful! Please login.');
+        this.router.navigate(['/login']);
       },
       error: error => {
+        this.loading = false;
         if (error?.status === 409) {
-          alert('Username is already taken.');
-          this.form.get('username')?.setErrors({ usernameTaken: true });
+          alert('Email is already registered.');
+          this.form.get('email')?.setErrors({ emailTaken: true });
           return;
         }
         alert('Signup failed. Please try again.');
