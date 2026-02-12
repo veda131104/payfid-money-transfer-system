@@ -36,6 +36,8 @@ public class BankDetails {
 
     private String cvv;
 
+    private String expiryDate;
+
     @Column(unique = true)
     private String upiId;
 
@@ -50,7 +52,8 @@ public class BankDetails {
 
     public BankDetails(Long id, String accountNumber, String bankName, String ifscCode, String branchName,
             String address, String email,
-            String phoneNumber, String userName, String creditCardNumber, String cvv, String upiId, String pin,
+            String phoneNumber, String userName, String creditCardNumber, String cvv, String expiryDate, String upiId,
+            String pin,
             LocalDateTime createdAt, LocalDateTime lastUpdated) {
         this.id = id;
         this.accountNumber = accountNumber;
@@ -63,6 +66,7 @@ public class BankDetails {
         this.userName = userName;
         this.creditCardNumber = creditCardNumber;
         this.cvv = cvv;
+        this.expiryDate = expiryDate;
         this.upiId = upiId;
         this.pin = pin;
         this.createdAt = createdAt;
@@ -85,6 +89,7 @@ public class BankDetails {
         private String userName;
         private String creditCardNumber;
         private String cvv;
+        private String expiryDate;
         private String upiId;
         private String pin;
         private LocalDateTime createdAt;
@@ -145,6 +150,11 @@ public class BankDetails {
             return this;
         }
 
+        public Builder expiryDate(String expiryDate) {
+            this.expiryDate = expiryDate;
+            return this;
+        }
+
         public Builder upiId(String upiId) {
             this.upiId = upiId;
             return this;
@@ -168,7 +178,7 @@ public class BankDetails {
         public BankDetails build() {
             return new BankDetails(id, accountNumber, bankName, ifscCode, branchName, address, email, phoneNumber,
                     userName,
-                    creditCardNumber, cvv, upiId, pin, createdAt, lastUpdated);
+                    creditCardNumber, cvv, expiryDate, upiId, pin, createdAt, lastUpdated);
         }
     }
 
@@ -271,6 +281,14 @@ public class BankDetails {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
+    }
+
+    public String getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(String expiryDate) {
+        this.expiryDate = expiryDate;
     }
 
     public String getUpiId() {

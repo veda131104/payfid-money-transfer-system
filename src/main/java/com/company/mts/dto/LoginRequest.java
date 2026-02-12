@@ -8,9 +8,10 @@ public class LoginRequest {
     @NotBlank(message = "Username is required")
     private String name;
 
-    @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
+
+    private boolean rememberMe;
 
     public String getName() {
         return name;
@@ -26,5 +27,13 @@ public class LoginRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isRememberMe() {
+        return rememberMe;
+    }
+
+    public void setRememberMe(boolean rememberMe) {
+        this.rememberMe = rememberMe;
     }
 }

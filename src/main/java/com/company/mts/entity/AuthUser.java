@@ -65,11 +65,53 @@ public class AuthUser {
         this.email = email;
     }
 
+    @Column(unique = true)
+    private String recoveryToken;
+
+    private java.time.LocalDateTime recoveryTokenExpiry;
+
+    public String getRecoveryToken() {
+        return recoveryToken;
+    }
+
+    public void setRecoveryToken(String recoveryToken) {
+        this.recoveryToken = recoveryToken;
+    }
+
+    public java.time.LocalDateTime getRecoveryTokenExpiry() {
+        return recoveryTokenExpiry;
+    }
+
+    public void setRecoveryTokenExpiry(java.time.LocalDateTime recoveryTokenExpiry) {
+        this.recoveryTokenExpiry = recoveryTokenExpiry;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Column(unique = true)
+    private String rememberToken;
+
+    private LocalDateTime rememberTokenExpiry;
+
+    public String getRememberToken() {
+        return rememberToken;
+    }
+
+    public void setRememberToken(String rememberToken) {
+        this.rememberToken = rememberToken;
+    }
+
+    public LocalDateTime getRememberTokenExpiry() {
+        return rememberTokenExpiry;
+    }
+
+    public void setRememberTokenExpiry(LocalDateTime rememberTokenExpiry) {
+        this.rememberTokenExpiry = rememberTokenExpiry;
     }
 }

@@ -47,6 +47,7 @@ public class AccountSetupController {
                 .userName(request.getUserName())
                 .creditCardNumber(request.getCreditCardNumber())
                 .cvv(request.getCvv())
+                .expiryDate(request.getExpiryDate())
                 .upiId(generatedUpiId)
                 .build();
 
@@ -123,6 +124,7 @@ public class AccountSetupController {
         existing.setPhoneNumber(request.getPhoneNumber());
         existing.setCreditCardNumber(request.getCreditCardNumber());
         existing.setCvv(request.getCvv());
+        existing.setExpiryDate(request.getExpiryDate());
 
         BankDetails saved = service.save(existing);
         return ResponseEntity.ok(saved);

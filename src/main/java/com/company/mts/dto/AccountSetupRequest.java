@@ -11,6 +11,7 @@ public class AccountSetupRequest {
     private String userName;
     private String creditCardNumber;
     private String cvv;
+    private String expiryDate;
     private String upiId;
 
     public AccountSetupRequest() {
@@ -94,6 +95,14 @@ public class AccountSetupRequest {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
+    }
+
+    public String getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(String expiryDate) {
+        this.expiryDate = expiryDate;
     }
 
     public String getUpiId() {
