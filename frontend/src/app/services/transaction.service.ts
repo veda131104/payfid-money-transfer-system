@@ -14,6 +14,8 @@ export interface Transaction {
   status: 'completed' | 'pending' | 'failed' | 'SUCCESS' | 'FAILED';
   referenceId: string;
   description?: string;
+  fromAccountHolderName?: string;
+  toAccountHolderName?: string;
 }
 
 @Injectable({
@@ -69,7 +71,9 @@ export class TransactionService {
       type: dto.type.toLowerCase() as 'debit' | 'credit' | 'transfer',
       status: dto.status as 'SUCCESS' | 'FAILED' | 'completed' | 'pending' | 'failed',
       referenceId: dto.idempotencyKey || `TXN${dto.id}`,
-      description: dto.description
+      description: dto.description,
+      fromAccountHolderName: dto.fromAccountHolderName,
+      toAccountHolderName: dto.toAccountHolderName
     };
   }
 

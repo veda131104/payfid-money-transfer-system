@@ -92,18 +92,25 @@
       </div>
     </mat-card>
 
-    <mat-card class="card compliance">
-      <h2>Compliance insights</h2>
-      <p>Automated checks across 14 sanction lists in the last hour.</p>
-      <div class="insight-grid">
-        <div>
-          <p class="insight-value">98.9%</p>
-          <p class="insight-label">Auto-approved</p>
+    <mat-card class="card activity compliance">
+      <div class="card-header">
+        <h2>Recent Payments</h2>
+        <button class="link" routerLink="/history">View all</button>
+      </div>
+      <div class="activity-list small">
+        @for (txn of recentTransactions; track txn.id) {
+        <div class="activity-item">
+          <div class="activity-details">
+            <p class="activity-title">{{ txn.toAccountHolderName || 'Self' }}</p>
+            <p class="activity-meta">{{ txn.amount | currency:'INR':'symbol':'1.2-2' }} • {{ txn.status }}</p>
+          </div>
+          <div class="activity-amount" [ngClass]="txn.type">
+            {{ txn.type === 'credit' ? '+' : '-' }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
+          </div>
         </div>
-        <div>
-          <p class="insight-value">4</p>
-          <p class="insight-label">Manual reviews</p>
-        </div>
+        } @empty {
+        <p class="no-activity">No recent payments found.</p>
+        }
       </div>
     </mat-card>
   </main>
