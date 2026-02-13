@@ -2,6 +2,7 @@ package com.company.mts.dto;
 
 public class AuthResponse {
     private String name;
+    private String email;
     private String rememberToken;
 
     public AuthResponse(String name) {
@@ -21,6 +22,14 @@ public class AuthResponse {
         this.name = name;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getRememberToken() {
         return rememberToken;
     }
@@ -29,3 +38,4 @@ public class AuthResponse {
         this.rememberToken = rememberToken;
     }
 }
+

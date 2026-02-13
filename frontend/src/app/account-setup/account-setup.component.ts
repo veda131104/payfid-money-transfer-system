@@ -26,6 +26,7 @@ export class AccountSetupComponent {
   form!: FormGroup;
   lastSentOtp = '';
   isEmailVerified = false;
+  otpSentMessage = '';
 
   constructor(
     private readonly fb: FormBuilder,
@@ -50,6 +51,7 @@ export class AccountSetupComponent {
     // Reset verification status if email changes
     this.form.get('email')?.valueChanges.subscribe(() => {
       this.isEmailVerified = false;
+      this.otpSentMessage = '';
     });
   }
 
@@ -59,9 +61,15 @@ export class AccountSetupComponent {
       alert('Please enter an email address first');
       return;
     }
-    this.svc.sendOtp({ contact }).subscribe(resp => {
-      this.lastSentOtp = resp.otp || '';
-      // In production do not expose OTP
+    this.svc.sendOtp({ contact }).subscribe({
+      next: (resp) => {
+        this.otpSentMessage = `OTP has been sent to ${contact}. Valid for 10 minutes.`;
+      },
+      error: (err) => {
+        const errMsg = err?.error?.message || err?.message || 'Unknown error';
+        alert('Failed to send OTP. Error: ' + errMsg);
+        console.error('OTP Send Error:', err);
+      }
     });
   }
 

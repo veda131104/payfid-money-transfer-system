@@ -10,6 +10,8 @@ public interface AuthUserRepository extends JpaRepository<AuthUser, Long> {
 
     boolean existsByNameIgnoreCase(String name);
 
+    boolean existsByEmailIgnoreCase(String email);
+
     java.util.Optional<AuthUser> findByRecoveryToken(String token);
 
     java.util.Optional<AuthUser> findByRememberToken(String token);

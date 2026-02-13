@@ -65,6 +65,11 @@
       </mat-form-field>
       <button mat-raised-button type="button" (click)="verifyOtp()">Verify</button>
     </div>
+    @if (otpSentMessage) {
+    <div class="otp-message">
+      {{ otpSentMessage }}
+    </div>
+    }
 
     <mat-form-field appearance="fill" class="full">
       <mat-label>Credit Card Number</mat-label>

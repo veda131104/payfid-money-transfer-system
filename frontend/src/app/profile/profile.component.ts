@@ -78,8 +78,9 @@ export class ProfileComponent implements OnInit {
       branchName: ['', [Validators.required]],
       address: ['', [Validators.required]],
       ifscCode: ['', [Validators.required]],
-      creditCardNumber: [''],
-      cvv: [''],
+      creditCardNumber: ['', [Validators.required]],
+      cvv: ['', [Validators.required]],
+      expiryDate: ['', [Validators.required]]
     });
   }
 

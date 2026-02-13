@@ -65,7 +65,7 @@ export class ResetPasswordComponent implements OnInit {
                 alert('Password has been reset successfully! Redirecting to dashboard...');
                 this.router.navigate(['/dashboard']);
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error('Reset failed:', err);
                 this.isSending = false;
                 alert('Failed to reset password. Link may be expired.');

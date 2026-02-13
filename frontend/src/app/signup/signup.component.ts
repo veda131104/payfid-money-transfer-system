@@ -30,6 +30,7 @@ import { AuthService } from '../services/auth.service';
 })
 export class SignupComponent {
   form!: FormGroup;
+  loading = false;
 
   constructor(
     private readonly fb: FormBuilder,
@@ -54,20 +55,23 @@ export class SignupComponent {
       return;
     }
 
+    this.loading = true;
     const { username, email, password } = this.form.getRawValue();
     this.authService.signup({ name: username, email, password }).subscribe({
       next: () => {
+        this.loading = false;
         alert('Signup successful!');
         this.router.navigate(['/dashboard']);
       },
       error: error => {
+        this.loading = false;
         if (error?.status === 409) {
           alert('Username is already taken.');
-          this.form.get('username')?.setErrors({ usernameTaken: true });
+          this.form.reset();
           return;
         }
         alert('Signup failed. Please try again.');
-        this.form.setErrors({ signupFailed: true });
+        this.form.reset();
       }
     });
   }
