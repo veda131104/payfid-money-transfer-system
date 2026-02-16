@@ -26,6 +26,8 @@ export class DashboardComponent implements OnInit {
   processedToday = 0;
   activeTransfers = 0;
   recentTransactions: Transaction[] = [];
+  currentUserAccountNumber: string = '';
+  isFirstLogin: boolean = false;
 
   cardDetails = {
     number: '**** **** **** ****',
@@ -39,6 +41,7 @@ export class DashboardComponent implements OnInit {
     if (user) {
       this.userName = user.name;
       this.cardDetails.holder = user.name;
+      this.isFirstLogin = !!user.firstLogin;
     }
   }
 
@@ -60,6 +63,7 @@ export class DashboardComponent implements OnInit {
         this.accountSetupService.getAccountByNumber(data.accountNumber).subscribe({
           next: (acc) => {
             this.balance = acc.balance;
+            this.currentUserAccountNumber = acc.accountNumber;
             this.cardDetails.expiry = data.expiryDate || '12/28';
             this.fetchTransactions(acc.id);
             this.cdr.detectChanges();
@@ -94,6 +98,18 @@ export class DashboardComponent implements OnInit {
     if (!num) return '**** **** **** ****';
     const last4 = num.slice(-4);
     return `**** **** **** ${last4}`;
+  }
+
+  getDisplayType(txn: Transaction): 'credit' | 'debit' {
+    if (!this.currentUserAccountNumber) return txn.type === 'credit' ? 'credit' : 'debit';
+    if (txn.fromAccountNumber && txn.toAccountNumber) {
+      return txn.toAccountNumber === this.currentUserAccountNumber ? 'credit' : 'debit';
+    }
+    return txn.type === 'credit' ? 'credit' : 'debit';
+  }
+
+  getTransactionSign(txn: Transaction): string {
+    return this.getDisplayType(txn) === 'credit' ? '+' : '-';
   }
 
   onLogout(): void {

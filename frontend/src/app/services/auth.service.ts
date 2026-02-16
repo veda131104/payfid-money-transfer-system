@@ -18,6 +18,7 @@ export interface LoginPayload {
 export interface AuthResponse {
   name: string;
   rememberToken?: string;
+  firstLogin?: boolean;
 }
 
 @Injectable({

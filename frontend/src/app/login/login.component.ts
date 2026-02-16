@@ -35,8 +35,8 @@ export class LoginComponent implements OnInit {
     private readonly route: ActivatedRoute
   ) {
     this.form = this.fb.nonNullable.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      name: ['', [Validators.required]],
+      password: ['', [Validators.required]],
       rememberMe: [true]
     });
   }
@@ -83,13 +83,22 @@ export class LoginComponent implements OnInit {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      alert('Please enter your username and password.');
+      let errorMsg = 'Please check the following:\n';
+      if (this.form.get('name')?.invalid) errorMsg += '- Username must be at least 3 characters.\n';
+      if (this.form.get('password')?.invalid) errorMsg += '- Password must be at least 8 characters.\n';
+      alert(errorMsg);
+      console.log('Form Errors:', {
+        name: this.form.get('name')?.errors,
+        password: this.form.get('password')?.errors
+      });
       return;
     }
 
     const { name, password, rememberMe } = this.form.getRawValue();
+    this.isSending = true;
     this.authService.login({ name, password, rememberMe }).subscribe({
       next: (res) => {
+        this.isSending = false;
         if (rememberMe && res.rememberToken) {
           localStorage.setItem('remember_token', res.rememberToken);
         } else {
@@ -97,8 +106,10 @@ export class LoginComponent implements OnInit {
         }
         this.router.navigate(['/dashboard']);
       },
-      error: () => {
-        alert('Invalid username or password.');
+      error: (err) => {
+        this.isSending = false;
+        console.error('Login error:', err);
+        alert(err.error?.message || 'Invalid username or password.');
         this.form.get('name')?.setErrors({ invalidLogin: true });
         this.form.get('password')?.setErrors({ invalidLogin: true });
       }

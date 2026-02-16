@@ -59,6 +59,10 @@ public class TransactionService {
                                         existingTx.getId());
                 }
 
+                if (fromAccountId.equals(toAccountId)) {
+                        throw new IllegalArgumentException("Self-transfer is not allowed.");
+                }
+
                 // Get accounts
                 Account fromAccount = accountRepository.findById(fromAccountId)
                                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -130,6 +134,10 @@ public class TransactionService {
                         BigDecimal amount, String description) {
                 logger.info("Executing transfer by account numbers - From: {}, To: {}, Amount: {}",
                                 fromAccountNumber, toAccountNumber, amount);
+
+                if (fromAccountNumber.equals(toAccountNumber)) {
+                        throw new IllegalArgumentException("Self-transfer is not allowed.");
+                }
 
                 // Smart Provisioning: If sender account doesn't exist in 'accounts' table,
                 // check 'bank_details'

@@ -17,6 +17,11 @@ public class AuthUser {
     @Column(nullable = false)
     private String password;
 
+    private boolean firstLogin;
+
+    @Column(nullable = false)
+    private String role = "USER";
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -52,6 +57,14 @@ public class AuthUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isFirstLogin() {
+        return firstLogin;
+    }
+
+    public void setFirstLogin(boolean firstLogin) {
+        this.firstLogin = firstLogin;
     }
 
     @Column(unique = true)
@@ -113,5 +126,13 @@ public class AuthUser {
 
     public void setRememberTokenExpiry(LocalDateTime rememberTokenExpiry) {
         this.rememberTokenExpiry = rememberTokenExpiry;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

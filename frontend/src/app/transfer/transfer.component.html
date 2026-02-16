@@ -21,6 +21,8 @@
         [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
       <button class="ghost" type="button" mat-flat-button routerLink="/transfer" routerLinkActive="active"
         [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
+      <button class="ghost" type="button" mat-stroked-button routerLink="/analytics" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
       <button class="ghost" type="button" mat-stroked-button (click)="onLogout()">Log out</button>
     </div>
   </header>
@@ -124,6 +126,8 @@
       [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
     <button type="button" class="nav-item" mat-button routerLink="/transfer" routerLinkActive="active"
       [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
+    <button type="button" class="nav-item" mat-button routerLink="/analytics" routerLinkActive="active"
+      [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
     <button type="button" class="nav-item logout" mat-button (click)="onLogout()">Log out</button>
   </nav>
 </section>

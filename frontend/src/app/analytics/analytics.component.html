@@ -1,0 +1,138 @@
+<section class="dashboard-shell">
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-mark">PF</span>
+            <div>
+                <p class="brand-name">PayFid</p>
+                <p class="brand-tag">Transfer Command Center</p>
+            </div>
+        </div>
+        <div class="account">
+            <div>
+                <p class="account-label">Account holder</p>
+                <p class="account-name">{{ userName }}</p>
+            </div>
+            <button class="logout ghost" type="button" mat-stroked-button routerLink="/profile">View Profile</button>
+        </div>
+        <div class="topbar-actions">
+            <button class="ghost" type="button" mat-stroked-button routerLink="/dashboard" routerLinkActive="active"
+                [routerLinkActiveOptions]="routerLinkActiveOptions">Dashboard</button>
+            <button class="ghost" type="button" mat-stroked-button routerLink="/history" routerLinkActive="active"
+                [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
+            <button class="ghost" type="button" mat-stroked-button routerLink="/transfer" routerLinkActive="active"
+                [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
+            <button class="ghost" type="button" mat-flat-button routerLink="/analytics" routerLinkActive="active"
+                [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
+            <button class="ghost" type="button" mat-stroked-button (click)="onLogout()">Log out</button>
+        </div>
+    </header>
+
+    <main class="analytics-container">
+        <div class="header">
+            <h1>Analytics Insights</h1>
+            <p>Real-time data synchronization from Snowflake Warehouse</p>
+        </div>
+
+        <!-- Main Analytics Grid -->
+        <div class="analytics-grid">
+            <!-- Row 1 -->
+            <mat-card class="chart-card large">
+                <mat-card-header>
+                    <mat-card-title>Transaction Volume</mat-card-title>
+                    <mat-card-subtitle>Daily aggregate payout volume ($)</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <canvas id="volumeChart"></canvas>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="chart-card small">
+                <mat-card-header>
+                    <mat-card-title>Success Rate</mat-card-title>
+                    <mat-card-subtitle>Payout success vs failures</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="doughnut-container">
+                    <canvas id="successChart"></canvas>
+                </mat-card-content>
+            </mat-card>
+
+            <!-- Row 2 -->
+            <mat-card class="chart-card medium">
+                <mat-card-header>
+                    <mat-card-title>Account Activity</mat-card-title>
+                    <mat-card-subtitle>Top 5 most active accounts</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <canvas id="activityChart"></canvas>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card class="chart-card medium">
+                <mat-card-header>
+                    <mat-card-title>Peak Hours</mat-card-title>
+                    <mat-card-subtitle>Hourly transaction distribution</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <canvas id="peakChart"></canvas>
+                </mat-card-content>
+            </mat-card>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row">
+            <mat-card class="stat-card blue">
+                <h3>Primary Source</h3>
+                <p>H2 Database (Local)</p>
+            </mat-card>
+            <mat-card class="stat-card snowflake">
+                <h3>Analytics Source</h3>
+                <p>Snowflake Warehouse</p>
+            </mat-card>
+            <mat-card class="stat-card green">
+                <h3>Sync Status</h3>
+                <p>Active (5m cycle)</p>
+            </mat-card>
+            <mat-card class="stat-card gold">
+                <h3>Average Payout</h3>
+                <p>₹12,450.00</p>
+            </mat-card>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <button type="button" class="nav-item" mat-button routerLink="/dashboard" routerLinkActive="active"
+            [routerLinkActiveOptions]="routerLinkActiveOptions">Dashboard</button>
+        <button type="button" class="nav-item" mat-button routerLink="/history" routerLinkActive="active"
+            [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
+        <button type="button" class="nav-item" mat-button routerLink="/transfer" routerLinkActive="active"
+            [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
+        <button type="button" class="nav-item" mat-button routerLink="/analytics" routerLinkActive="active"
+            [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
+        <button type="button" class="nav-item logout" mat-button (click)="onLogout()">Log out</button>
+    </nav>
+</section>
+
+<footer class="app-footer">
+    <div class="footer-content">
+        <div class="footer-section">
+            <h4 class="footer-heading">Support</h4>
+            <button type="button" class="footer-link">Security</button>
+            <button type="button" class="footer-link">Preferences</button>
+            <button type="button" class="footer-link">Help & Support</button>
+        </div>
+        <div class="footer-section">
+            <h4 class="footer-heading">Legal</h4>
+            <button type="button" class="footer-link">Privacy Policy</button>
+            <button type="button" class="footer-link">Terms & Conditions</button>
+            <button type="button" class="footer-link">Cookie Policy</button>
+        </div>
+        <div class="footer-section">
+            <h4 class="footer-heading">Contact</h4>
+            <p class="footer-text">Email: support@payfid.com</p>
+            <p class="footer-text">Phone: +91 1800 123 4567</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p class="footer-copyright">&copy; 2026 PayFid. All rights reserved.</p>
+    </div>
+</footer>

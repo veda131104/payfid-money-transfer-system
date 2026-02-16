@@ -23,13 +23,18 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<AuthResponse> signup(@Valid @RequestBody SignupRequest request) {
         AuthUser user = authService.signup(request);
-        return new ResponseEntity<>(new AuthResponse(user.getName()), HttpStatus.CREATED);
+        AuthResponse response = new AuthResponse(user.getName(), null, true);
+        System.out.println("DEBUG: Signup response created with firstLogin=" + response.isFirstLogin());
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthUser user = authService.login(request);
-        return ResponseEntity.ok(new AuthResponse(user.getName(), user.getRememberToken()));
+        AuthResponse response = new AuthResponse(user.getName(), user.getRememberToken(), user.isFirstLogin(),
+                user.getRole());
+        System.out.println("DEBUG: Login response created with firstLogin=" + response.isFirstLogin());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/remember-me")

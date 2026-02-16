@@ -56,13 +56,11 @@ CREATE TABLE IF NOT EXISTS transaction_logs (
     );
 
 -- Indexes for performance
-CREATE INDEX idx_account_number ON accounts(account_number);
-CREATE INDEX idx_holder_name ON accounts(holder_name);
-CREATE INDEX idx_from_account ON transaction_logs(from_account_id);
-CREATE INDEX idx_to_account ON transaction_logs(to_account_id);
-CREATE INDEX idx_transaction_date ON transaction_logs(transaction_date);
-CREATE INDEX idx_idempotency_key ON transaction_logs(idempotency_key);
-CREATE INDEX idx_status ON transaction_logs(status);
+CREATE INDEX IF NOT EXISTS idx_holder_name ON accounts(holder_name);
+CREATE INDEX IF NOT EXISTS idx_from_account ON transaction_logs(from_account_id);
+CREATE INDEX IF NOT EXISTS idx_to_account ON transaction_logs(to_account_id);
+CREATE INDEX IF NOT EXISTS idx_transaction_date ON transaction_logs(transaction_date);
+CREATE INDEX IF NOT EXISTS idx_status ON transaction_logs(status);
 
 -- Comments for documentation
 COMMENT ON TABLE accounts IS 'Stores bank account information';
@@ -78,5 +76,4 @@ CREATE TABLE IF NOT EXISTS auth_users (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_auth_users_email ON auth_users(email);
 

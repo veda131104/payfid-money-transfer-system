@@ -21,13 +21,15 @@
         [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
       <button class="ghost" type="button" mat-stroked-button routerLink="/transfer" routerLinkActive="active"
         [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
+      <button class="ghost" type="button" mat-stroked-button routerLink="/analytics" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
       <button class="ghost" type="button" mat-stroked-button (click)="onLogout()">Log out</button>
     </div>
   </header>
 
   <main class="dashboard-grid">
     <mat-card class="card highlights">
-      <h1>Welcome back, {{ userName }}</h1>
+      <h1>{{ isFirstLogin ? 'Welcome, ' : 'Welcome back, ' }}{{ userName }}</h1>
       <p>Live status of your payout corridors and risk posture.</p>
       <div class="balance">
         <p class="balance-label">Current balance</p>
@@ -75,15 +77,15 @@
       <div class="activity-list">
         @for (txn of recentTransactions; track txn.id) {
         <div class="activity-item">
-          <div class="activity-icon" [ngClass]="txn.type">
-            {{ txn.type === 'credit' ? '↓' : '↑' }}
+          <div class="activity-icon" [ngClass]="getDisplayType(txn)">
+            {{ getDisplayType(txn) === 'credit' ? '↓' : '↑' }}
           </div>
           <div class="activity-details">
             <p class="activity-title">{{ txn.description || 'Money Transfer' }}</p>
             <p class="activity-meta">{{ txn.date | date:'MMM d, h:mm a' }} • {{ txn.referenceId }}</p>
           </div>
-          <div class="activity-amount" [ngClass]="txn.type">
-            {{ txn.type === 'credit' ? '+' : '-' }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
+          <div class="activity-amount" [ngClass]="getDisplayType(txn)">
+            {{ getTransactionSign(txn) }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
           </div>
         </div>
         } @empty {
@@ -101,11 +103,13 @@
         @for (txn of recentTransactions; track txn.id) {
         <div class="activity-item">
           <div class="activity-details">
-            <p class="activity-title">{{ txn.toAccountHolderName || 'Self' }}</p>
-            <p class="activity-meta">{{ txn.amount | currency:'INR':'symbol':'1.2-2' }} • {{ txn.status }}</p>
+            <p class="activity-title">{{ (getDisplayType(txn) === 'credit' ? txn.fromAccountHolderName :
+              txn.toAccountHolderName) || 'System' }}</p>
+            <p class="activity-meta">{{ txn.amount | currency:'INR':'symbol':'1.2-2' }} • {{ txn.status | titlecase }}
+            </p>
           </div>
-          <div class="activity-amount" [ngClass]="txn.type">
-            {{ txn.type === 'credit' ? '+' : '-' }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
+          <div class="activity-amount" [ngClass]="getDisplayType(txn)">
+            {{ getTransactionSign(txn) }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
           </div>
         </div>
         } @empty {
@@ -122,6 +126,8 @@
       [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
     <button type="button" class="nav-item" mat-button routerLink="/transfer" routerLinkActive="active"
       [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
+    <button type="button" class="nav-item" mat-button routerLink="/analytics" routerLinkActive="active"
+      [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
     <button type="button" class="nav-item logout" mat-button (click)="onLogout()">Log out</button>
   </nav>
 </section>
