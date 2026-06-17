@@ -64,19 +64,23 @@ CREATE INDEX idx_transaction_date ON transaction_logs(transaction_date);
 CREATE INDEX idx_idempotency_key ON transaction_logs(idempotency_key);
 CREATE INDEX idx_status ON transaction_logs(status);
 
--- Comments for documentation
-COMMENT ON TABLE accounts IS 'Stores bank account information';
-COMMENT ON TABLE transaction_logs IS 'Audit trail for all transactions';
-COMMENT ON COLUMN transaction_logs.idempotency_key IS 'Unique key to prevent duplicate transactions';
+-- comments for documentation (using MySQL ALTER TABLE syntax):
+ALTER TABLE accounts COMMENT 'Stores bank account information';
+ALTER TABLE transaction_logs COMMENT 'Audit trail for all transactions';
 
 -- Auth Users Table
 CREATE TABLE IF NOT EXISTS auth_users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) UNIQUE,
     password VARCHAR(255) NOT NULL,
+    recovery_token VARCHAR(255) UNIQUE,
+    recovery_token_expiry TIMESTAMP,
+    remember_token VARCHAR(255) UNIQUE,
+    remember_token_expiry TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_auth_users_email ON auth_users(email);
+CREATE INDEX idx_auth_users_name ON auth_users(name);
 

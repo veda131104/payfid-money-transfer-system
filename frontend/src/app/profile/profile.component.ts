@@ -35,6 +35,7 @@ export class ProfileComponent implements OnInit {
   pinForm: FormGroup;
   pinError = '';
   profileForm!: FormGroup;
+  currentBalance = 0;
 
   profileData = {
     name: '',
@@ -49,6 +50,9 @@ export class ProfileComponent implements OnInit {
     accountType: 'Savings Account',
     accountStatus: 'Active',
     joinDate: 'N/A',
+    creditCardNumber: 'N/A',
+    cvv: 'N/A',
+    expiryDate: 'N/A',
   };
 
   constructor(
@@ -78,8 +82,9 @@ export class ProfileComponent implements OnInit {
       branchName: ['', [Validators.required]],
       address: ['', [Validators.required]],
       ifscCode: ['', [Validators.required]],
-      creditCardNumber: [''],
-      cvv: [''],
+      creditCardNumber: ['', [Validators.required]],
+      cvv: ['', [Validators.required]],
+      expiryDate: ['', [Validators.required]]
     });
   }
 
@@ -96,7 +101,23 @@ export class ProfileComponent implements OnInit {
             day: 'numeric'
           }) : 'N/A'
         };
+        
+        // Load balance from account
+        if (data.accountNumber) {
+          this.accountSetupService.getAccountByNumber(data.accountNumber).subscribe({
+            next: (account) => {
+              this.currentBalance = account.balance || 0;
+              this.cdr.detectChanges();
+            },
+            error: (err) => {
+              console.error('Error loading account balance:', err);
+              this.currentBalance = 0;
+            }
+          });
+        }
+        
         this.profileForm.patchValue(data);
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isNewUser = true;

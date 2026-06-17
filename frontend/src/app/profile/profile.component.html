@@ -84,6 +84,12 @@
     <form [formGroup]="profileForm">
       <mat-card class="card account-details">
         <h2 class="section-title">Account Information</h2>
+        
+        <div class="balance-card">
+          <h3>Current Balance</h3>
+          <p class="balance-amount">₹{{ currentBalance | number: '1.2-2' }}</p>
+        </div>
+        
         <div class="details-grid">
           <div class="detail-item">
             <p class="detail-label">Account Number</p>
@@ -170,6 +176,36 @@
             } @else {
             <mat-form-field appearance="outline">
               <input matInput formControlName="ifscCode">
+            </mat-form-field>
+            }
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">Credit Card Number</p>
+            @if (!isEditing) {
+            <p class="detail-value">{{ profileData.creditCardNumber }}</p>
+            } @else {
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="creditCardNumber">
+            </mat-form-field>
+            }
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">CVV</p>
+            @if (!isEditing) {
+            <p class="detail-value">{{ profileData.cvv }}</p>
+            } @else {
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="cvv" maxlength="3">
+            </mat-form-field>
+            }
+          </div>
+          <div class="detail-item">
+            <p class="detail-label">Expiry Date (MM/YY)</p>
+            @if (!isEditing) {
+            <p class="detail-value">{{ profileData.expiryDate }}</p>
+            } @else {
+            <mat-form-field appearance="outline">
+              <input matInput formControlName="expiryDate" placeholder="MM/YY" maxlength="5">
             </mat-form-field>
             }
           </div>

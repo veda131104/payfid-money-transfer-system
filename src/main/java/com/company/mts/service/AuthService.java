@@ -9,9 +9,14 @@ import com.company.mts.dto.SignupRequest;
 import com.company.mts.dto.CredentialsResponse;
 import com.company.mts.entity.AuthUser;
 import com.company.mts.exception.DuplicateUserException;
+import com.company.mts.exception.InvalidCredentialsException;
 import com.company.mts.repository.AuthUserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import com.company.mts.security.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
 @Slf4j
@@ -19,44 +24,54 @@ public class AuthService {
 
     private final AuthUserRepository authUserRepository;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider tokenProvider;
 
-    public AuthService(AuthUserRepository authUserRepository, EmailService emailService) {
+    @Autowired
+    public AuthService(AuthUserRepository authUserRepository,
+                       EmailService emailService,
+                       PasswordEncoder passwordEncoder,
+                       JwtTokenProvider tokenProvider) {
         this.authUserRepository = authUserRepository;
         this.emailService = emailService;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
     }
 
     public AuthUser signup(SignupRequest request) {
+        String email = request.getEmail().trim().toLowerCase();
         String name = request.getName().trim();
-        if (authUserRepository.existsByNameIgnoreCase(name)) {
-            throw new DuplicateUserException("Username already in use");
+        if (authUserRepository.existsByEmailIgnoreCase(email) || authUserRepository.existsByNameIgnoreCase(name)) {
+            throw new DuplicateUserException("Email or username already in use");
         }
 
         AuthUser user = new AuthUser();
         user.setName(name);
-        user.setPassword(request.getPassword());
-        user.setEmail(request.getEmail().trim().toLowerCase());
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(request.getPassword().trim()));
 
-        log.info("Saving new user to database: name={}", name);
-        AuthUser saved = authUserRepository.save(user);
-        log.info("User saved successfully with ID: {}", saved.getId());
-
-        return saved;
+        log.info("Saving new user to database: email={}", email);
+        return authUserRepository.save(user);
     }
 
     public AuthUser login(LoginRequest request) {
-        AuthUser user = authUserRepository.findByNameIgnoreCase(request.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        AuthUser user = authUserRepository
+                .findByNameIgnoreCase(request.getName().trim())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid username or password"));
 
-        if (!user.getPassword().equals(request.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+        if (!passwordEncoder.matches(request.getPassword().trim(), user.getPassword())) {
+            throw new InvalidCredentialsException("Invalid username or password");
         }
 
         if (request.isRememberMe()) {
-            String token = java.util.UUID.randomUUID().toString();
+            String token = UUID.randomUUID().toString();
             user.setRememberToken(token);
-            user.setRememberTokenExpiry(java.time.LocalDateTime.now().plusDays(30));
+            user.setRememberTokenExpiry(LocalDateTime.now().plusDays(30));
             authUserRepository.save(user);
         }
+
+        // generate and persist JWT token (JwtTokenProvider saves token to DB)
+        tokenProvider.generateToken(user);
 
         return user;
     }
@@ -66,7 +81,7 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Invalid remember token"));
 
         if (user.getRememberTokenExpiry() == null
-                || user.getRememberTokenExpiry().isBefore(java.time.LocalDateTime.now())) {
+                || user.getRememberTokenExpiry().isBefore(LocalDateTime.now())) {
             throw new RuntimeException("Remember token expired");
         }
 
@@ -117,7 +132,7 @@ public class AuthService {
             throw new IllegalArgumentException("Reset link has expired");
         }
 
-        user.setPassword(request.getNewPassword());
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         user.setRecoveryToken(null);
         user.setRecoveryTokenExpiry(null);
 

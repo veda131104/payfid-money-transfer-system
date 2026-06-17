@@ -23,6 +23,9 @@
             @if (form.get('name')?.hasError('required')) {
             <mat-error>Username is required</mat-error>
             }
+            @if (form.get('name')?.hasError('minlength')) {
+            <mat-error>Must be at least 3 characters</mat-error>
+            }
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="field">
@@ -32,6 +35,9 @@
             @if (form.get('password')?.hasError('required')) {
             <mat-error>Password is required</mat-error>
             }
+            @if (form.get('password')?.hasError('minlength')) {
+            <mat-error>Password must be at least 8 characters</mat-error>
+            }
           </mat-form-field>
 
           <div class="form-row">
@@ -39,10 +45,23 @@
               <input type="checkbox" formControlName="rememberMe" />
               <span>Keep me signed in</span>
             </label>
-            <button class="link" type="button" mat-button (click)="openForgotModal()">Forgot password?</button>
+            <button class="link" type="button" mat-button>Forgot password?</button>
           </div>
 
-          <button class="primary" type="submit" mat-flat-button>Sign in</button>
+          <button class="primary" type="submit" mat-flat-button [disabled]="loading">
+            {{loading ? 'Signing in...' : 'Sign in'}}
+          </button>
+          <button class="ghost" type="button" mat-stroked-button>Use a passkey</button>
+
+          <div class="divider">
+            <span>Or continue with</span>
+          </div>
+
+          <div class="oauth">
+            <button type="button" mat-stroked-button>Google</button>
+            <button type="button" mat-stroked-button>Microsoft</button>
+            <button type="button" mat-stroked-button>Apple</button>
+          </div>
         </form>
 
         <p class="footnote">
@@ -51,29 +70,6 @@
         </p>
       </mat-card>
     </div>
+
   </div>
-
-  @if (isForgotModalOpen) {
-  <div class="modal-overlay">
-    <div class="modal-card">
-      <header class="modal-header">
-        <h2>Password Recovery</h2>
-        <p>Enter your username and we'll send a recovery email to your registered address.</p>
-      </header>
-
-      <mat-form-field appearance="outline" class="field">
-        <mat-label>Username</mat-label>
-        <input matInput type="text" placeholder="Your username" [(ngModel)]="forgotUsernameValue" [disabled]="isSending"
-          (keyup.enter)="onForgotPassword()" />
-      </mat-form-field>
-
-      <div class="modal-actions">
-        <button class="primary" (click)="onForgotPassword()" [disabled]="isSending">
-          {{ isSending ? 'Sending...' : 'Send Recovery Email' }}
-        </button>
-        <button class="ghost" (click)="closeForgotModal()" [disabled]="isSending">Cancel</button>
-      </div>
-    </div>
-  </div>
-  }
 </section>
