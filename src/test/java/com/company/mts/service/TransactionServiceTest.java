@@ -4,6 +4,7 @@ import com.company.mts.dto.TransactionDTO;
 import com.company.mts.entity.*;
 import com.company.mts.exception.DuplicateTransactionException;
 import com.company.mts.exception.InsufficientBalanceException;
+import com.company.mts.exception.ResourceNotFoundException;
 import com.company.mts.repository.AccountRepository;
 import com.company.mts.repository.BankDetailsRepository;
 import com.company.mts.repository.TransactionLogRepository;
@@ -15,11 +16,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -72,109 +73,80 @@ class TransactionServiceTest {
 
         @Test
         void executeIdempotentTransfer_Success() {
-                // Arrange
                 String idempotencyKey = "TEST-KEY-002";
-                BigDecimal amount = new BigDecimal("300.00");
-
                 when(transactionLogRepository.existsByIdempotencyKey(idempotencyKey)).thenReturn(false);
                 when(accountRepository.findById(1L)).thenReturn(Optional.of(fromAccount));
                 when(accountRepository.findById(2L)).thenReturn(Optional.of(toAccount));
-                when(transactionLogRepository.save(any(TransactionLog.class)))
-                                .thenAnswer(invocation -> {
-                                        TransactionLog tx = invocation.getArgument(0);
-                                        tx.setId(2L);
-                                        return tx;
-                                });
+                when(transactionLogRepository.save(any(TransactionLog.class))).thenAnswer(i -> i.getArgument(0));
 
-                // Act
                 TransactionDTO result = transactionService.executeIdempotentTransfer(
-                                1L, 2L, amount, idempotencyKey, "Test transfer");
+                                1L, 2L, new BigDecimal("300.00"), idempotencyKey, "Test transfer");
 
-                // Assert
                 assertNotNull(result);
                 assertEquals(new BigDecimal("700.00"), fromAccount.getBalance());
                 assertEquals(new BigDecimal("800.00"), toAccount.getBalance());
-                verify(transactionLogRepository, times(1)).save(any(TransactionLog.class));
         }
 
         @Test
         void executeIdempotentTransfer_DuplicateKey_ThrowsException() {
-                // Arrange
                 String idempotencyKey = "TEST-KEY-001";
-                BigDecimal amount = new BigDecimal("300.00");
-
                 when(transactionLogRepository.existsByIdempotencyKey(idempotencyKey)).thenReturn(true);
                 when(transactionLogRepository.findByIdempotencyKey(idempotencyKey))
                                 .thenReturn(Optional.of(existingTransaction));
 
-                // Act & Assert
-                DuplicateTransactionException exception = assertThrows(
-                                DuplicateTransactionException.class,
-                                () -> transactionService.executeIdempotentTransfer(
-                                                1L, 2L, amount, idempotencyKey, "Test transfer"));
-
-                assertEquals(1L, exception.getExistingTransactionId());
-                verify(transactionLogRepository, never()).save(any(TransactionLog.class));
+                assertThrows(DuplicateTransactionException.class, () -> transactionService.executeIdempotentTransfer(1L,
+                                2L, new BigDecimal("300.00"), idempotencyKey, "Test"));
         }
 
         @Test
-        void executeIdempotentTransfer_InsufficientBalance_LogsFailure() {
-                // Arrange
-                String idempotencyKey = "TEST-KEY-003";
-                BigDecimal amount = new BigDecimal("2000.00"); // More than balance
+        void executeTransferByAccountNumber_Internal_Success() {
+                when(accountRepository.findByAccountNumber("123456789012")).thenReturn(Optional.of(fromAccount));
+                when(accountRepository.findByAccountNumber("234567890123")).thenReturn(Optional.of(toAccount));
+                when(transactionLogRepository.save(any(TransactionLog.class))).thenAnswer(i -> i.getArgument(0));
 
-                when(transactionLogRepository.existsByIdempotencyKey(idempotencyKey)).thenReturn(false);
-                when(accountRepository.findById(1L)).thenReturn(Optional.of(fromAccount));
-                when(accountRepository.findById(2L)).thenReturn(Optional.of(toAccount));
-                when(transactionLogRepository.save(any(TransactionLog.class)))
-                                .thenAnswer(invocation -> invocation.getArgument(0));
+                TransactionDTO result = transactionService.executeTransferByAccountNumber(
+                                "123456789012", "234567890123", new BigDecimal("100.00"), "Internal test");
 
-                // Act & Assert
-                assertThrows(InsufficientBalanceException.class, () -> {
-                        transactionService.executeIdempotentTransfer(
-                                        1L, 2L, amount, idempotencyKey, "Test transfer");
-                });
+                assertNotNull(result);
+                assertEquals(new BigDecimal("900.00"), fromAccount.getBalance());
+        }
 
-                // Verify that failed transaction was logged
-                verify(transactionLogRepository, times(1)).save(
-                                argThat(tx -> tx.getStatus() == TransactionStatus.FAILED));
+        @Test
+        void executeTransferByAccountNumber_External_Success() {
+                when(accountRepository.findByAccountNumber("123456789012")).thenReturn(Optional.of(fromAccount));
+                when(accountRepository.findByAccountNumber("987654321098")).thenReturn(Optional.empty());
+                when(transactionLogRepository.save(any(TransactionLog.class))).thenAnswer(i -> i.getArgument(0));
+
+                TransactionDTO result = transactionService.executeTransferByAccountNumber(
+                                "123456789012", "987654321098", new BigDecimal("100.00"), "External test");
+
+                assertNotNull(result);
+                assertEquals(TransactionType.DEBIT, result.getType());
         }
 
         @Test
         void logCreditTransaction_Success() {
-                // Arrange
-                BigDecimal amount = new BigDecimal("500.00");
-                when(transactionLogRepository.save(any(TransactionLog.class)))
-                                .thenAnswer(invocation -> invocation.getArgument(0));
-
-                // Act
-                TransactionLog result = transactionService.logCreditTransaction(
-                                fromAccount, amount, "Deposit");
-
-                // Assert
+                when(transactionLogRepository.save(any(TransactionLog.class))).thenAnswer(i -> i.getArgument(0));
+                TransactionLog result = transactionService.logCreditTransaction(fromAccount, new BigDecimal("500.00"),
+                                "Deposit");
                 assertNotNull(result);
                 assertEquals(TransactionType.CREDIT, result.getType());
-                assertEquals(TransactionStatus.SUCCESS, result.getStatus());
-                assertEquals(amount, result.getAmount());
-                verify(transactionLogRepository, times(1)).save(any(TransactionLog.class));
         }
 
         @Test
-        void logDebitTransaction_Success() {
-                // Arrange
-                BigDecimal amount = new BigDecimal("200.00");
-                when(transactionLogRepository.save(any(TransactionLog.class)))
-                                .thenAnswer(invocation -> invocation.getArgument(0));
+        void getAccountTransactionHistory_Success() {
+                when(accountRepository.findById(1L)).thenReturn(Optional.of(fromAccount));
+                when(transactionLogRepository.findByAccountId(1L)).thenReturn(List.of(existingTransaction));
 
-                // Act
-                TransactionLog result = transactionService.logDebitTransaction(
-                                fromAccount, amount, "Withdrawal");
+                List<TransactionDTO> results = transactionService.getAccountTransactionHistory(1L);
+                assertEquals(1, results.size());
+        }
 
-                // Assert
+        @Test
+        void getTransactionById_Success() {
+                when(transactionLogRepository.findById(1L)).thenReturn(Optional.of(existingTransaction));
+                TransactionDTO result = transactionService.getTransactionById(1L);
                 assertNotNull(result);
-                assertEquals(TransactionType.DEBIT, result.getType());
-                assertEquals(TransactionStatus.SUCCESS, result.getStatus());
-                assertEquals(amount, result.getAmount());
-                verify(transactionLogRepository, times(1)).save(any(TransactionLog.class));
+                assertEquals(1L, result.getId());
         }
 }

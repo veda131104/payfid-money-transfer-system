@@ -110,6 +110,11 @@ export class TransferComponent {
       return;
     }
 
+    if (this.accountNumber === this.myAccountNumber) {
+      alert('Self-transfer is not allowed. Please enter a different recipient account number.');
+      return;
+    }
+
     if (!this.amount.trim()) {
       alert('Please enter the amount to transfer.');
       return;

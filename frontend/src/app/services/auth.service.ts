@@ -27,6 +27,7 @@ export interface LoginResponse {
   token: string;
   tokenType: string;
   rememberToken?: string;
+  firstLogin?: boolean;
 }
 
 export interface CredentialsResponse {

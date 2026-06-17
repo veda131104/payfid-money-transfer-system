@@ -30,6 +30,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
   userName: string = 'User';
   currentBalance: string = '--.--';
   isLoading: boolean = false;
+  currentFilter: 'all' | 'today' | 'month' | 'year' = 'all';
+  rawTransactions: Transaction[] = [];
 
   constructor(
     private router: Router,
@@ -97,9 +99,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         if (txns) {
           console.log('✅ [History] Data pipeline complete, transactions count:', txns.length);
-          this.displayedTransactions = [];
-          this.currentPage = 0;
-          this.loadMore();
+          this.rawTransactions = txns;
+          this.applyFilter();
         }
         this.cdr.detectChanges();
       },
@@ -115,9 +116,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe(() => {
       console.log('🔄 [History] Service transactions updated, syncing UI...');
-      this.displayedTransactions = [];
-      this.currentPage = 0;
-      this.loadMore();
+      this.rawTransactions = this.transactionService.getTransactions();
+      this.applyFilter();
       this.cdr.detectChanges();
     });
 
@@ -292,15 +292,48 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   loadMore(): void {
-    this.allTransactions = this.transactionService.getTransactions();
+    const filtered = this.getFilteredTransactions();
     const startIndex = this.currentPage * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    const newTransactions = this.allTransactions.slice(startIndex, endIndex);
+    const newTransactions = filtered.slice(startIndex, endIndex);
 
     this.displayedTransactions = [...this.displayedTransactions, ...newTransactions];
     this.currentPage++;
 
-    this.hasMoreTransactions = endIndex < this.allTransactions.length;
+    this.hasMoreTransactions = endIndex < filtered.length;
+  }
+
+  setFilter(filter: 'all' | 'today' | 'month' | 'year'): void {
+    this.currentFilter = filter;
+    this.applyFilter();
+  }
+
+  private applyFilter(): void {
+    this.displayedTransactions = [];
+    this.currentPage = 0;
+    this.loadMore();
+    this.cdr.detectChanges();
+  }
+
+  private getFilteredTransactions(): Transaction[] {
+    const now = new Date();
+    const today = now.toDateString();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    switch (this.currentFilter) {
+      case 'today':
+        return this.rawTransactions.filter(t => new Date(t.date).toDateString() === today);
+      case 'month':
+        return this.rawTransactions.filter(t => {
+          const d = new Date(t.date);
+          return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+        });
+      case 'year':
+        return this.rawTransactions.filter(t => new Date(t.date).getFullYear() === currentYear);
+      default:
+        return this.rawTransactions;
+    }
   }
 
   openTransactionDetail(transaction: Transaction, index: number): void {

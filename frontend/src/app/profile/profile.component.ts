@@ -67,14 +67,6 @@ export class ProfileComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      this.profileData.name = user.name;
-      this.checkAccountStatus(user.name);
-    } else {
-      this.router.navigate(['/']);
-    }
-
     this.profileForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       phoneNumber: ['', [Validators.required]],
@@ -86,6 +78,14 @@ export class ProfileComponent implements OnInit {
       cvv: ['', [Validators.required]],
       expiryDate: ['', [Validators.required]]
     });
+
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.profileData.name = user.name;
+      this.checkAccountStatus(user.name);
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
   checkAccountStatus(userName: string): void {
