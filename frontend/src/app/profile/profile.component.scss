@@ -304,6 +304,30 @@
   padding-bottom: 0.75rem;
 }
 
+.balance-card {
+  background: linear-gradient(135deg, #215a66 0%, #1d3b4f 100%);
+  color: #fefbf6;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 10px 30px rgba(29, 59, 79, 0.2);
+
+  h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.9;
+  }
+
+  .balance-amount {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+  }
+}
+
 .details-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

@@ -1,102 +1,210 @@
-<mat-card>
-  <h2>Account Setup</h2>
+<div class="account-setup-container">
+  <!-- Setup Form -->
+  <mat-card *ngIf="!setupComplete">
+    <h2>Account Setup</h2>
 
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <mat-form-field appearance="fill" class="full">
-      <mat-label>Account Number</mat-label>
-      <input matInput formControlName="accountNumber" />
-      @if (form.get('accountNumber')?.hasError('required') && form.get('accountNumber')?.touched) {
-      <mat-error>Account Number is required</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full">
-      <mat-label>Bank Name</mat-label>
-      <input matInput formControlName="bankName" />
-      @if (form.get('bankName')?.hasError('required') && form.get('bankName')?.touched) {
-      <mat-error>Bank Name is required</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full">
-      <mat-label>IFSC Code</mat-label>
-      <input matInput formControlName="ifscCode" />
-      @if (form.get('ifscCode')?.hasError('required') && form.get('ifscCode')?.touched) {
-      <mat-error>IFSC Code is required</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full">
-      <mat-label>Branch Name</mat-label>
-      <input matInput formControlName="branchName" />
-      @if (form.get('branchName')?.hasError('required') && form.get('branchName')?.touched) {
-      <mat-error>Branch Name is required</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full">
-      <mat-label>Address</mat-label>
-      <textarea matInput formControlName="address" rows="3"></textarea>
-      @if (form.get('address')?.hasError('required') && form.get('address')?.touched) {
-      <mat-error>Address is required</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full">
-      <mat-label>Email Address</mat-label>
-      <input matInput formControlName="email" placeholder="example@mail.com" />
-      @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
-      <mat-error>Email is required</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full">
-      <mat-label>Phone Number</mat-label>
-      <input matInput formControlName="phoneNumber" placeholder="+91 ..." />
-      @if (form.get('phoneNumber')?.hasError('required') && form.get('phoneNumber')?.touched) {
-      <mat-error>Phone Number is required</mat-error>
-      }
-    </mat-form-field>
-
-    <div class="otp-row">
-      <button mat-raised-button type="button" (click)="sendOtp()">Send Email OTP</button>
-      <mat-form-field appearance="fill" class="otp-field">
-        <input matInput placeholder="Enter OTP" formControlName="otp" />
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Account Number</mat-label>
+        <input matInput formControlName="accountNumber" />
+        @if (form.get('accountNumber')?.hasError('required') && form.get('accountNumber')?.touched) {
+        <mat-error>Account Number is required</mat-error>
+        }
       </mat-form-field>
-      <button mat-raised-button type="button" (click)="verifyOtp()">Verify</button>
+
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Bank Name</mat-label>
+        <input matInput formControlName="bankName" />
+        @if (form.get('bankName')?.hasError('required') && form.get('bankName')?.touched) {
+        <mat-error>Bank Name is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>IFSC Code</mat-label>
+        <input matInput formControlName="ifscCode" />
+        @if (form.get('ifscCode')?.hasError('required') && form.get('ifscCode')?.touched) {
+        <mat-error>IFSC Code is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Branch Name</mat-label>
+        <input matInput formControlName="branchName" />
+        @if (form.get('branchName')?.hasError('required') && form.get('branchName')?.touched) {
+        <mat-error>Branch Name is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Address</mat-label>
+        <textarea matInput formControlName="address" rows="3"></textarea>
+        @if (form.get('address')?.hasError('required') && form.get('address')?.touched) {
+        <mat-error>Address is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Email Address</mat-label>
+        <input matInput formControlName="email" placeholder="example@mail.com" />
+        @if (form.get('email')?.hasError('required') && form.get('email')?.touched) {
+        <mat-error>Email is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Phone Number</mat-label>
+        <input matInput formControlName="phoneNumber" placeholder="+91 ..." />
+        @if (form.get('phoneNumber')?.hasError('required') && form.get('phoneNumber')?.touched) {
+        <mat-error>Phone Number is required</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="otp-row">
+        <button mat-raised-button type="button" (click)="sendOtp()">Send Email OTP</button>
+        <mat-form-field appearance="fill" class="otp-field">
+          <input matInput placeholder="Enter OTP" formControlName="otp" />
+        </mat-form-field>
+        <button mat-raised-button type="button" (click)="verifyOtp()">Verify</button>
+      </div>
+      @if (otpSentMessage) {
+      <div class="otp-message">
+        ✓ {{ otpSentMessage }}
+      </div>
+      }
+      @if (isEmailVerified) {
+      <div class="verified-message">
+        ✓ Email verified. You can now complete the setup.
+      </div>
+      }
+
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Credit Card Number</mat-label>
+        <input matInput formControlName="creditCardNumber" />
+        @if (form.get('creditCardNumber')?.hasError('required') && form.get('creditCardNumber')?.touched) {
+        <mat-error>Credit Card Number is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>CVV</mat-label>
+        <input matInput formControlName="cvv" maxlength="3" />
+        @if (form.get('cvv')?.hasError('required') && form.get('cvv')?.touched) {
+        <mat-error>CVV is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full">
+        <mat-label>Expiry Date (MM/YY)</mat-label>
+        <input matInput formControlName="expiryDate" placeholder="MM/YY" maxlength="5" />
+        @if (form.get('expiryDate')?.hasError('required') && form.get('expiryDate')?.touched) {
+        <mat-error>Expiry Date is required</mat-error>
+        }
+      </mat-form-field>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Complete Setup</button>
+      </div>
+    </form>
+  </mat-card>
+
+  <!-- Post-Setup: PIN and Edit Details -->
+  <mat-card *ngIf="setupComplete && !showPinSetup && !showEditDetails" class="setup-complete">
+    <h2>✓ Setup Complete!</h2>
+    <div class="balance-display">
+      <h3>Current Balance</h3>
+      <p class="balance-amount">₹{{ currentBalance | number: '1.2-2' }}</p>
     </div>
-    @if (otpSentMessage) {
-    <div class="otp-message">
-      {{ otpSentMessage }}
+
+    <div class="setup-options">
+      <mat-card class="option-card" (click)="showPinSetup = true">
+        <h3>🔐 Set PIN</h3>
+        <p>Create a 4-6 digit PIN for secure transactions</p>
+      </mat-card>
+
+      <mat-card class="option-card" (click)="openEditDetails()">
+        <h3>✏️ Edit Details</h3>
+        <p>Update your account information anytime</p>
+      </mat-card>
     </div>
-    }
-
-    <mat-form-field appearance="fill" class="full">
-      <mat-label>Credit Card Number</mat-label>
-      <input matInput formControlName="creditCardNumber" />
-      @if (form.get('creditCardNumber')?.hasError('required') && form.get('creditCardNumber')?.touched) {
-      <mat-error>Credit Card Number is required</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full">
-      <mat-label>CVV</mat-label>
-      <input matInput formControlName="cvv" maxlength="3" />
-      @if (form.get('cvv')?.hasError('required') && form.get('cvv')?.touched) {
-      <mat-error>CVV is required</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field appearance="fill" class="full">
-      <mat-label>Expiry Date (MM/YY)</mat-label>
-      <input matInput formControlName="expiryDate" placeholder="MM/YY" maxlength="5" />
-      @if (form.get('expiryDate')?.hasError('required') && form.get('expiryDate')?.touched) {
-      <mat-error>Expiry Date is required</mat-error>
-      }
-    </mat-form-field>
 
     <div class="actions">
-      <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Complete Setup</button>
+      <button mat-raised-button color="primary" (click)="completeSetup()">Go to Dashboard</button>
     </div>
-  </form>
-</mat-card>
+  </mat-card>
+
+  <!-- PIN Setup Modal -->
+  <mat-card *ngIf="showPinSetup" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Set Your PIN</h2>
+      <form [formGroup]="pinForm">
+        <mat-form-field appearance="fill" class="full">
+          <mat-label>PIN (4-6 digits)</mat-label>
+          <input matInput type="password" placeholder="Enter PIN" formControlName="pin" />
+          @if (pinForm.get('pin')?.hasError('required') && pinForm.get('pin')?.touched) {
+          <mat-error>PIN is required</mat-error>
+          }
+          @if (pinForm.get('pin')?.hasError('minlength') || pinForm.get('pin')?.hasError('maxlength')) {
+          <mat-error>PIN must be 4-6 digits</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full">
+          <mat-label>Confirm PIN</mat-label>
+          <input matInput type="password" placeholder="Confirm PIN" formControlName="confirmPin" />
+          @if (pinForm.get('confirmPin')?.hasError('required') && pinForm.get('confirmPin')?.touched) {
+          <mat-error>Confirmation is required</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-raised-button color="primary" (click)="setPin()">Set PIN</button>
+          <button mat-raised-button (click)="showPinSetup = false">Skip for Now</button>
+        </div>
+      </form>
+    </div>
+  </mat-card>
+
+  <!-- Edit Details Modal -->
+  <mat-card *ngIf="showEditDetails" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Edit Account Details</h2>
+      <form [formGroup]="editDetailsForm">
+        <mat-form-field appearance="fill" class="full">
+          <mat-label>Email Address</mat-label>
+          <input matInput formControlName="email" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full">
+          <mat-label>Phone Number</mat-label>
+          <input matInput formControlName="phoneNumber" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full">
+          <mat-label>Address</mat-label>
+          <textarea matInput formControlName="address" rows="3"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full">
+          <mat-label>Credit Card Number</mat-label>
+          <input matInput formControlName="creditCardNumber" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full">
+          <mat-label>CVV</mat-label>
+          <input matInput formControlName="cvv" maxlength="3" />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="full">
+          <mat-label>Expiry Date (MM/YY)</mat-label>
+          <input matInput formControlName="expiryDate" maxlength="5" />
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-raised-button color="primary" (click)="saveEditDetails()">Save Changes</button>
+          <button mat-raised-button (click)="cancelEditDetails()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </mat-card>
+</div>

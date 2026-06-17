@@ -59,14 +59,26 @@ export class DashboardComponent implements OnInit {
         // Fetch the account using the holder name to get the balance
         this.accountSetupService.getAccountByNumber(data.accountNumber).subscribe({
           next: (acc) => {
-            this.balance = acc.balance;
+            this.balance = acc.balance || 0;
             this.cardDetails.expiry = data.expiryDate || '12/28';
+            this.cardDetails.holder = data.userName || user.name;
             this.fetchTransactions(acc.id);
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error('Account Balance Load Error:', err);
+            // Set default balance if account fetch fails
+            this.balance = 0;
             this.cdr.detectChanges();
           }
         });
       },
-      error: (err) => console.error('Dashboard Load Error:', err)
+      error: (err) => {
+        console.error('Dashboard Load Error:', err);
+        // Set default values if bank details fetch fails
+        this.balance = 0;
+        this.cdr.detectChanges();
+      }
     });
   }
 

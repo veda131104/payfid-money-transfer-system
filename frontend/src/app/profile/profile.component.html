@@ -84,6 +84,12 @@
     <form [formGroup]="profileForm">
       <mat-card class="card account-details">
         <h2 class="section-title">Account Information</h2>
+        
+        <div class="balance-card">
+          <h3>Current Balance</h3>
+          <p class="balance-amount">₹{{ currentBalance | number: '1.2-2' }}</p>
+        </div>
+        
         <div class="details-grid">
           <div class="detail-item">
             <p class="detail-label">Account Number</p>
