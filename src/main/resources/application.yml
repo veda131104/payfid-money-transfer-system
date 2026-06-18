@@ -10,7 +10,7 @@ spring:
     url: jdbc:mysql://localhost:3306/money_transfer_system?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: Root123@
+    password: "Cloud@123$"
     hikari:
       maximum-pool-size: 5
 
@@ -23,6 +23,10 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
+  sql:
+    init:
+      mode: never
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -34,6 +38,21 @@ spring:
           auth: true
           starttls:
             enable: true
+
+app:
+  jwt:
+    secret: MySuperSecretKeyForJWTTokenGenerationAndValidationInMoneyTransferSystem2024
+    expiration: 86400000
+
+# Snowflake configuration (placeholder defaults - update with real credentials when needed)
+snowflake:
+  url: "jdbc:snowflake://<your-account>.snowflakecomputing.com"
+  user: "<your-username>"
+  password: "<your-password>"
+  role: "SYSADMIN"
+  warehouse: "COMPUTE_WH"
+  database: "PAYFID_DB"
+  schema: "PUBLIC"
 
 logging:
   level:

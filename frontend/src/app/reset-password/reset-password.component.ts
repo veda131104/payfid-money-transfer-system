@@ -40,7 +40,9 @@ export class ResetPasswordComponent implements OnInit {
     ngOnInit(): void {
         this.token = this.route.snapshot.queryParamMap.get('token');
         if (!this.token) {
-            alert('Invalid reset link. Token is missing.');
+            if (typeof window !== 'undefined') {
+                alert('Invalid reset link. Token is missing.');
+            }
             this.router.navigate(['/']);
         }
     }
@@ -62,13 +64,17 @@ export class ResetPasswordComponent implements OnInit {
 
         this.authService.resetPassword({ token: this.token, newPassword: password }).subscribe({
             next: () => {
-                alert('Password has been reset successfully! Redirecting to dashboard...');
+                if (typeof window !== 'undefined') {
+                    alert('Password has been reset successfully! Redirecting to dashboard...');
+                }
                 this.router.navigate(['/dashboard']);
             },
             error: (err: any) => {
                 console.error('Reset failed:', err);
                 this.isSending = false;
-                alert('Failed to reset password. Link may be expired.');
+                if (typeof window !== 'undefined') {
+                    alert('Failed to reset password. Link may be expired.');
+                }
             }
         });
     }

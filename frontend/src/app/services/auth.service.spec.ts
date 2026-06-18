@@ -49,7 +49,7 @@ describe('AuthService', () => {
     });
 
     it('should login and set current user', () => {
-        const mockResponse = { name: 'test', rememberToken: 'token' };
+        const mockResponse = { userId: 1, name: 'test', email: 'test@company.com', token: 'token', rememberToken: 'token' };
         const payload = { name: 'test', password: 'pass', rememberMe: true };
         service.login(payload).subscribe(res => {
             expect(service.getCurrentUser()?.name).toEqual('test');
@@ -82,11 +82,12 @@ describe('AuthService', () => {
     });
 
     it('should login with token', () => {
-        const mockResponse = { name: 'test' };
+        const mockResponse = { userId: 1, name: 'test', email: 'test@company.com', token: 'token', tokenType: 'Bearer' };
         service.loginWithToken('token').subscribe(res => {
             expect(service.getCurrentUser()?.name).toEqual('test');
         });
-        const req = httpMock.expectOne('http://localhost:8080/api/v1/auth/verify-token?token=token');
+        const req = httpMock.expectOne('http://localhost:8080/api/v1/auth/login-with-token');
+        expect(req.request.method).toBe('POST');
         req.flush(mockResponse);
     });
 });

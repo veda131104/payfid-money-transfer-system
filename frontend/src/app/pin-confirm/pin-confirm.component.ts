@@ -24,7 +24,7 @@ export class PinConfirmComponent {
 
   constructor(private router: Router, private ngZone: NgZone, private transactionService: TransactionService) {
     // Grab navigation state (transfer details) from history.state
-    const st: any = history.state || {};
+    const st: any = (typeof history !== 'undefined' ? history.state : null) || {};
     this.accountNumber = st.accountNumber || '';
     this.amount = st.amount || '';
   }

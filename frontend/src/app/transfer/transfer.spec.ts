@@ -84,7 +84,7 @@ describe('TransferComponent', () => {
   });
 
   it('should load account data on init', () => {
-    vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser' });
+    vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
     vi.spyOn(accountSetupService, 'getAccountByUser').mockReturnValue(of({ accountNumber: '123456789012' }));
     component.ngOnInit();
     expect(accountSetupService.getAccountByUser).toHaveBeenCalled();

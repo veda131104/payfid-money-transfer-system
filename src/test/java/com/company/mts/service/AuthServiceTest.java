@@ -5,12 +5,14 @@ import com.company.mts.dto.SignupRequest;
 import com.company.mts.entity.AuthUser;
 import com.company.mts.exception.DuplicateUserException;
 import com.company.mts.repository.AuthUserRepository;
+import com.company.mts.security.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,6 +29,12 @@ class AuthServiceTest {
 
     @Mock
     private EmailService emailService;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private JwtTokenProvider tokenProvider;
 
     @InjectMocks
     private AuthService authService;
@@ -49,7 +57,9 @@ class AuthServiceTest {
         request.setPassword("password123");
         request.setEmail("test@example.com");
 
+        when(authUserRepository.existsByEmailIgnoreCase("test@example.com")).thenReturn(false);
         when(authUserRepository.existsByNameIgnoreCase("testuser")).thenReturn(false);
+        when(passwordEncoder.encode("password123")).thenReturn("encoded_password");
         when(authUserRepository.save(any(AuthUser.class))).thenReturn(testUser);
 
         AuthUser result = authService.signup(request);
@@ -63,8 +73,10 @@ class AuthServiceTest {
     void signup_DuplicateUser_ThrowsException() {
         SignupRequest request = new SignupRequest();
         request.setName("testuser");
+        request.setPassword("password123");
+        request.setEmail("test@example.com");
 
-        when(authUserRepository.existsByNameIgnoreCase("testuser")).thenReturn(true);
+        when(authUserRepository.existsByEmailIgnoreCase("test@example.com")).thenReturn(true);
 
         assertThrows(DuplicateUserException.class, () -> authService.signup(request));
     }
@@ -76,6 +88,7 @@ class AuthServiceTest {
         request.setPassword("password123");
 
         when(authUserRepository.findByNameIgnoreCase("testuser")).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("password123", "password123")).thenReturn(true);
 
         AuthUser result = authService.login(request);
 
@@ -90,6 +103,7 @@ class AuthServiceTest {
         request.setPassword("wrongpassword");
 
         when(authUserRepository.findByNameIgnoreCase("testuser")).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("wrongpassword", "password123")).thenReturn(false);
 
         assertThrows(RuntimeException.class, () -> authService.login(request));
     }
@@ -102,6 +116,7 @@ class AuthServiceTest {
         request.setRememberMe(true);
 
         when(authUserRepository.findByNameIgnoreCase("testuser")).thenReturn(Optional.of(testUser));
+        when(passwordEncoder.matches("password123", "password123")).thenReturn(true);
 
         AuthUser result = authService.login(request);
 

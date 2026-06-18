@@ -75,7 +75,7 @@ describe('DashboardComponent', () => {
         transactionService = TestBed.inject(TransactionService);
 
         // Add default mocks
-        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser' });
+        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
         vi.spyOn(accountSetupService, 'getAccountByUser').mockReturnValue(of({ holderName: 'testuser' }));
         vi.spyOn(transactionService, 'getAccountHistory').mockReturnValue(of([]));
     });
@@ -85,13 +85,14 @@ describe('DashboardComponent', () => {
     });
 
     it('should load account data on init', () => {
-        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser' });
+        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
         vi.spyOn(accountSetupService, 'getAccountByUser').mockReturnValue(of({ accountNumber: '123456789012', balance: 1000 }));
         vi.spyOn(accountSetupService, 'getAccountByNumber').mockReturnValue(of({ accountNumber: '123456789012', balance: 1000, id: 1 }));
 
         component.ngOnInit();
 
         expect(accountSetupService.getAccountByUser).toHaveBeenCalledWith('testuser');
-        expect(component.currentUserAccountNumber).toBe('123456789012');
+        expect(accountSetupService.getAccountByNumber).toHaveBeenCalledWith('123456789012');
+        expect(component.balance).toBe(1000);
     });
 });

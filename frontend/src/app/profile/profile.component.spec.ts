@@ -7,7 +7,7 @@ import { AccountSetupService } from '../services/account-setup.service';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 describe('ProfileComponent', () => {
     let component: ProfileComponent;
@@ -46,9 +46,13 @@ describe('ProfileComponent', () => {
         accountSetupService = TestBed.inject(AccountSetupService);
 
         // Add default mocks to prevent subscription errors
-        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser' });
+        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
         vi.spyOn(accountSetupService, 'getAccountByUser').mockReturnValue(of({ holderName: 'testuser', createdAt: new Date().toISOString() }));
         vi.spyOn(accountSetupService, 'updateAccount').mockReturnValue(of({ name: 'updated' }));
+    });
+
+    afterEach(() => {
+        TestBed.resetTestingModule();
     });
 
     it('should create', () => {
@@ -56,7 +60,7 @@ describe('ProfileComponent', () => {
     });
 
     it('should load profile data on init', () => {
-        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser' });
+        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
         vi.spyOn(accountSetupService, 'getAccountByUser').mockReturnValue(of({ holderName: 'testuser', upiId: 'test@upi' }));
 
         component.ngOnInit();
@@ -66,7 +70,7 @@ describe('ProfileComponent', () => {
 
     it('should update profile successfully', () => {
         fixture.detectChanges();
-        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser' });
+        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
         vi.spyOn(accountSetupService, 'updateAccount').mockReturnValue(of({ name: 'updated' }));
 
         component.profileForm.patchValue({
@@ -75,7 +79,10 @@ describe('ProfileComponent', () => {
             bankName: 'Test Bank',
             branchName: 'Test Branch',
             address: 'Test Address',
-            ifscCode: 'TEST001'
+            ifscCode: 'TEST001',
+            creditCardNumber: '1111222233334444',
+            cvv: '123',
+            expiryDate: '12/28'
         });
 
         component.onSave();

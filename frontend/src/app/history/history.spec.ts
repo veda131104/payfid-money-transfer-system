@@ -124,7 +124,7 @@ describe('HistoryComponent', () => {
     authService = TestBed.inject(AuthService);
     accountSetupService = TestBed.inject(AccountSetupService);
 
-    vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser' });
+    vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
     vi.spyOn(accountSetupService, 'getAccountByUser').mockReturnValue(of({ accountNumber: '123456789012' }));
     vi.spyOn(accountSetupService, 'getAccountByNumber').mockReturnValue(of({ balance: 1000, id: 1 }));
     vi.spyOn(transactionService, 'getAccountHistory').mockReturnValue(of([]));
