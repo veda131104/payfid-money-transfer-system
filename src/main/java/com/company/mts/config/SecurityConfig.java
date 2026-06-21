@@ -61,6 +61,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/account-setup/send-otp").permitAll()
                         .requestMatchers("/api/v1/account-setup/verify-otp").permitAll()
                         .requestMatchers("POST", "/api/v1/account-setup").permitAll()
+                        // Reward module endpoints (accessible with or without JWT)
+                        .requestMatchers("/api/v1/rewards/**").permitAll()
                         // Require authentication for all other endpoints
                         .anyRequest().authenticated()
                 )

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -24,7 +24,7 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './account-setup.component.html',
   styleUrls: ['./account-setup.component.scss']
 })
-export class AccountSetupComponent {
+export class AccountSetupComponent implements OnInit {
   form!: FormGroup;
   lastSentOtp = '';
   isEmailVerified = false;
@@ -78,6 +78,23 @@ export class AccountSetupComponent {
     });
   }
 
+  ngOnInit(): void {
+    // Check if user already has bank details set up
+    const user = this.authService.getCurrentUser();
+    if (user?.name) {
+      this.svc.getAccountByUser(user.name).subscribe({
+        next: () => {
+          // Already set up — redirect to dashboard
+          alert('Your account is already set up! Redirecting to dashboard.');
+          this.router.navigate(['/dashboard']);
+        },
+        error: () => {
+          // No existing setup — stay on this page (normal flow)
+        }
+      });
+    }
+  }
+
   sendOtp(): void {
     const contact = this.form.get('email')?.value || '';
     if (!contact) {
@@ -85,12 +102,12 @@ export class AccountSetupComponent {
       return;
     }
     this.svc.sendOtp({ contact }).subscribe({
-      next: (resp) => {
-        this.otpSentMessage = `OTP has been sent to ${contact}. Valid for 10 minutes.`;
+      next: () => {
+        this.otpSentMessage = `OTP sent to ${contact}. Please check your inbox and enter the OTP below.`;
       },
       error: (err) => {
-        const errMsg = err?.error?.message || err?.message || 'Unknown error';
-        alert('Failed to send OTP. Error: ' + errMsg);
+        const errMsg = err?.error?.message || err?.message || 'Failed to send email. Please check your email address.';
+        alert('Failed to send OTP: ' + errMsg);
         console.error('OTP Send Error:', err);
       }
     });
@@ -135,9 +152,15 @@ export class AccountSetupComponent {
     }
 
     const user = this.authService.getCurrentUser();
+    if (!user?.name) {
+      alert('You are not logged in. Please log in again and retry.');
+      this.router.navigate(['/login']);
+      return;
+    }
+
     const payload = {
       ...this.form.getRawValue(),
-      userName: user?.name
+      userName: user.name
     };
 
     this.svc.create(payload).subscribe({
@@ -155,7 +178,10 @@ export class AccountSetupComponent {
           expiryDate: payload.expiryDate
         });
       },
-      error: (e) => alert('Error saving: ' + e?.message)
+      error: (e) => {
+        const msg = e?.error?.message || e?.message || 'An unexpected error occurred during account setup.';
+        alert('Error saving: ' + msg);
+      }
     });
   }
 

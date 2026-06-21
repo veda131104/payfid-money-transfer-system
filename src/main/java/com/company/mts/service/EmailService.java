@@ -24,8 +24,8 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
         message.setTo(to);
-        message.setSubject("Your Money Transfer System OTP");
-        // message.setText("Your OTP for account setup is: " + otp + ". This OTP is valid for 10 minutes.");
+        message.setSubject("Your PayFid OTP - Verification Code");
+        message.setText("Dear User,\n\nYour OTP for PayFid account setup is: " + otp + "\n\nThis OTP is valid for 10 minutes. Do not share it with anyone.\n\nRegards,\nPayFid Support Team");
 
         try {
             mailSender.send(message);

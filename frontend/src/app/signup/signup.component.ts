@@ -66,11 +66,11 @@ export class SignupComponent {
       error: error => {
         this.loading = false;
         if (error?.status === 409) {
-          alert('Username is already taken.');
+          alert(error.error?.message || 'Username or email is already in use.');
           this.form.reset();
           return;
         }
-        alert('Signup failed. Please try again.');
+        alert(error.error?.message || 'Signup failed. Please try again.');
         this.form.reset();
       }
     });

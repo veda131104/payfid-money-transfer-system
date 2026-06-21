@@ -8,6 +8,7 @@ import com.company.mts.entity.BankDetails;
 import com.company.mts.repository.AccountRepository;
 import com.company.mts.service.BankDetailsService;
 import com.company.mts.service.EmailService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,47 +34,67 @@ public class AccountSetupController {
     }
 
     @PostMapping
-    public ResponseEntity<AccountSetupResponse> create(@RequestBody AccountSetupRequest request) {
-        String generatedUpiId = generateUpiId(request.getEmail(), request.getBankName());
+    public ResponseEntity<?> create(@RequestBody AccountSetupRequest request) {
+        try {
+            // Validate that userName is present (required for unique UPI ID generation)
+            if (request.getUserName() == null || request.getUserName().isBlank()) {
+                Map<String, String> error = new HashMap<>();
+                error.put("message", "User not logged in or session expired. Please log in and try again.");
+                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+            }
 
-        BankDetails details = BankDetails.builder()
-                .accountNumber(request.getAccountNumber())
-                .bankName(request.getBankName())
-                .ifscCode(request.getIfscCode())
-                .branchName(request.getBranchName())
-                .address(request.getAddress())
-                .email(request.getEmail())
-                .phoneNumber(request.getPhoneNumber())
-                .userName(request.getUserName())
-                .creditCardNumber(request.getCreditCardNumber())
-                .cvv(request.getCvv())
-                .expiryDate(request.getExpiryDate())
-                .upiId(generatedUpiId)
-                .build();
+            // Generate UPI ID from userName (always unique) instead of email prefix
+            String generatedUpiId = generateUpiId(request.getUserName(), request.getBankName());
 
-        BankDetails saved = service.save(details);
-
-        // SYNC: Create an Account entry if it doesn't exist
-        if (!accountRepository.existsByAccountNumber(saved.getAccountNumber())) {
-            Account account = Account.builder()
-                    .accountNumber(saved.getAccountNumber())
-                    .holderName(saved.getUserName())
-                    .balance(new java.math.BigDecimal("10000.00")) // Initial balance for new users
-                    .status(AccountStatus.ACTIVE)
+            BankDetails details = BankDetails.builder()
+                    .accountNumber(request.getAccountNumber())
+                    .bankName(request.getBankName())
+                    .ifscCode(request.getIfscCode())
+                    .branchName(request.getBranchName())
+                    .address(request.getAddress())
+                    .email(request.getEmail())
+                    .phoneNumber(request.getPhoneNumber())
+                    .userName(request.getUserName())
+                    .creditCardNumber(request.getCreditCardNumber())
+                    .cvv(request.getCvv())
+                    .expiryDate(request.getExpiryDate())
+                    .upiId(generatedUpiId)
                     .build();
-            accountRepository.save(account);
-        }
 
-        AccountSetupResponse resp = new AccountSetupResponse(saved.getId(), saved.getAccountNumber(),
-                saved.getUpiId());
-        return new ResponseEntity<>(resp, HttpStatus.CREATED);
+            BankDetails saved = service.save(details);
+
+            // SYNC: Create an Account entry with ₹10,000 initial balance if it doesn't exist
+            if (!accountRepository.existsByAccountNumber(saved.getAccountNumber())) {
+                Account account = Account.builder()
+                        .accountNumber(saved.getAccountNumber())
+                        .holderName(saved.getUserName())
+                        .balance(new java.math.BigDecimal("10000.00"))
+                        .status(AccountStatus.ACTIVE)
+                        .build();
+                accountRepository.save(account);
+            }
+
+            AccountSetupResponse resp = new AccountSetupResponse(saved.getId(), saved.getAccountNumber(),
+                    saved.getUpiId());
+            return new ResponseEntity<>(resp, HttpStatus.CREATED);
+
+        } catch (DataIntegrityViolationException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", "Account setup already exists for this user or account number. Please contact support.");
+            return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage() != null ? e.getMessage() : "An unexpected error occurred during account setup.");
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    private String generateUpiId(String contact, String bankName) {
-        if (contact == null || bankName == null)
+    private String generateUpiId(String userName, String bankName) {
+        if (userName == null || bankName == null)
             return null;
 
-        String prefix = contact.split("@")[0];
+        // Use userName (always unique) as UPI prefix to avoid conflicts
+        String prefix = userName.toLowerCase().replaceAll("[^a-z0-9]", "");
         String suffix = "@upi";
 
         String bank = bankName.toUpperCase();
@@ -86,7 +107,7 @@ public class AccountSetupController {
         else if (bank.contains("AXIS"))
             suffix = "@axisbank";
 
-        return prefix.toLowerCase() + suffix;
+        return prefix + suffix;
     }
 
     @GetMapping("/{accountNumber}")
@@ -149,19 +170,13 @@ public class AccountSetupController {
 
         // Send real email if contact looks like an email address
         if (contact != null && contact.contains("@")) {
-            try {
-                emailService.sendOtpEmail(contact, otp);
-            } catch (Exception e) {
-                // Log the error but don't fail the request (demo mode)
-                System.err.println("Failed to send email: " + e.getMessage());
-            }
+            emailService.sendOtpEmail(contact, otp);
         }
 
         Map<String, Object> resp = new HashMap<>();
         resp.put("sent", true);
         resp.put("contact", contact);
-        // In real app do not return otp; returned here for demo/testing
-        resp.put("otp", otp);
+        // OTP is NOT returned in response - it is sent to user's email only
         return ResponseEntity.ok(resp);
     }
 
