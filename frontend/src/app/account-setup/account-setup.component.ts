@@ -194,18 +194,8 @@ export class AccountSetupComponent implements OnInit {
     this.svc.create(payload).subscribe({
       next: (response) => {
         console.log('[AccountSetup] submit: Account setup SUCCESS. Response from backend:', response);
-        this.accountData = response;
-        this.setupComplete = true;
-        this.loadAccountBalance();
-        // Refresh form for display
-        this.editDetailsForm.patchValue({
-          email: payload.email,
-          phoneNumber: payload.phoneNumber,
-          address: payload.address,
-          creditCardNumber: payload.creditCardNumber,
-          cvv: payload.cvv,
-          expiryDate: payload.expiryDate
-        });
+        alert('Account setup completed successfully!');
+        this.router.navigate(['/dashboard']);
       },
       error: (e) => {
         console.error('[AccountSetup] submit: Account setup FAILED. Backend error object:', e);

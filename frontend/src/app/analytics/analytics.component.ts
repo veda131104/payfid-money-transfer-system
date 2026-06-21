@@ -1,5 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -20,6 +20,7 @@ export class AnalyticsComponent implements OnInit {
     private authService = inject(AuthService);
     private router = inject(Router);
     private analyticsService = inject(AnalyticsService);
+    private platformId = inject(PLATFORM_ID);
 
     userName = 'User';
     routerLinkActiveOptions = { exact: true };
@@ -31,11 +32,12 @@ export class AnalyticsComponent implements OnInit {
     peakChart: any;
 
     ngOnInit(): void {
+        if (!isPlatformBrowser(this.platformId)) return;
         const user = this.authService.getCurrentUser();
         if (user) {
             this.userName = user.name;
+            this.loadAllAnalytics();
         }
-        this.loadAllAnalytics();
     }
 
     loadAllAnalytics(): void {

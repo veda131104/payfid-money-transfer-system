@@ -51,6 +51,31 @@ export class SignupComponent {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      
+      const confirmPasswordControl = this.form.get('confirmPassword');
+      if (confirmPasswordControl?.hasError('passwordMismatch')) {
+        alert('Validation Error: Passwords do not match.');
+        return;
+      }
+      
+      const usernameControl = this.form.get('username');
+      if (usernameControl?.hasError('minlength')) {
+        alert('Validation Error: Username must be at least 3 characters long.');
+        return;
+      }
+      
+      const emailControl = this.form.get('email');
+      if (emailControl?.hasError('email')) {
+        alert('Validation Error: Please enter a valid email address.');
+        return;
+      }
+      
+      const passwordControl = this.form.get('password');
+      if (passwordControl?.hasError('minlength')) {
+        alert('Validation Error: Password must be at least 8 characters long.');
+        return;
+      }
+
       alert('Please fill in all fields correctly.');
       return;
     }
@@ -60,8 +85,8 @@ export class SignupComponent {
     this.authService.signup({ name: username, email, password }).subscribe({
       next: () => {
         this.loading = false;
-        alert('Signup successful!');
-        this.router.navigate(['/dashboard']);
+        alert('Signup successful! Please log in to complete your account setup.');
+        this.router.navigate(['/']);
       },
       error: error => {
         this.loading = false;
@@ -80,8 +105,23 @@ export class SignupComponent {
 function passwordsMatch(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password')?.value;
   const confirmPassword = control.get('confirmPassword')?.value;
+  const confirmPasswordControl = control.get('confirmPassword');
+  
   if (!password || !confirmPassword) {
     return null;
   }
-  return password === confirmPassword ? null : { passwordMismatch: true };
+  
+  if (password !== confirmPassword) {
+    confirmPasswordControl?.setErrors({ passwordMismatch: true });
+    return { passwordMismatch: true };
+  } else {
+    if (confirmPasswordControl?.hasError('passwordMismatch')) {
+      const currentErrors = confirmPasswordControl.errors;
+      if (currentErrors) {
+        delete currentErrors['passwordMismatch'];
+        confirmPasswordControl.setErrors(Object.keys(currentErrors).length ? currentErrors : null);
+      }
+    }
+  }
+  return null;
 }

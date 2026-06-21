@@ -30,95 +30,80 @@
   </header>
 
   <main class="dashboard-grid">
-    <mat-card class="card highlights">
-      <h1>{{ isFirstLogin ? 'Welcome, ' : 'Welcome back, ' }}{{ userName }}</h1>
-      <p>Live status of your payout corridors and risk posture.</p>
-      <div class="balance">
-        <p class="balance-label">Current balance</p>
-        <p class="balance-value">{{ balance | currency:'INR':'symbol':'1.2-2' }}</p>
-      </div>
-      <div class="metrics">
-        <div class="metric">
-          <p class="metric-value">{{ processedToday | currency:'INR':'symbol':'1.0-0' }}</p>
-          <p class="metric-label">Processed today</p>
-        </div>
-        <div class="metric">
-          <p class="metric-value">{{ activeTransfers }}</p>
-          <p class="metric-label">Active transfers</p>
-        </div>
-        <div class="metric">
-          <p class="metric-value">1.8%</p>
-          <p class="metric-label">At-risk volume</p>
-        </div>
+    <!-- Loading State -->
+    <mat-card class="card full-width-card" *ngIf="loading">
+      <div class="loading-state">
+        <p>Loading your rewards wallet...</p>
       </div>
     </mat-card>
 
-    <mat-card class="card magic-card">
-      <div class="card-glass">
-        <div class="card-chip"></div>
-        <div class="card-number">{{ cardDetails.number }}</div>
-        <div class="card-info">
-          <div>
-            <p class="card-label">Card Holder</p>
-            <p class="card-holder">{{ cardDetails.holder }}</p>
-          </div>
-          <div>
-            <p class="card-label">Expires</p>
-            <p class="card-expiry">{{ cardDetails.expiry }}</p>
-          </div>
-        </div>
-        <div class="card-brand">{{ cardDetails.type }}</div>
+    <!-- Error State -->
+    <mat-card class="card full-width-card" *ngIf="!loading && errorMsg">
+      <div class="error-state">
+        <h2>Setup Required</h2>
+        <p>{{ errorMsg }}</p>
+        <button mat-raised-button color="primary" *ngIf="errorMsg.includes('Account Setup')" routerLink="/account-setup">Go to Account Setup</button>
       </div>
     </mat-card>
 
-    <mat-card class="card activity">
-      <div class="card-header">
-        <h2>Recent Activity</h2>
-        <button class="link" routerLink="/history">View all</button>
-      </div>
-      <div class="activity-list">
-        @for (txn of recentTransactions; track txn.id) {
-        <div class="activity-item">
-          <div class="activity-icon" [ngClass]="getDisplayType(txn)">
-            {{ getDisplayType(txn) === 'credit' ? '↓' : '↑' }}
+    <!-- Reward Details -->
+    <ng-container *ngIf="!loading && !errorMsg">
+      <!-- Highlight Rewards Info -->
+      <mat-card class="card highlights">
+        <h1>Your Rewards Wallet</h1>
+        <p>Earn reward points automatically on transfer volumes greater than ₹7,100.</p>
+        
+        <div class="rewards-banner">
+          <div class="points-badge">
+            <span class="points-number">{{ points }}</span>
+            <span class="points-label">Total Points</span>
           </div>
-          <div class="activity-details">
-            <p class="activity-title">{{ txn.description || 'Money Transfer' }}</p>
-            <p class="activity-meta">{{ txn.date | date:'MMM d, h:mm a' }} • {{ txn.referenceId }}</p>
-          </div>
-          <div class="activity-amount" [ngClass]="getDisplayType(txn)">
-            {{ getTransactionSign(txn) }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
+          <div class="tier-badge" [style.border-color]="getTierColor(tier)">
+            <span class="tier-label">Status Tier</span>
+            <span class="tier-value" [style.color]="getTierColor(tier)">{{ tier }}</span>
           </div>
         </div>
-        } @empty {
-        <p class="no-activity">No recent transactions found.</p>
-        }
-      </div>
-    </mat-card>
+      </mat-card>
 
-    <mat-card class="card activity compliance">
-      <div class="card-header">
-        <h2>Recent Payments</h2>
-        <button class="link" routerLink="/history">View all</button>
-      </div>
-      <div class="activity-list small">
-        @for (txn of recentTransactions; track txn.id) {
-        <div class="activity-item">
-          <div class="activity-details">
-            <p class="activity-title">{{ (getDisplayType(txn) === 'credit' ? txn.fromAccountHolderName :
-              txn.toAccountHolderName) || 'System' }}</p>
-            <p class="activity-meta">{{ txn.amount | currency:'INR':'symbol':'1.2-2' }} • {{ txn.status | titlecase }}
-            </p>
+      <!-- Rules and Info Card -->
+      <mat-card class="card magic-card">
+        <div class="card-glass">
+          <div class="rules-header">
+            <h3>Reward Rules</h3>
           </div>
-          <div class="activity-amount" [ngClass]="getDisplayType(txn)">
-            {{ getTransactionSign(txn) }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
-          </div>
+          <ul class="rules-list">
+            <li>✓ Eligible only for <strong>SUCCESS</strong> status transactions.</li>
+            <li>✓ Transaction amount must exceed <strong>₹7,100</strong>.</li>
+            <li>✓ Transferred between different accounts (non-self transfers).</li>
+            <li>✓ Earn <strong>1 Point</strong> per every <strong>₹7,100</strong>.</li>
+            <li>✓ Points are rounded down (e.g. ₹7,250 = 1 point).</li>
+          </ul>
         </div>
-        } @empty {
-        <p class="no-activity">No recent payments found.</p>
-        }
-      </div>
-    </mat-card>
+      </mat-card>
+
+      <!-- Ledger History -->
+      <mat-card class="card activity full-width-card">
+        <div class="card-header">
+          <h2>Reward History Ledger</h2>
+        </div>
+        <div class="activity-list">
+          @for (item of history; track item.id) {
+          <div class="activity-item">
+            <div class="activity-icon credit">★</div>
+            <div class="activity-details">
+              <p class="activity-title">{{ item.description }}</p>
+              <p class="activity-meta">Granted at: {{ item.grantedAt | date:'MMM d, yyyy h:mm a' }} • Tx ID: #{{ item.transactionId }}</p>
+            </div>
+            <div class="activity-amount credit">
+              +{{ item.pointsAwarded }} pts
+            </div>
+          </div>
+          } @empty {
+          <p class="no-activity">No rewards points earned yet. Make an eligible transfer to get rewarded!</p>
+          }
+        </div>
+      </mat-card>
+    </ng-container>
   </main>
 
   <nav class="bottom-nav">
