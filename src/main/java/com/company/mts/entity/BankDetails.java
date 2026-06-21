@@ -11,7 +11,7 @@ public class BankDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 12)
+    @Column(unique = true, nullable = false, length = 18)
     private String accountNumber;
 
     @Column(nullable = false)

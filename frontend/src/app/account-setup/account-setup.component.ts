@@ -44,7 +44,7 @@ export class AccountSetupComponent implements OnInit {
     private readonly router: Router
   ) {
     this.form = this.fb.nonNullable.group({
-      accountNumber: ['', [Validators.required]],
+      accountNumber: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(18), Validators.pattern(/^\d+$/)]],
       bankName: ['', [Validators.required]],
       branchName: ['', [Validators.required]],
       address: ['', [Validators.required]],
@@ -139,8 +139,8 @@ export class AccountSetupComponent implements OnInit {
     }
 
     const accNo = this.form.get('accountNumber')?.value || '';
-    if (accNo.length !== 12) {
-      alert('Validation Error: Account Number must be exactly 12 digits.');
+    if (!/^\d{9,18}$/.test(accNo)) {
+      alert('Validation Error: Account Number must be between 9 and 18 digits (numbers only).');
       this.form.get('accountNumber')?.markAsTouched();
       return;
     }

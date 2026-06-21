@@ -5,10 +5,19 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()">
       <mat-form-field appearance="fill" class="full">
-        <mat-label>Account Number</mat-label>
-        <input matInput formControlName="accountNumber" />
+        <mat-label>Account Number (9–18 digits)</mat-label>
+        <input matInput formControlName="accountNumber" maxlength="18" placeholder="Enter your bank account number" />
         @if (form.get('accountNumber')?.hasError('required') && form.get('accountNumber')?.touched) {
         <mat-error>Account Number is required</mat-error>
+        }
+        @if (form.get('accountNumber')?.hasError('minlength') && form.get('accountNumber')?.touched) {
+        <mat-error>Account Number must be at least 9 digits</mat-error>
+        }
+        @if (form.get('accountNumber')?.hasError('maxlength') && form.get('accountNumber')?.touched) {
+        <mat-error>Account Number must not exceed 18 digits</mat-error>
+        }
+        @if (form.get('accountNumber')?.hasError('pattern') && form.get('accountNumber')?.touched) {
+        <mat-error>Account Number must contain digits only</mat-error>
         }
       </mat-form-field>
 
