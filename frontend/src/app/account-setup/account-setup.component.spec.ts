@@ -71,71 +71,6 @@ describe('AccountSetupComponent', () => {
     expect(routerSpy.navigate).not.toHaveBeenCalled();
   });
 
-  it('should reset isEmailVerified when email changes', () => {
-    fixture.detectChanges();
-    component.isEmailVerified = true;
-    component.otpSentMessage = 'Sent';
-    component.form.patchValue({ email: 'new-email@test.com' });
-    expect(component.isEmailVerified).toBeFalse();
-    expect(component.otpSentMessage).toBe('');
-  });
-
-  it('should show alert if sending OTP with empty email', () => {
-    fixture.detectChanges();
-    component.form.patchValue({ email: '' });
-    component.sendOtp();
-    expect(alertSpy).toHaveBeenCalledWith('Please enter an email address first');
-  });
-
-  it('should send OTP successfully', () => {
-    fixture.detectChanges();
-    svcSpy.sendOtp.and.returnValue(of({}));
-    component.form.patchValue({ email: 'test@example.com' });
-    component.sendOtp();
-    expect(svcSpy.sendOtp).toHaveBeenCalledWith({ contact: 'test@example.com' });
-    expect(component.otpSentMessage).toContain('test@example.com');
-  });
-
-  it('should alert error if send OTP fails', () => {
-    fixture.detectChanges();
-    svcSpy.sendOtp.and.returnValue(throwError(() => ({ error: { message: 'SMTP error' } })));
-    component.form.patchValue({ email: 'test@example.com' });
-    component.sendOtp();
-    expect(alertSpy).toHaveBeenCalledWith('Failed to send OTP: SMTP error');
-  });
-
-  it('should show alert if verifying OTP with missing info', () => {
-    fixture.detectChanges();
-    component.form.patchValue({ email: '', otp: '' });
-    component.verifyOtp();
-    expect(alertSpy).toHaveBeenCalledWith('Please enter email and OTP');
-  });
-
-  it('should verify OTP successfully', () => {
-    fixture.detectChanges();
-    svcSpy.verifyOtp.and.returnValue(of({ verified: true }));
-    component.form.patchValue({ email: 'test@example.com', otp: '1234' });
-    component.verifyOtp();
-    expect(component.isEmailVerified).toBeTrue();
-    expect(alertSpy).toHaveBeenCalledWith('Email verified successfully!');
-  });
-
-  it('should fail verification if OTP is invalid', () => {
-    fixture.detectChanges();
-    svcSpy.verifyOtp.and.returnValue(of({ verified: false }));
-    component.form.patchValue({ email: 'test@example.com', otp: 'wrong' });
-    component.verifyOtp();
-    expect(component.isEmailVerified).toBeFalse();
-    expect(alertSpy).toHaveBeenCalledWith('Invalid OTP. Please try again.');
-  });
-
-  it('should alert error if OTP verification API fails', () => {
-    fixture.detectChanges();
-    svcSpy.verifyOtp.and.returnValue(throwError(() => new Error('Connection lost')));
-    component.form.patchValue({ email: 'test@example.com', otp: '1234' });
-    component.verifyOtp();
-    expect(alertSpy).toHaveBeenCalledWith('Error verifying OTP: Connection lost');
-  });
 
   it('should submit form and handle alerts when form is invalid', () => {
     fixture.detectChanges();
@@ -162,7 +97,7 @@ describe('AccountSetupComponent', () => {
     expect(alertSpy).toHaveBeenCalledWith('Validation Error: Account Number must be between 9 and 18 digits (numbers only).');
   });
 
-  it('should alert if email is not verified', () => {
+  it('should alert and redirect to /login if user session is missing during submit', () => {
     fixture.detectChanges();
     component.form.patchValue({
       accountNumber: '1234567890',
@@ -176,27 +111,6 @@ describe('AccountSetupComponent', () => {
       cvv: '123',
       expiryDate: '12/28'
     });
-    component.isEmailVerified = false;
-    component.submit();
-    expect(alertSpy).toHaveBeenCalledWith('Security Requirement: Please verify your email address using the OTP sent to your inbox before completing setup.');
-  });
-
-  it('should alert and redirect to /login if user session is missing during submit', () => {
-    fixture.detectChanges();
-    component.form.patchValue({
-      accountNumber: '1234567890',
-      bankName: 'Test Bank',
-      branchName: 'Test Branch',
-      address: 'Test Addr',
-      ifscCode: 'IFSC123',
-      email: 'test@test.com',
-      phoneNumber: '1234567890',
-      creditCardNumber: '1111222233334444',
-      cvv: '123',
-      expiryDate: '12/28',
-      otp: '123456'
-    });
-    component.isEmailVerified = true;
     authServiceSpy.getCurrentUser.and.returnValue(null);
     component.submit();
     expect(alertSpy).toHaveBeenCalledWith('You are not logged in. Please log in again and retry.');
@@ -215,10 +129,8 @@ describe('AccountSetupComponent', () => {
       phoneNumber: '1234567890',
       creditCardNumber: '1111222233334444',
       cvv: '123',
-      expiryDate: '12/28',
-      otp: '123456'
+      expiryDate: '12/28'
     });
-    component.isEmailVerified = true;
     svcSpy.create.and.returnValue(of({}));
     component.submit();
     expect(svcSpy.create).toHaveBeenCalled();
@@ -238,10 +150,8 @@ describe('AccountSetupComponent', () => {
       phoneNumber: '1234567890',
       creditCardNumber: '1111222233334444',
       cvv: '123',
-      expiryDate: '12/28',
-      otp: '123456'
+      expiryDate: '12/28'
     });
-    component.isEmailVerified = true;
     svcSpy.create.and.returnValue(throwError(() => ({ error: { message: 'Database error' } })));
     component.submit();
     expect(alertSpy).toHaveBeenCalledWith('Error saving: Database error');

@@ -5,6 +5,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   padding: 24px;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
 }
 
 mat-card {
@@ -32,50 +33,7 @@ mat-card {
   margin-bottom: 8px;
 }
 
-.otp-row {
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-  margin-bottom: 8px;
 
-  button {
-    height: 56px;
-    white-space: nowrap;
-  }
-
-  .otp-field {
-    flex: 1;
-  }
-}
-
-.otp-warning {
-  margin-top: 0.8rem;
-  padding: 0.8rem 1rem;
-  border-radius: 12px;
-  background: #fff4e5;
-  color: #7a4f1a;
-  border: 1px solid rgba(229, 141, 0, 0.2);
-  font-weight: 600;
-}
-
-.otp-message {
-  color: #4caf50;
-  font-weight: 500;
-  margin: 12px 0 16px 0;
-  padding: 8px 0;
-  font-size: 14px;
-}
-
-.verified-message {
-  color: #4caf50;
-  font-weight: 500;
-  margin: 12px 0 16px 0;
-  padding: 12px;
-  background: #e8f5e9;
-  border-radius: 4px;
-  font-size: 14px;
-  text-align: center;
-}
 
 .setup-complete {
   text-align: center !important;
@@ -105,7 +63,7 @@ mat-card {
       margin: 12px 0 0 0;
       font-size: 36px;
       font-weight: 700;
-      font-family: 'Courier New', monospace;
+      font-family: 'SF Mono', Consolas, Fira Code, Monaco, monospace;
     }
   }
 

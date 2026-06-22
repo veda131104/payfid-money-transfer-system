@@ -95,46 +95,47 @@ public class AuthController {
     }
 
     @PostMapping(&quot;/forgot-password&quot;)
-    public ResponseEntity&lt;Void&gt; forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity&lt;com.company.mts.dto.ForgotPasswordResponse&gt; forgotPassword(@Valid @RequestBody com.company.mts.dto.ForgotPasswordRequest request) {
 <span class="fc" id="L99">        log.info(&quot;[AuthController] POST /forgot-password - Processing forgot password for name='{}'&quot;, request.getName());</span>
         try {
 <span class="fc" id="L101">            authService.processForgotPassword(request.getName());</span>
 <span class="fc" id="L102">            log.info(&quot;[AuthController] POST /forgot-password - Forgot password processed for name='{}'&quot;, request.getName());</span>
-<span class="fc" id="L103">            return ResponseEntity.ok().build();</span>
-<span class="fc" id="L104">        } catch (Exception e) {</span>
-<span class="fc" id="L105">            log.error(&quot;[AuthController] POST /forgot-password - FAILED for name='{}': {} - {}&quot;,</span>
-<span class="fc" id="L106">                    request.getName(), e.getClass().getSimpleName(), e.getMessage());</span>
-<span class="fc" id="L107">            throw e;</span>
+<span class="fc" id="L103">            String msg = &quot;If an account exists for the provided username, a password reset link has been sent to the registered email address.&quot;;</span>
+<span class="fc" id="L104">            return ResponseEntity.ok(new com.company.mts.dto.ForgotPasswordResponse(msg));</span>
+<span class="fc" id="L105">        } catch (Exception e) {</span>
+<span class="fc" id="L106">            log.error(&quot;[AuthController] POST /forgot-password - FAILED for name='{}': {} - {}&quot;,</span>
+<span class="fc" id="L107">                    request.getName(), e.getClass().getSimpleName(), e.getMessage());</span>
+<span class="fc" id="L108">            throw e;</span>
         }
     }
 
     @GetMapping(&quot;/verify-token&quot;)
     public ResponseEntity&lt;LoginResponse&gt; verifyToken(@RequestParam String token) {
-<span class="fc" id="L113">        log.info(&quot;[AuthController] GET /verify-token - Verifying token&quot;);</span>
+<span class="fc" id="L114">        log.info(&quot;[AuthController] GET /verify-token - Verifying token&quot;);</span>
         try {
-<span class="fc" id="L115">            AuthUser user = authService.loginWithToken(token);</span>
-<span class="fc" id="L116">            String jwtToken = jwtTokenProvider.generateToken(user);</span>
-<span class="fc" id="L117">            LoginResponse resp = new LoginResponse(user.getId(), user.getEmail(), user.getName(), jwtToken, null);</span>
-<span class="fc" id="L118">            log.info(&quot;[AuthController] GET /verify-token - Token verified for name='{}'&quot;, user.getName());</span>
-<span class="fc" id="L119">            return ResponseEntity.ok(resp);</span>
-<span class="fc" id="L120">        } catch (Exception e) {</span>
-<span class="fc" id="L121">            log.error(&quot;[AuthController] GET /verify-token - FAILED: {} - {}&quot;, e.getClass().getSimpleName(), e.getMessage());</span>
-<span class="fc" id="L122">            throw e;</span>
+<span class="fc" id="L116">            AuthUser user = authService.loginWithToken(token);</span>
+<span class="fc" id="L117">            String jwtToken = jwtTokenProvider.generateToken(user);</span>
+<span class="fc" id="L118">            LoginResponse resp = new LoginResponse(user.getId(), user.getEmail(), user.getName(), jwtToken, null);</span>
+<span class="fc" id="L119">            log.info(&quot;[AuthController] GET /verify-token - Token verified for name='{}'&quot;, user.getName());</span>
+<span class="fc" id="L120">            return ResponseEntity.ok(resp);</span>
+<span class="fc" id="L121">        } catch (Exception e) {</span>
+<span class="fc" id="L122">            log.error(&quot;[AuthController] GET /verify-token - FAILED: {} - {}&quot;, e.getClass().getSimpleName(), e.getMessage());</span>
+<span class="fc" id="L123">            throw e;</span>
         }
     }
 
     @PostMapping(&quot;/reset-password&quot;)
     public ResponseEntity&lt;LoginResponse&gt; resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-<span class="fc" id="L128">        log.info(&quot;[AuthController] POST /reset-password - Processing password reset&quot;);</span>
+<span class="fc" id="L129">        log.info(&quot;[AuthController] POST /reset-password - Processing password reset&quot;);</span>
         try {
-<span class="fc" id="L130">            AuthUser user = authService.resetPassword(request);</span>
-<span class="fc" id="L131">            String token = jwtTokenProvider.generateToken(user);</span>
-<span class="fc" id="L132">            LoginResponse resp = new LoginResponse(user.getId(), user.getEmail(), user.getName(), token, null);</span>
-<span class="fc" id="L133">            log.info(&quot;[AuthController] POST /reset-password - Password reset SUCCESS for name='{}'&quot;, user.getName());</span>
-<span class="fc" id="L134">            return ResponseEntity.ok(resp);</span>
-<span class="fc" id="L135">        } catch (Exception e) {</span>
-<span class="fc" id="L136">            log.error(&quot;[AuthController] POST /reset-password - FAILED: {} - {}&quot;, e.getClass().getSimpleName(), e.getMessage());</span>
-<span class="fc" id="L137">            throw e;</span>
+<span class="fc" id="L131">            AuthUser user = authService.resetPassword(request);</span>
+<span class="fc" id="L132">            String token = jwtTokenProvider.generateToken(user);</span>
+<span class="fc" id="L133">            LoginResponse resp = new LoginResponse(user.getId(), user.getEmail(), user.getName(), token, null);</span>
+<span class="fc" id="L134">            log.info(&quot;[AuthController] POST /reset-password - Password reset SUCCESS for name='{}'&quot;, user.getName());</span>
+<span class="fc" id="L135">            return ResponseEntity.ok(resp);</span>
+<span class="fc" id="L136">        } catch (Exception e) {</span>
+<span class="fc" id="L137">            log.error(&quot;[AuthController] POST /reset-password - FAILED: {} - {}&quot;, e.getClass().getSimpleName(), e.getMessage());</span>
+<span class="fc" id="L138">            throw e;</span>
         }
     }
 }

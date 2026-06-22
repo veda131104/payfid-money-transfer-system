@@ -11,21 +11,22 @@ import java.security.SecureRandom;
     private static final int MAX_LENGTH = 18;
 
     /**
-     * Generate a random 12-digit account number (default)
+     * Generate a random 12-digit account number (default generated length)
      * Format: XXXXXXXXXXXX (12 digits, no leading zero)
+     * Note: Valid account numbers range from 9-18 digits per Indian banking standards
      */
     public static String generate() {
-<span class="fc" id="L18">        StringBuilder accountNumber = new StringBuilder(ACCOUNT_NUMBER_LENGTH);</span>
+<span class="fc" id="L19">        StringBuilder accountNumber = new StringBuilder(ACCOUNT_NUMBER_LENGTH);</span>
 
         // First digit should not be 0
-<span class="fc" id="L21">        accountNumber.append(random.nextInt(9) + 1);</span>
+<span class="fc" id="L22">        accountNumber.append(random.nextInt(9) + 1);</span>
 
         // Remaining digits can be 0-9
-<span class="fc bfc" id="L24" title="All 2 branches covered.">        for (int i = 1; i &lt; ACCOUNT_NUMBER_LENGTH; i++) {</span>
-<span class="fc" id="L25">            accountNumber.append(random.nextInt(10));</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        for (int i = 1; i &lt; ACCOUNT_NUMBER_LENGTH; i++) {</span>
+<span class="fc" id="L26">            accountNumber.append(random.nextInt(10));</span>
         }
 
-<span class="fc" id="L28">        return accountNumber.toString();</span>
+<span class="fc" id="L29">        return accountNumber.toString();</span>
     }
 
     /**
@@ -33,22 +34,22 @@ import java.security.SecureRandom;
      * Used for testing or special account types
      */
     public static String generateWithPrefix(String prefix) {
-<span class="fc bfc" id="L36" title="All 4 branches covered.">        if (prefix == null || prefix.isEmpty()) {</span>
-<span class="fc" id="L37">            return generate();</span>
+<span class="fc bfc" id="L37" title="All 4 branches covered.">        if (prefix == null || prefix.isEmpty()) {</span>
+<span class="fc" id="L38">            return generate();</span>
         }
 
-<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (prefix.length() &gt;= ACCOUNT_NUMBER_LENGTH) {</span>
-<span class="fc" id="L41">            throw new IllegalArgumentException(&quot;Prefix too long&quot;);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (prefix.length() &gt;= ACCOUNT_NUMBER_LENGTH) {</span>
+<span class="fc" id="L42">            throw new IllegalArgumentException(&quot;Prefix too long&quot;);</span>
         }
 
-<span class="fc" id="L44">        StringBuilder accountNumber = new StringBuilder(prefix);</span>
-<span class="fc" id="L45">        int remainingDigits = ACCOUNT_NUMBER_LENGTH - prefix.length();</span>
+<span class="fc" id="L45">        StringBuilder accountNumber = new StringBuilder(prefix);</span>
+<span class="fc" id="L46">        int remainingDigits = ACCOUNT_NUMBER_LENGTH - prefix.length();</span>
 
-<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int i = 0; i &lt; remainingDigits; i++) {</span>
-<span class="fc" id="L48">            accountNumber.append(random.nextInt(10));</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        for (int i = 0; i &lt; remainingDigits; i++) {</span>
+<span class="fc" id="L49">            accountNumber.append(random.nextInt(10));</span>
         }
 
-<span class="fc" id="L51">        return accountNumber.toString();</span>
+<span class="fc" id="L52">        return accountNumber.toString();</span>
     }
 
     /**
@@ -56,14 +57,14 @@ import java.security.SecureRandom;
      * Accepts 9 to 18 digits — the Indian banking standard range.
      */
     public static boolean isValid(String accountNumber) {
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (accountNumber == null) {</span>
-<span class="fc" id="L60">            return false;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (accountNumber == null) {</span>
+<span class="fc" id="L61">            return false;</span>
         }
-<span class="fc" id="L62">        int len = accountNumber.length();</span>
-<span class="fc bfc" id="L63" title="All 4 branches covered.">        if (len &lt; MIN_LENGTH || len &gt; MAX_LENGTH) {</span>
-<span class="fc" id="L64">            return false;</span>
+<span class="fc" id="L63">        int len = accountNumber.length();</span>
+<span class="fc bfc" id="L64" title="All 4 branches covered.">        if (len &lt; MIN_LENGTH || len &gt; MAX_LENGTH) {</span>
+<span class="fc" id="L65">            return false;</span>
         }
-<span class="fc" id="L66">        return accountNumber.matches(&quot;\\d{&quot; + MIN_LENGTH + &quot;,&quot; + MAX_LENGTH + &quot;}&quot;);</span>
+<span class="fc" id="L67">        return accountNumber.matches(&quot;\\d{&quot; + MIN_LENGTH + &quot;,&quot; + MAX_LENGTH + &quot;}&quot;);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

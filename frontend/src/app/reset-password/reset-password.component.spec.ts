@@ -96,8 +96,8 @@ describe('ResetPasswordComponent', () => {
       token: 'valid-token',
       newPassword: 'password123'
     });
-    expect(alertSpy).toHaveBeenCalledWith('Password has been reset successfully! Redirecting to dashboard...');
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/dashboard']);
+    expect(alertSpy).toHaveBeenCalledWith('Password has been reset successfully! Redirecting to sign-in...');
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
   });
 
   it('should handle reset password error response', () => {

@@ -10,11 +10,11 @@ mts,com.company.mts.exception,ResourceNotFoundException,0,4,0,0,0,2,0,1,0,1
 mts,com.company.mts.exception,GlobalExceptionHandler.ErrorResponse,0,74,0,0,0,28,0,14,0,14
 mts,com.company.mts.exception,InvalidCredentialsException,0,4,0,0,0,2,0,1,0,1
 mts,com.company.mts.utils,AccountNumberGenerator,0,98,0,16,0,22,0,13,0,5
-mts,com.company.mts.service,TransactionService,10,698,6,32,4,180,6,34,0,21
+mts,com.company.mts.service,TransactionService,30,704,7,35,8,181,8,35,1,21
 mts,com.company.mts.service,AnalyticsService,5,667,1,31,1,143,1,28,0,13
 mts,com.company.mts.service,RewardService,0,347,0,18,0,78,0,22,0,13
 mts,com.company.mts.service,EmailService,0,124,0,0,0,29,0,4,0,4
-mts,com.company.mts.service,AuthService,0,458,1,19,0,104,1,22,0,13
+mts,com.company.mts.service,AuthService,28,473,6,22,6,107,4,23,0,13
 mts,com.company.mts.service,AccountService,0,632,0,52,0,127,0,47,0,21
 mts,com.company.mts.service,BankDetailsService,0,161,0,0,0,40,0,10,0,10
 mts,com.company.mts.service,SnowflakeSyncService,18,355,9,29,1,84,9,19,0,9
@@ -31,6 +31,7 @@ mts,com.company.mts.entity,BankDetails,0,184,0,2,0,75,0,38,0,37
 mts,com.company.mts.entity,BankDetails.Builder,0,119,0,0,0,34,0,18,0,18
 mts,com.company.mts.entity,AccountStatus,0,21,0,0,0,4,0,1,0,1
 mts,com.company.mts.entity,TransactionLog,0,177,0,4,0,66,0,34,0,32
+mts,com.company.mts.config,DatabaseSchemaFixer,79,49,12,2,18,9,6,4,0,3
 mts,com.company.mts.config,CorsConfig,0,53,0,0,0,6,0,2,0,2
 mts,com.company.mts.config,JwtAuthenticationEntryPoint,0,27,0,0,0,8,0,3,0,3
 mts,com.company.mts.config,SecurityConfig,0,229,0,0,0,42,0,14,0,14
@@ -48,8 +49,8 @@ mts,com.company.mts.controller,TransferController,0,107,0,0,0,34,0,7,0,7
 mts,com.company.mts.controller,AmountRequest,0,16,0,0,0,8,0,4,0,4
 mts,com.company.mts.controller,AccountController.TransferResponse,0,33,0,0,0,14,0,7,0,7
 mts,com.company.mts.controller,TransferController.TransferResponse,0,53,0,0,0,22,0,11,0,11
-mts,com.company.mts.controller,AuthController,0,356,0,0,0,73,0,9,0,9
-mts,com.company.mts.controller,AccountSetupController,2,858,8,38,0,178,8,30,0,15
+mts,com.company.mts.controller,AuthController,0,361,0,0,0,74,0,9,0,9
+mts,com.company.mts.controller,AccountSetupController,41,877,20,40,8,178,18,28,0,16
 mts,com.company.mts.controller,TransferController.TransactionHistoryResponse,0,33,0,0,0,14,0,7,0,7
 mts,com.company.mts.dto,AccountSetupRequest,0,87,0,0,0,38,0,25,0,25
 mts,com.company.mts.dto,AuthResponse,0,92,0,0,0,38,0,14,0,14
@@ -66,4 +67,5 @@ mts,com.company.mts.dto,LoginResponse,0,27,0,0,0,10,0,1,0,1
 mts,com.company.mts.dto,CredentialsResponse,0,23,0,0,0,10,0,5,0,5
 mts,com.company.mts.dto,TransactionDTO.Builder,0,162,0,0,0,54,0,19,0,19
 mts,com.company.mts.dto,IdempotentTransferRequest,0,53,0,0,0,23,0,12,0,12
+mts,com.company.mts.dto,ForgotPasswordResponse,7,9,0,0,3,4,2,2,2,2
 mts,com.company.mts.dto,TransactionDTO,0,7,0,0,0,3,0,2,0,2

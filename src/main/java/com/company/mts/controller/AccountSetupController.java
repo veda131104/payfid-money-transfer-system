@@ -53,7 +53,9 @@ public class AccountSetupController {
             // Ensure userName is present: prefer request value, otherwise try to infer from the security context (JWT)
             if (request.getUserName() == null || request.getUserName().isBlank()) {
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                if (auth != null && auth.isAuthenticated() && auth.getName() != null && !auth.getName().isBlank()) {
+                if (auth != null && auth.isAuthenticated()
+                        && !(auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)
+                        && auth.getName() != null && !auth.getName().isBlank()) {
                     request.setUserName(auth.getName());
                     log.info("[AccountSetupController] POST / - Inferred userName '{}' from security context", auth.getName());
                 }
@@ -67,14 +69,6 @@ public class AccountSetupController {
                 return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
             }
 
-            String userEmail = normalizeContact(request.getEmail());
-            if (userEmail == null || !verifiedContacts.contains(userEmail)) {
-                log.warn("[AccountSetupController] POST / - REJECTED: Email '{}' has not been verified via OTP", request.getEmail());
-                Map<String, String> error = new HashMap<>();
-                error.put("message", "Email verification required. Please verify the OTP sent to your email before completing setup.");
-                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-            }
-            verifiedContacts.remove(userEmail);
 
             // Generate UPI ID from userName (always unique) instead of email prefix
             String generatedUpiId = generateUpiId(request.getUserName(), request.getBankName());

@@ -47,7 +47,7 @@ export function futureDateValidator(): ValidatorFn {
 export class AccountSetupComponent implements OnInit {
   form!: FormGroup;
   lastSentOtp = '';
-  isEmailVerified = false;
+  isEmailVerified = true;
   otpSentMessage = '';
   setupComplete = false;
   showPinSetup = false;
@@ -73,8 +73,7 @@ export class AccountSetupComponent implements OnInit {
       phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       creditCardNumber: ['', [Validators.required, Validators.pattern(/^\d{16}$/)]],
       cvv: ['', [Validators.required, Validators.pattern(/^\d{3}$/)]],
-      expiryDate: ['', [Validators.required, Validators.pattern(/^(0?[1-9]|1[0-2])\/\d{2}$/), futureDateValidator()]],
-      otp: ['']
+      expiryDate: ['', [Validators.required, Validators.pattern(/^(0?[1-9]|1[0-2])\/\d{2}$/), futureDateValidator()]]
     });
 
     this.pinForm = this.fb.nonNullable.group({
@@ -91,11 +90,6 @@ export class AccountSetupComponent implements OnInit {
       expiryDate: ['', [Validators.required, Validators.pattern(/^(0?[1-9]|1[0-2])\/\d{2}$/), futureDateValidator()]]
     });
 
-    // Reset verification status if email changes
-    this.form.get('email')?.valueChanges.subscribe(() => {
-      this.isEmailVerified = false;
-      this.otpSentMessage = '';
-    });
   }
 
   ngOnInit(): void {
@@ -219,53 +213,6 @@ export class AccountSetupComponent implements OnInit {
     ctrl?.markAsTouched();
   }
 
-  sendOtp(): void {
-    const contact = this.form.get('email')?.value || '';
-    console.log('[AccountSetup] sendOtp: Attempting to send OTP to contact:', contact);
-    if (!contact) {
-      alert('Please enter an email address first');
-      return;
-    }
-    this.svc.sendOtp({ contact }).subscribe({
-      next: (res) => {
-        console.log('[AccountSetup] sendOtp: OTP sent successfully. Response:', res);
-        this.otpSentMessage = `OTP sent to ${contact}. Please check your inbox and enter the OTP below.`;
-      },
-      error: (err) => {
-        const errMsg = err?.error?.message || err?.message || 'Failed to send email. Please check your email address.';
-        console.error('[AccountSetup] sendOtp: Failed to send OTP. Error:', err);
-        alert('Failed to send OTP: ' + errMsg);
-      }
-    });
-  }
-
-  verifyOtp(): void {
-    const contact = this.form.get('email')?.value || '';
-    const otp = this.form.get('otp')?.value || '';
-    console.log('[AccountSetup] verifyOtp: Attempting to verify OTP for contact:', contact, 'with OTP:', otp);
-    if (!contact || !otp) {
-      alert('Please enter email and OTP');
-      return;
-    }
-    this.svc.verifyOtp({ contact, otp }).subscribe({
-      next: (resp) => {
-        console.log('[AccountSetup] verifyOtp: Response received:', resp);
-        if (resp.verified) {
-          this.isEmailVerified = true;
-          console.log('[AccountSetup] verifyOtp: Verification SUCCESS');
-          alert('Email verified successfully!');
-        } else {
-          this.isEmailVerified = false;
-          console.warn('[AccountSetup] verifyOtp: Verification FAILED - invalid OTP');
-          alert('Invalid OTP. Please try again.');
-        }
-      },
-      error: (err) => {
-        console.error('[AccountSetup] verifyOtp: Error during OTP verification API call:', err);
-        alert('Error verifying OTP: ' + (err?.error?.message || err?.message));
-      }
-    });
-  }
 
   submit(): void {
     console.log('[AccountSetup] submit: Starting account setup form submission...');
@@ -294,21 +241,6 @@ export class AccountSetupComponent implements OnInit {
       return;
     }
 
-    console.log('[AccountSetup] submit: Checking email verification status. isEmailVerified:', this.isEmailVerified);
-    if (!this.isEmailVerified) {
-      console.warn('[AccountSetup] submit: Submission aborted. Email not verified.');
-      alert('Security Requirement: Please verify your email address using the OTP sent to your inbox before completing setup.');
-      this.form.get('otp')?.markAsTouched();
-      return;
-    }
-
-    const enteredOtp = this.form.get('otp')?.value || '';
-    if (!enteredOtp) {
-      console.warn('[AccountSetup] submit: Submission aborted. OTP missing.');
-      alert('Please enter the OTP from your email before completing setup.');
-      this.form.get('otp')?.markAsTouched();
-      return;
-    }
 
     const user = this.authService.getCurrentUser();
     console.log('[AccountSetup] submit: Fetching current session user:', user);

@@ -73,23 +73,6 @@
         }
       </mat-form-field>
 
-      <div class="otp-row">
-        <button mat-raised-button type="button" (click)="sendOtp()">Send Email OTP</button>
-        <mat-form-field appearance="fill" class="otp-field">
-          <input matInput placeholder="Enter OTP" formControlName="otp" />
-        </mat-form-field>
-        <button mat-raised-button type="button" (click)="verifyOtp()">Verify</button>
-      </div>
-      @if (otpSentMessage) {
-      <div class="otp-message">
-        ✓ {{ otpSentMessage }}
-      </div>
-      }
-      @if (isEmailVerified) {
-      <div class="verified-message">
-        ✓ Email verified. You can now complete the setup.
-      </div>
-      }
 
       <mat-form-field appearance="fill" class="full">
         <mat-label>Credit Card Number (16 digits)</mat-label>
@@ -128,15 +111,10 @@
       </mat-form-field>
 
       <div class="actions">
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || !isEmailVerified">
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
           Complete Setup
         </button>
       </div>
-      @if (!isEmailVerified) {
-      <div class="otp-warning">
-        Please verify your email with OTP before completing account setup.
-      </div>
-      }
     </form>
   </mat-card>
 

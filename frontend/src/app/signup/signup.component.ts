@@ -95,6 +95,14 @@ export class SignupComponent implements OnDestroy {
     this.otpError = null;
     this.otpAttemptError = null;
 
+    const password = this.form.get('password')?.value;
+    const confirmPassword = this.form.get('confirmPassword')?.value;
+
+    if (password !== confirmPassword) {
+      this.otpError = 'Passwords must match before sending OTP.';
+      return;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.otpError = 'Please fill in all signup fields correctly before sending OTP.';
@@ -102,14 +110,7 @@ export class SignupComponent implements OnDestroy {
     }
 
     const email = this.form.get('email')?.value;
-    const password = this.form.get('password')?.value;
-    const confirmPassword = this.form.get('confirmPassword')?.value;
     const username = this.form.get('username')?.value;
-
-    if (password !== confirmPassword) {
-      this.otpError = 'Passwords must match before sending OTP.';
-      return;
-    }
 
     if (!username || !email || !password) {
       this.otpError = 'Please complete signup details before sending OTP.';
@@ -152,8 +153,7 @@ export class SignupComponent implements OnDestroy {
       return;
     }
 
-    const email = this.form.get('email')?.value;
-    const otp = this.form.get('otp')?.value;
+    const { email, otp } = this.form.getRawValue();
 
     if (!otp || !/^[0-9]{6}$/.test(otp)) {
       this.otpAttemptError = 'Please enter the 6-digit OTP.';
@@ -167,8 +167,9 @@ export class SignupComponent implements OnDestroy {
           this.otpAttemptError = null;
           this.clearOtpTimer();
           this.clearResendCooldown();
-          this.otpToastMessage = 'OTP verified. You can complete account creation.';
+          this.otpToastMessage = 'OTP verified. Completing account creation...';
           setTimeout(() => (this.otpToastMessage = null), 2000);
+          this.submit();
         } else {
           this.otpAttemptsRemaining -= 1;
           if (this.otpAttemptsRemaining <= 0) {
@@ -189,7 +190,7 @@ export class SignupComponent implements OnDestroy {
       return;
     }
 
-    const email = this.form.get('email')?.value;
+    const email = this.form.getRawValue().email;
     if (!email) {
       this.otpError = 'Email is required to resend OTP.';
       return;
@@ -217,9 +218,7 @@ export class SignupComponent implements OnDestroy {
       return;
     }
 
-    const username = this.form.get('username')?.value;
-    const email = this.form.get('email')?.value;
-    const password = this.form.get('password')?.value;
+    const { username, email, password } = this.form.getRawValue();
 
     this.createAccount(username, email, password);
   }

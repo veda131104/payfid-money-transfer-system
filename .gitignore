@@ -37,3 +37,17 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# H2 Database
+*.mv.db
+*.trace.db
+
+# Logs
+*.log
+maven-debug.txt
+
+# Temp credentials or local JSON output
+acct.json
+
+# IntelliJ IDEA workspace directory
+.idea/

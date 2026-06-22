@@ -143,47 +143,62 @@ public class AuthService {
 <span class="fc" id="L143">    }</span>
 
     public AuthUser loginWithToken(String token) {
-<span class="fc" id="L146">        log.info(&quot;[AuthService] loginWithToken: Verifying magic link token&quot;);</span>
-<span class="fc" id="L147">        AuthUser user = authUserRepository.findByRecoveryToken(token)</span>
-<span class="fc" id="L148">                .orElseThrow(() -&gt; {</span>
-<span class="fc" id="L149">                    log.warn(&quot;[AuthService] loginWithToken: Invalid recovery link token&quot;);</span>
-<span class="fc" id="L150">                    return new IllegalArgumentException(&quot;Invalid recovery link&quot;);</span>
-                });
+<span class="fc" id="L146">        log.info(&quot;[AuthService] loginWithToken: Verifying provided token&quot;);</span>
 
-<span class="fc bfc" id="L153" title="All 2 branches covered.">        if (user.getRecoveryTokenExpiry().isBefore(LocalDateTime.now())) {</span>
-<span class="fc" id="L154">            log.warn(&quot;[AuthService] loginWithToken: Recovery link EXPIRED for user '{}'&quot;, user.getName());</span>
-<span class="fc" id="L155">            throw new IllegalArgumentException(&quot;Recovery link has expired&quot;);</span>
+<span class="fc" id="L148">        AuthUser user = authUserRepository.findByRecoveryToken(token)</span>
+<span class="fc" id="L149">                .orElse(null);</span>
+
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        if (user != null) {</span>
+<span class="fc" id="L152">            log.info(&quot;[AuthService] loginWithToken: Found recovery token for user='{}'&quot;, user.getName());</span>
+<span class="pc bpc" id="L153" title="1 of 4 branches missed.">            if (user.getRecoveryTokenExpiry() == null || user.getRecoveryTokenExpiry().isBefore(LocalDateTime.now())) {</span>
+<span class="fc" id="L154">                log.warn(&quot;[AuthService] loginWithToken: Recovery link EXPIRED for user '{}'&quot;, user.getName());</span>
+<span class="fc" id="L155">                throw new IllegalArgumentException(&quot;Recovery link has expired&quot;);</span>
+            }
+
+            // Clear token after use for security
+<span class="fc" id="L159">            user.setRecoveryToken(null);</span>
+<span class="fc" id="L160">            user.setRecoveryTokenExpiry(null);</span>
+<span class="fc" id="L161">            authUserRepository.save(user);</span>
+
+<span class="fc" id="L163">            log.info(&quot;[AuthService] loginWithToken: User '{}' logged in successfully via recovery token&quot;, user.getName());</span>
+<span class="fc" id="L164">            return user;</span>
         }
 
-        // Clear token after use for security
-<span class="fc" id="L159">        user.setRecoveryToken(null);</span>
-<span class="fc" id="L160">        user.setRecoveryTokenExpiry(null);</span>
-<span class="fc" id="L161">        authUserRepository.save(user);</span>
+<span class="fc" id="L167">        user = authUserRepository.findByRememberToken(token)</span>
+<span class="nc" id="L168">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L169">                    log.warn(&quot;[AuthService] loginWithToken: Invalid recovery or remember token&quot;);</span>
+<span class="fc" id="L170">                    return new IllegalArgumentException(&quot;Invalid login token&quot;);</span>
+                });
 
-<span class="fc" id="L163">        log.info(&quot;[AuthService] loginWithToken: User '{}' logged in successfully via magic link&quot;, user.getName());</span>
-<span class="fc" id="L164">        return user;</span>
+<span class="nc bnc" id="L173" title="All 4 branches missed.">        if (user.getRememberTokenExpiry() == null || user.getRememberTokenExpiry().isBefore(LocalDateTime.now())) {</span>
+<span class="nc" id="L174">            log.warn(&quot;[AuthService] loginWithToken: Remember token EXPIRED for user '{}'&quot;, user.getName());</span>
+<span class="nc" id="L175">            throw new IllegalArgumentException(&quot;Remember token has expired&quot;);</span>
+        }
+
+<span class="nc" id="L178">        log.info(&quot;[AuthService] loginWithToken: User '{}' logged in successfully via remember token&quot;, user.getName());</span>
+<span class="nc" id="L179">        return user;</span>
     }
 
     public AuthUser resetPassword(ResetPasswordRequest request) {
-<span class="fc" id="L168">        log.info(&quot;[AuthService] resetPassword: Resetting password for recovery token&quot;);</span>
-<span class="fc" id="L169">        AuthUser user = authUserRepository.findByRecoveryToken(request.getToken())</span>
-<span class="fc" id="L170">                .orElseThrow(() -&gt; {</span>
-<span class="fc" id="L171">                    log.warn(&quot;[AuthService] resetPassword: Invalid reset link token&quot;);</span>
-<span class="fc" id="L172">                    return new IllegalArgumentException(&quot;Invalid reset link&quot;);</span>
+<span class="fc" id="L183">        log.info(&quot;[AuthService] resetPassword: Resetting password for recovery token&quot;);</span>
+<span class="fc" id="L184">        AuthUser user = authUserRepository.findByRecoveryToken(request.getToken())</span>
+<span class="fc" id="L185">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L186">                    log.warn(&quot;[AuthService] resetPassword: Invalid reset link token&quot;);</span>
+<span class="fc" id="L187">                    return new IllegalArgumentException(&quot;Invalid reset link&quot;);</span>
                 });
 
-<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (user.getRecoveryTokenExpiry().isBefore(LocalDateTime.now())) {</span>
-<span class="fc" id="L176">            log.warn(&quot;[AuthService] resetPassword: Reset link EXPIRED for user '{}'&quot;, user.getName());</span>
-<span class="fc" id="L177">            throw new IllegalArgumentException(&quot;Reset link has expired&quot;);</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (user.getRecoveryTokenExpiry().isBefore(LocalDateTime.now())) {</span>
+<span class="fc" id="L191">            log.warn(&quot;[AuthService] resetPassword: Reset link EXPIRED for user '{}'&quot;, user.getName());</span>
+<span class="fc" id="L192">            throw new IllegalArgumentException(&quot;Reset link has expired&quot;);</span>
         }
 
-<span class="fc" id="L180">        user.setPassword(passwordEncoder.encode(request.getNewPassword()));</span>
-<span class="fc" id="L181">        user.setRecoveryToken(null);</span>
-<span class="fc" id="L182">        user.setRecoveryTokenExpiry(null);</span>
+<span class="fc" id="L195">        user.setPassword(passwordEncoder.encode(request.getNewPassword()));</span>
+<span class="fc" id="L196">        user.setRecoveryToken(null);</span>
+<span class="fc" id="L197">        user.setRecoveryTokenExpiry(null);</span>
 
-<span class="fc" id="L184">        authUserRepository.save(user);</span>
-<span class="fc" id="L185">        log.info(&quot;[AuthService] resetPassword: Password reset successfully for user: {}&quot;, user.getName());</span>
-<span class="fc" id="L186">        return user;</span>
+<span class="fc" id="L199">        authUserRepository.save(user);</span>
+<span class="fc" id="L200">        log.info(&quot;[AuthService] resetPassword: Password reset successfully for user: {}&quot;, user.getName());</span>
+<span class="fc" id="L201">        return user;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
