@@ -23,4 +23,5 @@ export const routes: Routes = [
   { path: 'analytics', component: AnalyticsComponent },
   { path: 'rewards', component: RewardsComponent },
   { path: 'reset-password', loadComponent: () => import('./reset-password/reset-password.component').then(m => m.ResetPasswordComponent) },
+  { path: 'forgot-password', loadComponent: () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },
 ];

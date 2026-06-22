@@ -17,81 +17,68 @@
           </div>
         </header>
 
-        @if (otpToastMessage) {
-        <div class="otp-toast success">{{otpToastMessage}}</div>
-        }
+        <div *ngIf="otpToastMessage" class="otp-toast success">{{ otpToastMessage }}</div>
+        <div *ngIf="otpError" class="otp-toast error">{{ otpError }}</div>
+        <div *ngIf="otpAttemptError" class="otp-toast warning">{{ otpAttemptError }}</div>
 
         <form class="form" [formGroup]="form" (ngSubmit)="submit()">
           <mat-form-field appearance="outline" class="field">
             <mat-label>Username</mat-label>
             <input matInput type="text" placeholder="Enter your username" autocomplete="username"
               formControlName="username" />
-            @if (form.get('username')?.hasError('required')) {
-            <mat-error>Username is required</mat-error>
-            }
-            @if (form.get('username')?.hasError('minlength')) {
-            <mat-error>Must be at least 3 characters</mat-error>
-            }
-            @if (form.get('username')?.hasError('usernameTaken')) {
-            <mat-error>This username is already taken</mat-error>
-            }
+            <mat-error *ngIf="form.get('username')?.hasError('required')">Username is required</mat-error>
+            <mat-error *ngIf="form.get('username')?.hasError('minlength')">Must be at least 3 characters</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="field">
             <mat-label>Email</mat-label>
             <input matInput type="email" placeholder="Enter your email" autocomplete="email"
               formControlName="email" />
-            @if (form.get('email')?.hasError('required')) {
-            <mat-error>Email is required</mat-error>
-            }
-            @if (form.get('email')?.hasError('email')) {
-            <mat-error>Please enter a valid email</mat-error>
-            }
-            @if (form.get('email')?.hasError('emailTaken')) {
-            <mat-error>This email is already registered</mat-error>
-            }
+            <mat-error *ngIf="form.get('email')?.hasError('required')">Email is required</mat-error>
+            <mat-error *ngIf="form.get('email')?.hasError('email')">Please enter a valid email</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="field">
             <mat-label>Create new password</mat-label>
             <input matInput type="password" placeholder="At least 8 characters" autocomplete="new-password"
               formControlName="password" />
-            @if (form.get('password')?.hasError('required')) {
-            <mat-error>Password is required</mat-error>
-            }
-            @if (form.get('password')?.hasError('minlength')) {
-            <mat-error>Password must be at least 8 characters</mat-error>
-            }
+            <mat-error *ngIf="form.get('password')?.hasError('required')">Password is required</mat-error>
+            <mat-error *ngIf="form.get('password')?.hasError('minlength')">Password must be at least 8 characters</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="field">
             <mat-label>Confirm password</mat-label>
             <input matInput type="password" placeholder="Re-enter your password" autocomplete="new-password"
               formControlName="confirmPassword" />
-            @if (form.get('confirmPassword')?.hasError('required')) {
-            <mat-error>Please confirm your password</mat-error>
-            }
-            @if (form.get('confirmPassword')?.hasError('passwordMismatch')) {
-            <mat-error>Passwords do not match</mat-error>
-            }
+            <mat-error *ngIf="form.get('confirmPassword')?.hasError('required')">Please confirm your password</mat-error>
+            <mat-error *ngIf="form.get('confirmPassword')?.hasError('passwordMismatch')">Passwords do not match</mat-error>
           </mat-form-field>
 
-          <button class="primary" type="submit" mat-flat-button [disabled]="loading">
-            {{loading ? 'Creating account...' : 'Create account'}}
-          </button>
+          <div class="actions-row">
+            <button class="primary" mat-flat-button type="button" *ngIf="step === 'SIGNUP'" (click)="sendOtp()" [disabled]="otpSending">
+              {{ otpSending ? 'Sending OTP...' : 'Send verification OTP' }}
+            </button>
+            <button class="primary" mat-flat-button type="submit" *ngIf="step === 'VERIFIED'" [disabled]="loading">
+              {{ loading ? 'Creating account...' : 'Create account' }}
+            </button>
+          </div>
+
+          <div class="otp-panel" *ngIf="step === 'OTP_SENT'">
+            <p class="otp-status">OTP sent to {{ form.get('email')?.value }}.</p>
+            <p class="otp-hint">Expires in {{ otpCountdown }}; resend in {{ resendSecondsRemaining }}s.</p>
+
+            <mat-form-field appearance="outline" class="field otp-field">
+              <mat-label>Enter 6-digit OTP</mat-label>
+              <input matInput type="text" maxlength="6" placeholder="000000" formControlName="otp" />
+            </mat-form-field>
+
+            <div class="otp-controls">
+              <button mat-stroked-button type="button" (click)="verifyOtp()" [disabled]="otpSending">Verify OTP</button>
+              <button mat-button type="button" (click)="resendOtp()" [disabled]="resendDisabled || otpSending">Resend OTP</button>
+            </div>
+          </div>
         </form>
 
-        @if (otpSendError) {
-        <div class="otp-error">
-          <p class="otp-error-message">{{otpSendError}}</p>
-          <div class="otp-actions">
-            <button mat-stroked-button (click)="retrySendOtp(form.get('email')?.value)" [disabled]="otpSending">
-              {{ otpSending ? 'Sending...' : 'Retry sending OTP' }}
-            </button>
-            <button mat-button (click)="proceedToAccountSetup()">Proceed to Account Setup</button>
-          </div>
-        </div>
-        }
 
         <p class="footnote">
           Already have an account?

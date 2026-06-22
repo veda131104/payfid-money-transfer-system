@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
     selector: 'app-reset-password',
     standalone: true,
     imports: [
+        RouterLink,
         MatButtonModule,
         MatCardModule,
         MatFormFieldModule,
@@ -65,9 +66,9 @@ export class ResetPasswordComponent implements OnInit {
         this.authService.resetPassword({ token: this.token, newPassword: password }).subscribe({
             next: () => {
                 if (typeof window !== 'undefined') {
-                    alert('Password has been reset successfully! Redirecting to dashboard...');
+                    alert('Password has been reset successfully! Redirecting to sign-in...');
                 }
-                this.router.navigate(['/dashboard']);
+                this.router.navigate(['/']);
             },
             error: (err: any) => {
                 console.error('Reset failed:', err);

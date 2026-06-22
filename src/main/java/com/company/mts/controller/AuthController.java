@@ -95,12 +95,13 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<com.company.mts.dto.ForgotPasswordResponse> forgotPassword(@Valid @RequestBody com.company.mts.dto.ForgotPasswordRequest request) {
         log.info("[AuthController] POST /forgot-password - Processing forgot password for name='{}'", request.getName());
         try {
             authService.processForgotPassword(request.getName());
             log.info("[AuthController] POST /forgot-password - Forgot password processed for name='{}'", request.getName());
-            return ResponseEntity.ok().build();
+            String msg = "If an account exists for the provided username, a password reset link has been sent to the registered email address.";
+            return ResponseEntity.ok(new com.company.mts.dto.ForgotPasswordResponse(msg));
         } catch (Exception e) {
             log.error("[AuthController] POST /forgot-password - FAILED for name='{}': {} - {}",
                     request.getName(), e.getClass().getSimpleName(), e.getMessage());

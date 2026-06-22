@@ -157,7 +157,7 @@ export class AuthService {
   forgotPassword(username: string): Observable<ForgotPasswordResponse> {
     return this.http.post<ForgotPasswordResponse>(
       `${this.baseUrl}/forgot-password`,
-      { username }
+      { name: username }
     );
   }
 
