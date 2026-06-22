@@ -193,7 +193,8 @@ describe('AccountSetupComponent', () => {
       phoneNumber: '12345678',
       creditCardNumber: '1111222233334444',
       cvv: '123',
-      expiryDate: '12/28'
+      expiryDate: '12/28',
+      otp: '123456'
     });
     component.isEmailVerified = true;
     authServiceSpy.getCurrentUser.and.returnValue(null);
@@ -214,7 +215,8 @@ describe('AccountSetupComponent', () => {
       phoneNumber: '12345678',
       creditCardNumber: '1111222233334444',
       cvv: '123',
-      expiryDate: '12/28'
+      expiryDate: '12/28',
+      otp: '123456'
     });
     component.isEmailVerified = true;
     svcSpy.create.and.returnValue(of({}));
@@ -236,7 +238,8 @@ describe('AccountSetupComponent', () => {
       phoneNumber: '12345678',
       creditCardNumber: '1111222233334444',
       cvv: '123',
-      expiryDate: '12/28'
+      expiryDate: '12/28',
+      otp: '123456'
     });
     component.isEmailVerified = true;
     svcSpy.create.and.returnValue(throwError(() => ({ error: { message: 'Database error' } })));

@@ -3,6 +3,7 @@ import { SignupComponent } from './signup.component';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { AccountSetupService } from '../services/account-setup.service';
 import { of, throwError } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -11,11 +12,14 @@ describe('SignupComponent', () => {
   let component: SignupComponent;
   let fixture: ComponentFixture<SignupComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
+  let accountSetupServiceSpy: jasmine.SpyObj<AccountSetupService>;
   let router: Router;
   let alertSpy: jasmine.Spy;
 
   beforeEach(async () => {
     authServiceSpy = jasmine.createSpyObj('AuthService', ['signup', 'login']);
+    accountSetupServiceSpy = jasmine.createSpyObj('AccountSetupService', ['sendOtp']);
+    accountSetupServiceSpy.sendOtp.and.returnValue(of({}));
     alertSpy = spyOn(window, 'alert');
 
     await TestBed.configureTestingModule({
@@ -26,7 +30,8 @@ describe('SignupComponent', () => {
         RouterTestingModule
       ],
       providers: [
-        { provide: AuthService, useValue: authServiceSpy }
+        { provide: AuthService, useValue: authServiceSpy },
+        { provide: AccountSetupService, useValue: accountSetupServiceSpy }
       ]
     }).compileComponents();
 
@@ -119,6 +124,7 @@ describe('SignupComponent', () => {
   });
 
   it('should submit and login successfully (first login -> account setup)', () => {
+    jasmine.clock().install();
     authServiceSpy.signup.and.returnValue(of({ name: 'validUser', email: 'test@example.com' }));
     authServiceSpy.login.and.returnValue(of({
       userId: 1,
@@ -129,6 +135,7 @@ describe('SignupComponent', () => {
       firstLogin: true,
       rememberToken: 'token123'
     }));
+    accountSetupServiceSpy.sendOtp.and.returnValue(of({}));
     component.form.patchValue({
       username: 'validUser',
       email: 'test@example.com',
@@ -136,7 +143,9 @@ describe('SignupComponent', () => {
       confirmPassword: 'password123'
     });
     component.submit();
+    jasmine.clock().tick(1000);
     expect(router.navigate).toHaveBeenCalledWith(['/account-setup']);
+    jasmine.clock().uninstall();
   });
 
   it('should submit and login successfully (not first login -> dashboard)', () => {

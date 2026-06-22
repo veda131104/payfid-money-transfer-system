@@ -92,7 +92,7 @@ describe('DashboardComponent', () => {
         getCurrentUserSpy.and.returnValue({ name: 'testuser', email: 'testuser@company.com' });
         getAccountByUserSpy.and.returnValue(of({ accountNumber: '123456789012', balance: 1000, creditCardNumber: '1111222233334444', expiryDate: '12/28', userName: 'testuser' }));
         const getAccountByNumberSpy = spyOn(accountSetupService, 'getAccountByNumber').and.returnValue(of({ accountNumber: '123456789012', balance: 1000, id: 1 }));
-        spyOn(transactionService, 'getAccountHistory').and.returnValue(of([
+        getAccountHistorySpy.and.returnValue(of([
             { id: '1', accountNumber: '999', amount: '100', date: new Date(), type: 'transfer', status: 'SUCCESS', referenceId: '1', description: 'test' }
         ]));
 
@@ -102,6 +102,12 @@ describe('DashboardComponent', () => {
         expect(getAccountByNumberSpy).toHaveBeenCalledWith('123456789012');
         expect(component.balance).toBe(1000);
         expect(component.cardDetails.number).toBe('**** **** **** 4444');
+    });
+
+    it('should not load data when user is null', () => {
+        getCurrentUserSpy.and.returnValue(null);
+        component.loadDashboardData();
+        expect(accountSetupService.getAccountByUser).not.toHaveBeenCalled();
     });
 
     it('should handle getAccountByUser error', () => {
@@ -127,6 +133,25 @@ describe('DashboardComponent', () => {
         expect(console.error).toHaveBeenCalled();
     });
 
+    it('should calculate metrics with today SUCCESS/completed and pending transactions', () => {
+        getCurrentUserSpy.and.returnValue({ name: 'testuser', email: 'testuser@company.com' });
+        getAccountByUserSpy.and.returnValue(of({ accountNumber: '123456789012' }));
+        spyOn(accountSetupService, 'getAccountByNumber').and.returnValue(of({ accountNumber: '123456789012', balance: 500, id: 2 }));
+
+        const today = new Date();
+        getAccountHistorySpy.and.returnValue(of([
+            { id: '1', accountNumber: '999', amount: '100', date: today, type: 'debit', status: 'SUCCESS', referenceId: 'R1' },
+            { id: '2', accountNumber: '999', amount: '50', date: today, type: 'debit', status: 'completed', referenceId: 'R2' },
+            { id: '3', accountNumber: '999', amount: '75', date: today, type: 'debit', status: 'pending', referenceId: 'R3' },
+            { id: '4', accountNumber: '999', amount: '25', date: new Date('2020-01-01'), type: 'debit', status: 'SUCCESS', referenceId: 'R4' }
+        ]));
+
+        component.ngOnInit();
+
+        expect(component.processedToday).toBe(150); // 100 + 50 (today SUCCESS + completed)
+        expect(component.activeTransfers).toBe(1); // 1 pending
+    });
+
     it('should determine display types and transaction signs correctly', () => {
         getCurrentUserSpy.and.returnValue({ name: 'testuser', email: 'testuser@company.com' });
         
@@ -143,6 +168,12 @@ describe('DashboardComponent', () => {
 
         const sendTxn = { toAccountHolderName: 'other', amount: '10' } as any;
         expect(component.getDisplayType(sendTxn)).toBe('debit');
+    });
+
+    it('should return debit from getDisplayType when currentUser is null', () => {
+        getCurrentUserSpy.and.returnValue(null);
+        const txn = { toAccountHolderName: 'someone', amount: '10' } as any;
+        expect(component.getDisplayType(txn)).toBe('debit');
     });
 
     it('should logout successfully', () => {
