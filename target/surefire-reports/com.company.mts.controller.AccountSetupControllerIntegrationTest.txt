@@ -1,4 +1,71 @@
 -------------------------------------------------------------------------------
 Test set: com.company.mts.controller.AccountSetupControllerIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.514 s -- in com.company.mts.controller.AccountSetupControllerIntegrationTest
+Tests run: 18, Failures: 6, Errors: 0, Skipped: 0, Time elapsed: 5.972 s <<< FAILURE! -- in com.company.mts.controller.AccountSetupControllerIntegrationTest
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_NewDetails_Success -- Time elapsed: 0.055 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<201> but was:<400>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.company.mts.controller.AccountSetupControllerIntegrationTest.create_NewDetails_Success(AccountSetupControllerIntegrationTest.java:118)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_ExistingDetails_Reuses -- Time elapsed: 0.017 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<201> but was:<400>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.company.mts.controller.AccountSetupControllerIntegrationTest.create_ExistingDetails_Reuses(AccountSetupControllerIntegrationTest.java:136)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_DataIntegrityViolation_ReturnsConflict -- Time elapsed: 0.036 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<409> but was:<400>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.company.mts.controller.AccountSetupControllerIntegrationTest.create_DataIntegrityViolation_ReturnsConflict(AccountSetupControllerIntegrationTest.java:164)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_ExistingDetailsConflict_ReturnsConflict -- Time elapsed: 0.010 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<409> but was:<400>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.company.mts.controller.AccountSetupControllerIntegrationTest.create_ExistingDetailsConflict_ReturnsConflict(AccountSetupControllerIntegrationTest.java:151)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_UpiSuffixResolutionTests -- Time elapsed: 0.055 s <<< FAILURE!
+java.lang.AssertionError: Status expected:<201> but was:<400>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:637)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.company.mts.controller.AccountSetupControllerIntegrationTest.create_UpiSuffixResolutionTests(AccountSetupControllerIntegrationTest.java:204)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_MissingUserName_ReturnsBadRequest -- Time elapsed: 0.009 s <<< FAILURE!
+java.lang.AssertionError: JSON path "$.message" expected:<User not logged in or session expired. Please log in and try again.> but was:<Email verification required. Please verify the OTP sent to your email before completing setup.>
+	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
+	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
+	at org.springframework.test.util.JsonPathExpectationsHelper.assertValue(JsonPathExpectationsHelper.java:123)
+	at org.springframework.test.web.servlet.result.JsonPathResultMatchers.lambda$value$2(JsonPathResultMatchers.java:111)
+	at org.springframework.test.web.servlet.MockMvc$1.andExpect(MockMvc.java:214)
+	at com.company.mts.controller.AccountSetupControllerIntegrationTest.create_MissingUserName_ReturnsBadRequest(AccountSetupControllerIntegrationTest.java:100)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+

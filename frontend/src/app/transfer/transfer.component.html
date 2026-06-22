@@ -1,139 +1,152 @@
-<section class="dashboard-shell">
-  <header class="topbar">
-    <div class="brand">
+<div class="app-layout">
+  <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle" aria-hidden="true" />
+
+  <aside class="app-sidebar">
+    <div class="sidebar-brand">
       <span class="brand-mark">PF</span>
-      <div>
-        <p class="brand-name">PayFid</p>
-        <p class="brand-tag">Transfer Command Center</p>
-      </div>
+      <span class="brand-name">PayFid</span>
     </div>
-    <div class="account">
-      <div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link" routerLink="/dashboard" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">▦</span><span class="sidebar-label">Dashboard</span>
+      </a>
+      <a class="sidebar-link" routerLink="/transfer" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">↗</span><span class="sidebar-label">New Transfer</span>
+      </a>
+      <a class="sidebar-link" routerLink="/history" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">☰</span><span class="sidebar-label">History</span>
+      </a>
+      <a class="sidebar-link" routerLink="/analytics" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">◫</span><span class="sidebar-label">Analytics</span>
+      </a>
+      <a class="sidebar-link" routerLink="/rewards" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">★</span><span class="sidebar-label">Rewards</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button type="button" class="sidebar-link logout" (click)="onLogout()">
+        <span class="sidebar-icon">⎋</span><span class="sidebar-label">Logout</span>
+      </button>
+      <label for="sidebar-toggle" class="sidebar-collapse-btn" title="Collapse sidebar">
+        <span class="collapse-icon">◀</span>
+      </label>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-header">
+      <div class="header-account">
         <p class="account-label">Account holder</p>
         <p class="account-name">{{ userName }}</p>
       </div>
-      <button class="logout ghost" type="button" mat-stroked-button (click)="onLogout()">Log out</button>
-    </div>
-    <div class="topbar-actions">
-      <button class="ghost" type="button" mat-stroked-button routerLink="/dashboard" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Dashboard</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/history" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
-      <button class="ghost" type="button" mat-flat-button routerLink="/transfer" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/analytics" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/rewards" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Rewards</button>
-      <button class="ghost" type="button" mat-stroked-button (click)="onLogout()">Log out</button>
-    </div>
-  </header>
+      <button class="profile-btn" type="button" mat-stroked-button routerLink="/profile">View Profile</button>
+    </header>
 
-  <main class="transfer-grid">
-    <mat-card class="card highlights">
-      <!-- Success State -->
-      <div *ngIf="isSuccess" class="success-state">
-        <div class="success-icon">✓</div>
-        <h2 class="success-title">Transfer Successful!</h2>
-        <p class="success-message">Your money has been transferred successfully</p>
-        <div class="success-details">
-          <p><strong>Recipient Account:</strong> {{ successDetails.accountNumber }}</p>
-          <p><strong>Amount:</strong> ₹{{ successDetails.amount }}</p>
-        </div>
-        <div class="success-actions">
-          <button class="send-button" type="button" mat-flat-button (click)="onNewTransfer()">New Transfer</button>
-          <button class="history-button" type="button" mat-flat-button (click)="onCheckHistory()">Check History</button>
-        </div>
+    <main class="page-content transfer-page">
+      <div class="page-heading">
+        <h1>New Transfer</h1>
+        <p>Transfer your money safely with PayFid</p>
       </div>
 
-      <!-- Loading State -->
-      <div *ngIf="isLoading && !isSuccess" class="loading-state">
-        <div class="loading-spinner"></div>
-        <p class="loading-text">Processing your transfer...</p>
-      </div>
-
-      <!-- Form State -->
-      <div *ngIf="!isLoading && !isSuccess">
-        <h2 class="transfer-header">Transfer your money safely with PayFid</h2>
-        <div class="transfer">
-          <!-- From Account Section -->
-          <div class="from-account">
-            <div class="from-account-header">
-              <div class="account-avatar">{{ getInitials() }}</div>
-              <div class="from-account-info">
-                <p class="from-label">From: <span class="from-name">{{ userName }}</span></p>
-              </div>
+      <div class="transfer-center">
+        <mat-card class="transfer-card">
+          <!-- Success State -->
+          <div *ngIf="isSuccess" class="success-state">
+            <div class="success-icon">✓</div>
+            <h2 class="success-title">Transfer Successful!</h2>
+            <p class="success-message">Your money has been transferred successfully</p>
+            <div class="success-details">
+              <p><strong>Recipient Account:</strong> {{ successDetails.accountNumber }}</p>
+              <p><strong>Amount:</strong> ₹{{ successDetails.amount }}</p>
             </div>
-            <p class="from-account-number">Account number: {{ myAccountNumber }}</p>
+            <div class="success-actions">
+              <button class="send-button" type="button" mat-flat-button (click)="onNewTransfer()">New Transfer</button>
+              <button class="history-button" type="button" mat-flat-button (click)="onCheckHistory()">Check History</button>
+            </div>
           </div>
 
-          <p>To Account Number</p>
-          <!-- Input for Account Number -->
-          <input type="text" id="account-number" placeholder="Enter account number"
-            (input)="onAccountNumberInput($event)" />
-          <p class="account-hint" *ngIf="accountNumber && accountNumber.length < 9"
-            style="color: #f57c00; font-size: 0.8rem; margin-top: -0.5rem;">9-18 digits required ({{ accountNumber.length
-            }}/18)</p>
-          <p class="account-hint" *ngIf="accountNumber && accountNumber === myAccountNumber"
-            style="color: #e53935; font-size: 0.8rem; margin-top: -0.5rem;">⚠ Self-transfer is not allowed. Please enter a different account number.</p>
+          <!-- Loading State -->
+          <div *ngIf="isLoading && !isSuccess" class="loading-state">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Processing your transfer...</p>
+          </div>
 
-          <p>&#8377;Amount</p>
-          <!-- Input for Amount -->
-          <input type="text" id="amount" inputmode="decimal" placeholder="Enter amount (decimals allowed, e.g. 100.50)" (input)="onAmountInput($event)" />
-
-          <p>Description <span style="font-size: 0.85rem; color: #999;">(optional)</span></p>
-          <!-- Input for Description -->
-          <input type="text" id="description" placeholder="Enter transaction description"
-            (input)="onDescriptionInput($event)" />
-
-          <button class="send-button" type="button" mat-flat-button [disabled]="accountNumber === myAccountNumber" (click)="onSendMoney()">Send Money</button>
-        </div>
-      </div>
-
-      <!-- PIN Modal Overlay -->
-      <div *ngIf="showPinModal" class="modal-overlay" (click)="closePinModal()"></div>
-
-      <div *ngIf="showPinModal" class="pin-modal">
-        <mat-card class="card pin-card" (click)="$event.stopPropagation()">
-          <h3>Enter PIN to confirm transfer</h3>
-          <p *ngIf="successDetails.accountNumber"><strong>To:</strong> {{ successDetails.accountNumber }}</p>
-          <p *ngIf="successDetails.amount"><strong>Amount:</strong> ₹{{ successDetails.amount }}</p>
-
-          <div *ngIf="!isSuccess">
-            <div class="pin-input-container">
-              <input [type]="pinVisible ? 'text' : 'password'" maxlength="4" placeholder="Enter 4-digit PIN"
-                (input)="onPinInput($event)" />
-              <button type="button" class="pin-toggle" (click)="togglePinVisibility()">
-                {{ pinVisible ? 'Hide' : 'Show' }}
-              </button>
+          <!-- Form State -->
+          <div *ngIf="!isLoading && !isSuccess" class="transfer-form-wrap">
+            <div class="from-account">
+              <div class="from-account-header">
+                <div class="account-avatar">{{ getInitials() }}</div>
+                <div class="from-account-info">
+                  <p class="from-label">From: <span class="from-name">{{ userName }}</span></p>
+                  <p class="from-account-number">Account: {{ myAccountNumber }}</p>
+                </div>
+              </div>
             </div>
-            <div class="actions">
-              <button mat-flat-button color="primary" (click)="onConfirmPin()">Confirm</button>
-              <button mat-stroked-button (click)="closePinModal()">Cancel</button>
-            </div>
-            <p class="message" *ngIf="pinMessage">{{ pinMessage }}</p>
 
-            <div *ngIf="pinLoading" class="loading-state">
-              <div class="loading-spinner"></div>
-              <p class="loading-text">Processing your transfer...</p>
+            <div class="transfer-fields">
+              <div class="field-group">
+                <label for="account-number">Recipient Account</label>
+                <input type="text" id="account-number" placeholder="Enter account number"
+                  (input)="onAccountNumberInput($event)" />
+                <p class="account-hint hint-warning" *ngIf="accountNumber && accountNumber.length < 9">
+                  9-18 digits required ({{ accountNumber.length }}/18)
+                </p>
+                <p class="account-hint hint-error" *ngIf="accountNumber && accountNumber === myAccountNumber">
+                  Self-transfer is not allowed. Please enter a different account number.
+                </p>
+              </div>
+
+              <div class="field-group">
+                <label for="amount">Amount (₹)</label>
+                <input type="text" id="amount" inputmode="decimal"
+                  placeholder="Enter amount (e.g. 100.50)" (input)="onAmountInput($event)" />
+              </div>
+
+              <div class="field-group">
+                <label for="description">Description <span class="optional-label">(optional)</span></label>
+                <input type="text" id="description" placeholder="Enter transaction description"
+                  (input)="onDescriptionInput($event)" />
+              </div>
+
+              <button class="send-button" type="button" mat-flat-button
+                [disabled]="accountNumber === myAccountNumber" (click)="onSendMoney()">Send Money</button>
             </div>
+          </div>
+
+          <!-- PIN Modal -->
+          <div *ngIf="showPinModal" class="modal-overlay" (click)="closePinModal()"></div>
+          <div *ngIf="showPinModal" class="pin-modal">
+            <mat-card class="pin-card" (click)="$event.stopPropagation()">
+              <h3>Enter PIN to confirm transfer</h3>
+              <p *ngIf="successDetails.accountNumber"><strong>To:</strong> {{ successDetails.accountNumber }}</p>
+              <p *ngIf="successDetails.amount"><strong>Amount:</strong> ₹{{ successDetails.amount }}</p>
+              <div *ngIf="!isSuccess">
+                <div class="pin-input-container">
+                  <input [type]="pinVisible ? 'text' : 'password'" maxlength="4" placeholder="Enter 4-digit PIN"
+                    (input)="onPinInput($event)" />
+                  <button type="button" class="pin-toggle" (click)="togglePinVisibility()">
+                    {{ pinVisible ? 'Hide' : 'Show' }}
+                  </button>
+                </div>
+                <div class="actions">
+                  <button mat-flat-button color="primary" (click)="onConfirmPin()">Confirm</button>
+                  <button mat-stroked-button (click)="closePinModal()">Cancel</button>
+                </div>
+                <p class="message" *ngIf="pinMessage">{{ pinMessage }}</p>
+                <div *ngIf="pinLoading" class="loading-state">
+                  <div class="loading-spinner"></div>
+                  <p class="loading-text">Processing your transfer...</p>
+                </div>
+              </div>
+            </mat-card>
           </div>
         </mat-card>
       </div>
-    </mat-card>
-  </main>
-
-  <nav class="bottom-nav">
-    <button type="button" class="nav-item" mat-button routerLink="/dashboard" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Dashboard</button>
-    <button type="button" class="nav-item" mat-button routerLink="/history" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
-    <button type="button" class="nav-item" mat-button routerLink="/transfer" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
-    <button type="button" class="nav-item" mat-button routerLink="/analytics" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
-    <button type="button" class="nav-item" mat-button routerLink="/rewards" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Rewards</button>
-    <button type="button" class="nav-item logout" mat-button (click)="onLogout()">Log out</button>
-  </nav>
-</section>
+    </main>
+  </div>
+</div>

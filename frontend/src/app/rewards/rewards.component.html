@@ -1,147 +1,124 @@
-<section class="dashboard-shell">
-  <header class="topbar">
-    <div class="brand">
+<div class="app-layout">
+  <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle" aria-hidden="true" />
+
+  <aside class="app-sidebar">
+    <div class="sidebar-brand">
       <span class="brand-mark">PF</span>
-      <div>
-        <p class="brand-name">PayFid</p>
-        <p class="brand-tag">Transfer Command Center</p>
-      </div>
+      <span class="brand-name">PayFid</span>
     </div>
-    <div class="account">
-      <div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link" routerLink="/dashboard" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">▦</span><span class="sidebar-label">Dashboard</span>
+      </a>
+      <a class="sidebar-link" routerLink="/transfer" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">↗</span><span class="sidebar-label">New Transfer</span>
+      </a>
+      <a class="sidebar-link" routerLink="/history" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">☰</span><span class="sidebar-label">History</span>
+      </a>
+      <a class="sidebar-link" routerLink="/analytics" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">◫</span><span class="sidebar-label">Analytics</span>
+      </a>
+      <a class="sidebar-link" routerLink="/rewards" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">★</span><span class="sidebar-label">Rewards</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button type="button" class="sidebar-link logout" (click)="onLogout()">
+        <span class="sidebar-icon">⎋</span><span class="sidebar-label">Logout</span>
+      </button>
+      <label for="sidebar-toggle" class="sidebar-collapse-btn" title="Collapse sidebar">
+        <span class="collapse-icon">◀</span>
+      </label>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-header">
+      <div class="header-account">
         <p class="account-label">Account holder</p>
         <p class="account-name">{{ userName }}</p>
       </div>
-      <button class="logout ghost" type="button" mat-stroked-button routerLink="/profile">View Profile</button>
-    </div>
-    <div class="topbar-actions">
-      <button class="ghost" type="button" mat-stroked-button routerLink="/dashboard" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Dashboard</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/history" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/transfer" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/analytics" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/rewards" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Rewards</button>
-      <button class="ghost" type="button" mat-stroked-button (click)="onLogout()">Log out</button>
-    </div>
-  </header>
+      <button class="profile-btn" type="button" mat-stroked-button routerLink="/profile">View Profile</button>
+    </header>
 
-  <main class="dashboard-grid">
-    <!-- Loading State -->
-    <mat-card class="card full-width-card" *ngIf="loading">
-      <div class="loading-state">
-        <p>Loading your rewards wallet...</p>
-      </div>
-    </mat-card>
-
-    <!-- Error State -->
-    <mat-card class="card full-width-card" *ngIf="!loading && errorMsg">
-      <div class="error-state">
-        <h2>Setup Required</h2>
-        <p>{{ errorMsg }}</p>
-        <button mat-raised-button color="primary" *ngIf="errorMsg.includes('Account Setup')" routerLink="/account-setup">Go to Account Setup</button>
-      </div>
-    </mat-card>
-
-    <!-- Reward Details -->
-    <ng-container *ngIf="!loading && !errorMsg">
-      <!-- Highlight Rewards Info -->
-      <mat-card class="card highlights">
-        <h1>Your Rewards Wallet</h1>
+    <main class="page-content">
+      <div class="page-heading">
+        <h1>Rewards Wallet</h1>
         <p>Earn reward points automatically on transfer volumes greater than ₹100.</p>
-        
-        <div class="rewards-banner">
-          <div class="points-badge">
-            <span class="points-number">{{ points }}</span>
-            <span class="points-label">Total Points</span>
-          </div>
-          <div class="tier-badge" [style.border-color]="getTierColor(tier)">
-            <span class="tier-label">Status Tier</span>
-            <span class="tier-value" [style.color]="getTierColor(tier)">{{ tier }}</span>
-          </div>
+      </div>
+
+      <mat-card class="card" *ngIf="loading">
+        <div class="state-box loading-state"><p>Loading your rewards wallet...</p></div>
+      </mat-card>
+
+      <mat-card class="card" *ngIf="!loading && errorMsg">
+        <div class="state-box error-state">
+          <h2>Setup Required</h2>
+          <p>{{ errorMsg }}</p>
+          <button mat-raised-button color="primary" *ngIf="errorMsg.includes('Account Setup')" routerLink="/account-setup">Go to Account Setup</button>
         </div>
       </mat-card>
 
-      <!-- Rules and Info Card -->
-      <mat-card class="card magic-card">
-        <div class="card-glass">
-          <div class="rules-header">
-            <h3>Reward Rules</h3>
-          </div>
-          <ul class="rules-list">
-            <li>✓ Eligible only for <strong>SUCCESS</strong> status transactions.</li>
-            <li>✓ Transaction amount must exceed <strong>₹100</strong>.</li>
-            <li>✓ Transferred between different accounts (non-self transfers).</li>
-            <li>✓ Earn <strong>1 Point</strong> per every <strong>₹100</strong>.</li>
-            <li>✓ Points are rounded down (e.g. ₹250 = 2 points).</li>
-          </ul>
-        </div>
-      </mat-card>
+      <ng-container *ngIf="!loading && !errorMsg">
+        <div class="rewards-top-grid">
+          <mat-card class="card points-card">
+            <p class="card-eyebrow">Total Points</p>
+            <p class="points-number">{{ points }}</p>
+            <p class="card-sub">Earn 1 point per ₹100 transferred</p>
+          </mat-card>
 
-      <!-- Ledger History -->
-      <mat-card class="card activity full-width-card">
-        <div class="card-header">
-          <h2>Reward History Ledger</h2>
-        </div>
-        <div class="activity-list">
-          @for (item of history; track item.id) {
-          <div class="activity-item">
-            <div class="activity-icon credit">★</div>
-            <div class="activity-details">
-              <p class="activity-title">{{ item.description }}</p>
-              <p class="activity-meta">Granted at: {{ item.grantedAt | date:'MMM d, yyyy h:mm a' }} • Tx ID: #{{ item.transactionId }}</p>
+          <mat-card class="card tier-card" [style.border-color]="getTierColor(tier)">
+            <p class="card-eyebrow">Status Tier</p>
+            <p class="tier-value" [style.color]="getTierColor(tier)">{{ tier }}</p>
+            <div class="tier-progress-track">
+              <div class="tier-progress-fill" [style.width.%]="tier === 'Bronze' ? 25 : tier === 'Silver' ? 55 : tier === 'Gold' ? 80 : 100"
+                [style.background]="getTierColor(tier)"></div>
             </div>
-            <div class="activity-amount credit">
-              +{{ item.pointsAwarded }} pts
-            </div>
-          </div>
-          } @empty {
-          <p class="no-activity">No rewards points earned yet. Make an eligible transfer to get rewarded!</p>
-          }
+            <p class="tier-progress-label">Progress toward next tier</p>
+          </mat-card>
+
+          <mat-card class="card rules-card">
+            <h3 class="rules-title">Reward Rules</h3>
+            <ul class="rules-list">
+              <li>Eligible only for <strong>SUCCESS</strong> status transactions.</li>
+              <li>Transaction amount must exceed <strong>₹100</strong>.</li>
+              <li>Non-self transfers between different accounts.</li>
+              <li>Earn <strong>1 Point</strong> per every <strong>₹100</strong>.</li>
+              <li>Points are rounded down (e.g. ₹250 = 2 points).</li>
+            </ul>
+          </mat-card>
         </div>
-      </mat-card>
-    </ng-container>
-  </main>
 
-  <nav class="bottom-nav">
-    <button type="button" class="nav-item" mat-button routerLink="/dashboard" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Dashboard</button>
-    <button type="button" class="nav-item" mat-button routerLink="/history" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
-    <button type="button" class="nav-item" mat-button routerLink="/transfer" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
-    <button type="button" class="nav-item" mat-button routerLink="/analytics" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
-    <button type="button" class="nav-item" mat-button routerLink="/rewards" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Rewards</button>
-    <button type="button" class="nav-item logout" mat-button (click)="onLogout()">Log out</button>
-  </nav>
-</section>
-
-<footer class="app-footer">
-  <div class="footer-content">
-    <div class="footer-section">
-      <h4 class="footer-heading">Support</h4>
-      <button type="button" class="footer-link">Security</button>
-      <button type="button" class="footer-link">Preferences</button>
-      <button type="button" class="footer-link">Help & Support</button>
-    </div>
-    <div class="footer-section">
-      <h4 class="footer-heading">Legal</h4>
-      <button type="button" class="footer-link">Privacy Policy</button>
-      <button type="button" class="footer-link">Terms & Conditions</button>
-      <button type="button" class="footer-link">Cookie Policy</button>
-    </div>
-    <div class="footer-section">
-      <h4 class="footer-heading">Contact</h4>
-      <p class="footer-text">Email: support@payfid.com</p>
-      <p class="footer-text">Phone: +91 1800 123 4567</p>
-    </div>
+        <mat-card class="card ledger-card">
+          <div class="card-header">
+            <h2>Reward History Ledger</h2>
+          </div>
+          <div class="ledger-list">
+            @for (item of history; track item.id) {
+            <div class="ledger-row">
+              <div class="ledger-icon">★</div>
+              <div class="ledger-info">
+                <p class="ledger-title">{{ item.description }}</p>
+                <p class="ledger-meta">Granted at: {{ item.grantedAt | date:'MMM d, yyyy h:mm a' }} · Tx #{{ item.transactionId }}</p>
+              </div>
+              <span class="ledger-points">+{{ item.pointsAwarded }} pts</span>
+            </div>
+            } @empty {
+            <div class="empty-state">
+              <span class="empty-icon">★</span>
+              <p>No rewards points earned yet.</p>
+              <p class="empty-sub">Make an eligible transfer to get rewarded!</p>
+            </div>
+            }
+          </div>
+        </mat-card>
+      </ng-container>
+    </main>
   </div>
-  <div class="footer-bottom">
-    <p class="footer-copyright">&copy; 2026 PayFid. All rights reserved.</p>
-  </div>
-</footer>
+</div>

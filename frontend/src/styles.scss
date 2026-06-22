@@ -1,17 +1,33 @@
-
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+
+// PayFid fintech design tokens
+:root {
+  --pf-primary: #1d3b4f;
+  --pf-primary-light: #215a66;
+  --pf-primary-teal: #1c5d5e;
+  --pf-accent: #a855b8;
+  --pf-accent-soft: rgba(168, 85, 184, 0.14);
+  --pf-bg: #f7f8fa;
+  --pf-bg-warm: #faf8f5;
+  --pf-surface: #ffffff;
+  --pf-text: #111a1f;
+  --pf-text-muted: #6a7881;
+  --pf-border: rgba(33, 90, 102, 0.1);
+  --pf-shadow-sm: 0 2px 8px rgba(22, 42, 52, 0.06);
+  --pf-shadow-md: 0 8px 24px rgba(22, 42, 52, 0.09);
+  --pf-shadow-lg: 0 16px 40px rgba(22, 42, 52, 0.11);
+  --pf-radius-sm: 10px;
+  --pf-radius-md: 14px;
+  --pf-radius-lg: 16px;
+  --pf-transition: 200ms ease-in-out;
+}
 
 html {
   height: 100%;
   @include mat.theme((
     color: (
-      primary: mat.$magenta-palette,
-      tertiary: mat.$violet-palette,
+      primary: mat.$azure-palette,
+      tertiary: mat.$magenta-palette,
     ),
     typography: Roboto,
     density: 0,
@@ -19,16 +35,23 @@ html {
 }
 
 body {
-  color-scheme: light; // default light. We can switch to dark as well
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
+  color-scheme: light;
+  background-color: var(--pf-bg);
+  color: var(--pf-text);
   font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin
   margin: 0;
   height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+[role='button'],
+a,
+.cursor-pointer {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }

@@ -13,6 +13,7 @@ com\company\mts\dto\SignupRequest.class
 com\company\mts\exception\GlobalExceptionHandler.class
 com\company\mts\dto\TokenRequest.class
 com\company\mts\service\AnalyticsService.class
+com\company\mts\dto\ForgotPasswordResponse.class
 com\company\mts\aspect\LoggingAspect.class
 com\company\mts\dto\LoginRequest.class
 com\company\mts\dto\TransactionDTO$Builder.class
@@ -67,6 +68,7 @@ com\company\mts\exception\DuplicateAccountException.class
 com\company\mts\exception\InactiveAccountException.class
 com\company\mts\repository\AuthUserRepository.class
 com\company\mts\exception\GlobalExceptionHandler$ErrorResponse.class
+com\company\mts\config\DatabaseSchemaFixer.class
 com\company\mts\controller\AnalyticsController$UserContext.class
 com\company\mts\controller\TransferRequest.class
 com\company\mts\exception\InvalidCredentialsException.class

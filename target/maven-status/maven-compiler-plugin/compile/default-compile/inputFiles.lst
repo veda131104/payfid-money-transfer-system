@@ -1,65 +1,67 @@
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\aspect\LoggingAspect.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\config\CorsConfig.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\config\JwtAuthenticationEntryPoint.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\config\SecurityConfig.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\controller\AccountController.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\controller\AccountSetupController.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\controller\AmountRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\controller\AnalyticsController.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\controller\AuthController.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\controller\CreateAccountRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\controller\RewardController.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\controller\TransferController.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\controller\TransferRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\AccountBalanceDTO.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\AccountSetupRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\AccountSetupResponse.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\AuthResponse.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\CredentialsResponse.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\ForgotPasswordRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\IdempotentTransferRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\LoginRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\LoginResponse.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\ResetPasswordRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\RewardLedgerDTO.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\RewardSummaryDTO.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\SignupRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\TokenRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\TransactionDTO.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\TransferByAccountNumberRequest.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\entity\Account.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\entity\AccountStatus.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\entity\AuthUser.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\entity\BankDetails.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\entity\RewardAccount.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\entity\RewardLedger.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\entity\TransactionLog.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\entity\TransactionStatus.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\entity\TransactionType.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\exception\DuplicateAccountException.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\exception\DuplicateTransactionException.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\exception\DuplicateUserException.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\exception\GlobalExceptionHandler.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\exception\InactiveAccountException.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\exception\InsufficientBalanceException.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\exception\InvalidCredentialsException.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\exception\ResourceNotFoundException.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\Main.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\repository\AccountRepository.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\repository\AuthUserRepository.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\repository\BankDetailsRepository.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\repository\RewardAccountRepository.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\repository\RewardLedgerRepository.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\repository\TransactionLogRepository.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\security\CustomUserDetailsService.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\security\JwtAuthenticationFilter.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\security\JwtTokenProvider.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\service\AccountService.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\service\AnalyticsService.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\service\AuthService.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\service\BankDetailsService.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\service\EmailService.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\service\RewardService.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\service\SnowflakeSyncService.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\service\TransactionService.java
-C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\utils\AccountNumberGenerator.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\aspect\LoggingAspect.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\config\CorsConfig.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\config\DatabaseSchemaFixer.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\config\JwtAuthenticationEntryPoint.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\config\SecurityConfig.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\controller\AccountController.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\controller\AccountSetupController.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\controller\AmountRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\controller\AnalyticsController.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\controller\AuthController.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\controller\CreateAccountRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\controller\RewardController.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\controller\TransferController.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\controller\TransferRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\AccountBalanceDTO.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\AccountSetupRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\AccountSetupResponse.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\AuthResponse.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\CredentialsResponse.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\ForgotPasswordRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\ForgotPasswordResponse.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\IdempotentTransferRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\LoginRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\LoginResponse.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\ResetPasswordRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\RewardLedgerDTO.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\RewardSummaryDTO.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\SignupRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\TokenRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\TransactionDTO.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\dto\TransferByAccountNumberRequest.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\entity\Account.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\entity\AccountStatus.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\entity\AuthUser.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\entity\BankDetails.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\entity\RewardAccount.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\entity\RewardLedger.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\entity\TransactionLog.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\entity\TransactionStatus.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\entity\TransactionType.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\exception\DuplicateAccountException.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\exception\DuplicateTransactionException.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\exception\DuplicateUserException.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\exception\GlobalExceptionHandler.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\exception\InactiveAccountException.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\exception\InsufficientBalanceException.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\exception\InvalidCredentialsException.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\exception\ResourceNotFoundException.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\Main.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\repository\AccountRepository.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\repository\AuthUserRepository.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\repository\BankDetailsRepository.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\repository\RewardAccountRepository.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\repository\RewardLedgerRepository.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\repository\TransactionLogRepository.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\security\CustomUserDetailsService.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\security\JwtAuthenticationFilter.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\security\JwtTokenProvider.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\service\AccountService.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\service\AnalyticsService.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\service\AuthService.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\service\BankDetailsService.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\service\EmailService.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\service\RewardService.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\service\SnowflakeSyncService.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\service\TransactionService.java
+C:\Users\user\Downloads\payfid-money-transfer-system - Copy\src\main\java\com\company\mts\utils\AccountNumberGenerator.java

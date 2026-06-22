@@ -1,0 +1,578 @@
+// Shared fintech SaaS shell — sidebar + header layout
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');
+
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #111827;
+  animation: pageFadeIn 0.22s ease-out;
+}
+
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f7f8fa;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+// ── Sidebar ──────────────────────────────────────────────
+.app-sidebar {
+  width: 248px;
+  flex-shrink: 0;
+  background: #ffffff;
+  border-right: 1px solid #e8eaed;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 200;
+  transition: width 220ms ease-in-out;
+  overflow: hidden;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid #f0f1f3;
+  flex-shrink: 0;
+}
+
+.brand-mark {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, #215a66, #1d3b4f);
+  color: #fefbf6;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #1d3b4f;
+  white-space: nowrap;
+  transition: opacity 220ms ease-in-out;
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.75rem 0.75rem;
+  overflow-y: auto;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  color: #5f6b7a;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background 200ms ease-in-out, color 200ms ease-in-out;
+  position: relative;
+
+  &:hover {
+    background: #f3f4f6;
+    color: #1d3b4f;
+  }
+
+  &.active {
+    background: rgba(29, 59, 79, 0.08);
+    color: #1d3b4f;
+    font-weight: 600;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60%;
+      background: linear-gradient(180deg, #215a66, #6366f1);
+      border-radius: 0 3px 3px 0;
+    }
+  }
+}
+
+.sidebar-icon {
+  width: 1.25rem;
+  text-align: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.sidebar-label {
+  white-space: nowrap;
+  transition: opacity 220ms ease-in-out;
+}
+
+.sidebar-footer {
+  padding: 0.75rem;
+  border-top: 1px solid #f0f1f3;
+  flex-shrink: 0;
+}
+
+.sidebar-link.logout {
+  color: #b91c1c;
+
+  &:hover {
+    background: #fef2f2;
+    color: #991b1b;
+  }
+}
+
+.sidebar-collapse-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5rem 0.75rem 0.75rem;
+  padding: 0.45rem;
+  border-radius: 8px;
+  border: 1px solid #e8eaed;
+  background: #fafafa;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 200ms ease-in-out;
+
+  &:hover {
+    background: #f3f4f6;
+    color: #1d3b4f;
+  }
+}
+
+.sidebar-toggle:checked ~ .app-sidebar {
+  width: 68px;
+
+  .brand-name,
+  .sidebar-label {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
+
+  .sidebar-brand {
+    justify-content: center;
+    padding-inline: 0.75rem;
+  }
+
+  .sidebar-link {
+    justify-content: center;
+    padding-inline: 0.65rem;
+  }
+
+  .sidebar-collapse-btn .collapse-icon {
+    transform: rotate(180deg);
+  }
+}
+
+// ── Main area ────────────────────────────────────────────
+.app-main {
+  flex: 1;
+  margin-left: 248px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 220ms ease-in-out;
+}
+
+.sidebar-toggle:checked ~ .app-main {
+  margin-left: 68px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding: 1rem 1.75rem;
+  background: #ffffff;
+  border-bottom: 1px solid #e8eaed;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-account {
+  text-align: right;
+}
+
+.account-label {
+  margin: 0;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #9ca3af;
+}
+
+.account-name {
+  margin: 0.1rem 0 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1d3b4f;
+}
+
+.profile-btn {
+  border-radius: 10px !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  border-color: #e8eaed !important;
+  color: #1d3b4f !important;
+  transition: background 200ms ease-in-out, border-color 200ms ease-in-out !important;
+
+  &:hover {
+    background: #f3f4f6 !important;
+  }
+}
+
+.page-content {
+  flex: 1;
+  padding: 1.5rem 1.75rem 2rem;
+}
+
+.page-heading {
+  margin-bottom: 1.5rem;
+
+  h1 {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.35rem, 2vw, 1.65rem);
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+}
+
+// ── Shared cards ─────────────────────────────────────────
+.card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(22, 42, 52, 0.04);
+  border: 1px solid #e8eaed;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+  }
+}
+
+.link {
+  border: none;
+  background: none;
+  color: #215a66;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 200ms ease-in-out;
+
+  &:hover { color: #1d3b4f; }
+}
+
+// ── Status chips ─────────────────────────────────────────
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+}
+
+.chip-success {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.chip-failed {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.chip-pending {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+// ── KPI cards ────────────────────────────────────────────
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.kpi-card {
+  padding: 1.15rem 1.25rem;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e8eaed;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 200ms ease-in-out, box-shadow 200ms ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(22, 42, 52, 0.08);
+  }
+}
+
+.kpi-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+
+.kpi-value {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1d3b4f;
+  letter-spacing: -0.02em;
+}
+
+.kpi-primary {
+  background: linear-gradient(135deg, #1d3b4f 0%, #215a66 100%);
+  border-color: transparent;
+
+  .kpi-label { color: rgba(255, 255, 255, 0.7); }
+  .kpi-value  { color: #ffffff; font-size: 1.75rem; }
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(29, 59, 79, 0.25);
+  }
+}
+
+// ── Dashboard split ──────────────────────────────────────
+.dashboard-split {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+// ── VISA widget ──────────────────────────────────────────
+.visa-widget {
+  background: linear-gradient(145deg, #1d3b4f 0%, #215a66 50%, #2d4a6f 100%);
+  padding: 0;
+  overflow: hidden;
+  min-height: 220px;
+  box-shadow: 0 8px 28px rgba(29, 59, 79, 0.22);
+}
+
+.card-glass {
+  height: 100%;
+  min-height: 220px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  margin: 1rem;
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #ffffff;
+  position: relative;
+}
+
+.card-chip {
+  width: 40px;
+  height: 30px;
+  background: linear-gradient(135deg, #e5c185, #c0a060);
+  border-radius: 5px;
+}
+
+.card-number {
+  font-family: 'Inter', monospace;
+  font-size: 1.15rem;
+  letter-spacing: 0.14em;
+  margin: 1.25rem 0;
+}
+
+.card-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.card-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.75;
+  margin: 0 0 0.15rem;
+}
+
+.card-holder,
+.card-expiry {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.card-brand {
+  position: absolute;
+  top: 1.35rem;
+  right: 1.35rem;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+// ── Recent payments list ─────────────────────────────────
+.payments-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.payments-list-header {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ca3af;
+  border-bottom: 1px solid #f0f1f3;
+}
+
+.payment-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f7f8fa;
+  transition: background 200ms ease-in-out;
+
+  &:hover {
+    background: #f9fafb;
+  }
+
+  &:last-child { border-bottom: none; }
+}
+
+.payment-party {
+  margin: 0 0 0.15rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #111827;
+}
+
+.payment-meta {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+.payment-amount {
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: right;
+
+  &.credit { color: #047857; }
+  &.debit  { color: #b91c1c; }
+}
+
+.no-activity {
+  text-align: center;
+  color: #9ca3af;
+  padding: 2.5rem 1rem;
+  font-size: 0.9rem;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 1px dashed #e8eaed;
+}
+
+// ── Responsive ───────────────────────────────────────────
+@media (max-width: 1100px) {
+  .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-split { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    transform: translateX(-100%);
+    transition: transform 220ms ease-in-out;
+  }
+
+  .sidebar-toggle:checked ~ .app-sidebar {
+    transform: translateX(0);
+    width: 248px;
+
+    .brand-name,
+    .sidebar-label {
+      opacity: 1;
+      width: auto;
+    }
+  }
+
+  .app-main,
+  .sidebar-toggle:checked ~ .app-main {
+    margin-left: 0;
+  }
+
+  .kpi-grid { grid-template-columns: 1fr; }
+
+  .payments-list-header { display: none; }
+
+  .payment-row {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+  }
+}

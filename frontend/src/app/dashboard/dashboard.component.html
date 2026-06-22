@@ -1,138 +1,140 @@
-<section class="dashboard-shell">
-  <header class="topbar">
-    <div class="brand">
+<div class="app-layout">
+  <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle" aria-hidden="true" />
+
+  <aside class="app-sidebar">
+    <div class="sidebar-brand">
       <span class="brand-mark">PF</span>
-      <div>
-        <p class="brand-name">PayFid</p>
-        <p class="brand-tag">Transfer Command Center</p>
-      </div>
+      <span class="brand-name">PayFid</span>
     </div>
-    <div class="account">
-      <div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-link" routerLink="/dashboard" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">▦</span>
+        <span class="sidebar-label">Dashboard</span>
+      </a>
+      <a class="sidebar-link" routerLink="/transfer" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">↗</span>
+        <span class="sidebar-label">New Transfer</span>
+      </a>
+      <a class="sidebar-link" routerLink="/history" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">☰</span>
+        <span class="sidebar-label">History</span>
+      </a>
+      <a class="sidebar-link" routerLink="/analytics" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">◫</span>
+        <span class="sidebar-label">Analytics</span>
+      </a>
+      <a class="sidebar-link" routerLink="/rewards" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">★</span>
+        <span class="sidebar-label">Rewards</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button type="button" class="sidebar-link logout" (click)="onLogout()">
+        <span class="sidebar-icon">⎋</span>
+        <span class="sidebar-label">Logout</span>
+      </button>
+      <label for="sidebar-toggle" class="sidebar-collapse-btn" title="Collapse sidebar">
+        <span class="collapse-icon">◀</span>
+      </label>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-header">
+      <div class="header-account">
         <p class="account-label">Account holder</p>
         <p class="account-name">{{ userName }}</p>
       </div>
-      <button class="logout ghost" type="button" mat-stroked-button routerLink="/profile">View Profile</button>
-    </div>
-    <div class="topbar-actions">
-      <button class="ghost" type="button" mat-stroked-button routerLink="/dashboard" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Dashboard</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/history" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/transfer" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/analytics" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/rewards" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Rewards</button>
-      <button class="ghost" type="button" mat-stroked-button (click)="onLogout()">Log out</button>
-    </div>
-  </header>
+      <button class="profile-btn" type="button" mat-stroked-button routerLink="/profile">View Profile</button>
+    </header>
 
-  <main class="dashboard-grid">
-    <mat-card class="card highlights">
-      <h1>{{ isFirstLogin ? 'Welcome, ' : 'Welcome back, ' }}{{ userName }}</h1>
-      <p>Live status of your payout corridors and risk posture.</p>
-      <div class="balance">
-        <p class="balance-label">Current balance</p>
-        <p class="balance-value">{{ balance | currency:'INR':'symbol':'1.2-2' }}</p>
+    <main class="page-content">
+      <div class="page-heading">
+        <h1>{{ isFirstLogin ? 'Welcome, ' : 'Welcome back, ' }}{{ userName }}</h1>
+        <p>Live status of your payout corridors and risk posture.</p>
       </div>
-      <div class="metrics">
-        <div class="metric">
-          <p class="metric-value">{{ processedToday | currency:'INR':'symbol':'1.0-0' }}</p>
-          <p class="metric-label">Processed today</p>
-        </div>
-        <div class="metric">
-          <p class="metric-value">{{ activeTransfers }}</p>
-          <p class="metric-label">Active transfers</p>
-        </div>
-        <div class="metric">
-          <p class="metric-value">1.8%</p>
-          <p class="metric-label">At-risk volume</p>
-        </div>
-      </div>
-    </mat-card>
 
-    <mat-card class="card magic-card">
-      <div class="card-glass">
-        <div class="card-chip"></div>
-        <div class="card-number">{{ cardDetails.number }}</div>
-        <div class="card-info">
-          <div>
-            <p class="card-label">Card Holder</p>
-            <p class="card-holder">{{ cardDetails.holder }}</p>
+      <div class="kpi-grid">
+        <mat-card class="kpi-card kpi-primary">
+          <p class="kpi-label">Current Balance</p>
+          <p class="kpi-value">{{ balance | currency:'INR':'symbol':'1.2-2' }}</p>
+        </mat-card>
+        <mat-card class="kpi-card">
+          <p class="kpi-label">Processed Today</p>
+          <p class="kpi-value">{{ processedToday | currency:'INR':'symbol':'1.0-0' }}</p>
+        </mat-card>
+        <mat-card class="kpi-card">
+          <p class="kpi-label">Active Transfers</p>
+          <p class="kpi-value">{{ activeTransfers }}</p>
+        </mat-card>
+        <mat-card class="kpi-card">
+          <p class="kpi-label">At-risk Volume</p>
+          <p class="kpi-value">1.8%</p>
+        </mat-card>
+      </div>
+
+      <div class="dashboard-split">
+        <mat-card class="card recent-payments">
+          <div class="card-header">
+            <h2>Recent Payments</h2>
+            <a class="link" routerLink="/history">View all</a>
           </div>
-          <div>
-            <p class="card-label">Expires</p>
-            <p class="card-expiry">{{ cardDetails.expiry }}</p>
+          <div class="payments-list">
+            <div class="payments-list-header">
+              <span>Recipient / Sender</span>
+              <span>Status</span>
+              <span>Amount</span>
+              <span></span>
+            </div>
+            @for (txn of recentTransactions; track txn.id) {
+            <div class="payment-row">
+              <div>
+                <p class="payment-party">{{ (getDisplayType(txn) === 'credit' ? txn.fromAccountHolderName :
+                  txn.toAccountHolderName) || 'System' }}</p>
+                <p class="payment-meta">{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}</p>
+              </div>
+              <span class="status-chip"
+                [ngClass]="{
+                  'chip-success': txn.status === 'completed' || txn.status === 'SUCCESS',
+                  'chip-failed': txn.status === 'failed' || txn.status === 'FAILED',
+                  'chip-pending': txn.status === 'pending'
+                }">{{ txn.status | titlecase }}</span>
+              <span class="payment-amount" [ngClass]="getDisplayType(txn)">
+                {{ getTransactionSign(txn) }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
+              </span>
+              <span></span>
+            </div>
+            } @empty {
+            <p class="no-activity">No recent payments found.</p>
+            }
           </div>
-        </div>
-        <div class="card-brand">{{ cardDetails.type }}</div>
-      </div>
-    </mat-card>
+        </mat-card>
 
-
-    <mat-card class="card activity">
-      <div class="card-header">
-        <h2>Recent Payments</h2>
-        <button class="link" routerLink="/history">View all</button>
-      </div>
-      <div class="activity-list small">
-        @for (txn of recentTransactions; track txn.id) {
-        <div class="activity-item">
-          <div class="activity-details">
-            <p class="activity-title">{{ (getDisplayType(txn) === 'credit' ? txn.fromAccountHolderName :
-              txn.toAccountHolderName) || 'System' }}</p>
-            <p class="activity-meta">{{ txn.amount | currency:'INR':'symbol':'1.2-2' }} • {{ txn.status | titlecase }}
-            </p>
+        <mat-card class="visa-widget">
+          <div class="card-glass">
+            <div class="card-brand">{{ cardDetails.type }}</div>
+            <div class="card-chip"></div>
+            <div class="card-number">{{ cardDetails.number }}</div>
+            <div class="card-info">
+              <div>
+                <p class="card-label">Card Holder</p>
+                <p class="card-holder">{{ cardDetails.holder }}</p>
+              </div>
+              <div>
+                <p class="card-label">Expires</p>
+                <p class="card-expiry">{{ cardDetails.expiry }}</p>
+              </div>
+            </div>
           </div>
-          <div class="activity-amount" [ngClass]="getDisplayType(txn)">
-            {{ getTransactionSign(txn) }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
-          </div>
-        </div>
-        } @empty {
-        <p class="no-activity">No recent payments found.</p>
-        }
+        </mat-card>
       </div>
-    </mat-card>
-  </main>
-
-  <nav class="bottom-nav">
-    <button type="button" class="nav-item" mat-button routerLink="/dashboard" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Dashboard</button>
-    <button type="button" class="nav-item" mat-button routerLink="/history" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
-    <button type="button" class="nav-item" mat-button routerLink="/transfer" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
-    <button type="button" class="nav-item" mat-button routerLink="/analytics" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
-    <button type="button" class="nav-item" mat-button routerLink="/rewards" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Rewards</button>
-    <button type="button" class="nav-item logout" mat-button (click)="onLogout()">Log out</button>
-  </nav>
-</section>
-
-<footer class="app-footer">
-  <div class="footer-content">
-    <div class="footer-section">
-      <h4 class="footer-heading">Support</h4>
-      <button type="button" class="footer-link">Security</button>
-      <button type="button" class="footer-link">Preferences</button>
-      <button type="button" class="footer-link">Help & Support</button>
-    </div>
-    <div class="footer-section">
-      <h4 class="footer-heading">Legal</h4>
-      <button type="button" class="footer-link">Privacy Policy</button>
-      <button type="button" class="footer-link">Terms & Conditions</button>
-      <button type="button" class="footer-link">Cookie Policy</button>
-    </div>
-    <div class="footer-section">
-      <h4 class="footer-heading">Contact</h4>
-      <p class="footer-text">Email: support@payfid.com</p>
-      <p class="footer-text">Phone: +91 1800 123 4567</p>
-    </div>
+    </main>
   </div>
-  <div class="footer-bottom">
-    <p class="footer-copyright">&copy; 2026 PayFid. All rights reserved.</p>
-  </div>
-</footer>
+</div>

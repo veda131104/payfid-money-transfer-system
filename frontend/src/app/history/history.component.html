@@ -1,171 +1,163 @@
-<section class="dashboard-shell">
-  <header class="topbar">
-    <div class="brand">
+<div class="app-layout">
+  <input type="checkbox" id="sidebar-toggle" class="sidebar-toggle" aria-hidden="true" />
+
+  <aside class="app-sidebar">
+    <div class="sidebar-brand">
       <span class="brand-mark">PF</span>
-      <div>
-        <p class="brand-name">PayFid</p>
-        <p class="brand-tag">Transfer Command Center</p>
-      </div>
+      <span class="brand-name">PayFid</span>
     </div>
-    <div class="account">
-      <div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link" routerLink="/dashboard" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">▦</span><span class="sidebar-label">Dashboard</span>
+      </a>
+      <a class="sidebar-link" routerLink="/transfer" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">↗</span><span class="sidebar-label">New Transfer</span>
+      </a>
+      <a class="sidebar-link" routerLink="/history" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">☰</span><span class="sidebar-label">History</span>
+      </a>
+      <a class="sidebar-link" routerLink="/analytics" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">◫</span><span class="sidebar-label">Analytics</span>
+      </a>
+      <a class="sidebar-link" routerLink="/rewards" routerLinkActive="active"
+        [routerLinkActiveOptions]="routerLinkActiveOptions">
+        <span class="sidebar-icon">★</span><span class="sidebar-label">Rewards</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button type="button" class="sidebar-link logout" (click)="onLogout()">
+        <span class="sidebar-icon">⎋</span><span class="sidebar-label">Logout</span>
+      </button>
+      <label for="sidebar-toggle" class="sidebar-collapse-btn" title="Collapse sidebar">
+        <span class="collapse-icon">◀</span>
+      </label>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-header">
+      <div class="header-account">
         <p class="account-label">Account holder</p>
         <p class="account-name">{{ userName }}</p>
       </div>
-      <button class="logout ghost" type="button" mat-stroked-button routerLink="/profile">View Profile</button>
-    </div>
-    <div class="topbar-actions">
-      <button class="ghost" type="button" mat-stroked-button routerLink="/dashboard" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Dashboard</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/history" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/transfer" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/analytics" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
-      <button class="ghost" type="button" mat-stroked-button routerLink="/rewards" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">Rewards</button>
-      <button class="ghost" type="button" mat-stroked-button (click)="onLogout()">Log out</button>
-    </div>
-  </header>
+      <button class="profile-btn" type="button" mat-stroked-button routerLink="/profile">View Profile</button>
+    </header>
 
-  <main class="history-grid">
-    <mat-card class="card balance-card">
-      <div class="balance-section">
-        <p class="balance-label">Current Balance</p>
-        <p class="balance-value">₹{{ currentBalance }}</p>
+    <main class="page-content">
+      <div class="page-heading">
+        <h1>Transaction History</h1>
+        <p>View and filter all your past transfers</p>
       </div>
-    </mat-card>
 
-    <mat-card class="card transactions-card">
-      <div class="transactions-header-row">
-        <h2 class="transactions-header">Transaction History</h2>
-        <div class="filters">
-          <button class="filter-btn" [class.active]="currentFilter === 'all'" (click)="setFilter('all')">All</button>
-          <button class="filter-btn" [class.active]="currentFilter === 'today'"
-            (click)="setFilter('today')">Today</button>
-          <button class="filter-btn" [class.active]="currentFilter === 'month'" (click)="setFilter('month')">This
-            Month</button>
-          <button class="filter-btn" [class.active]="currentFilter === 'year'" (click)="setFilter('year')">This
-            Year</button>
-        </div>
+      <div class="kpi-grid history-kpi">
+        <mat-card class="kpi-card kpi-primary">
+          <p class="kpi-label">Current Balance</p>
+          <p class="kpi-value">₹{{ currentBalance }}</p>
+        </mat-card>
       </div>
-      <div class="transactions-list">
-        <div *ngFor="let transaction of displayedTransactions; let i = index" class="transaction-item"
-          [ngClass]="[ getDisplayType(transaction), transaction.status === 'failed' ? 'failed' : '' ]"
-          (click)="openTransactionDetail(transaction, i)">
-          <div class="transaction-arrow"
-            [ngClass]="[ getDisplayType(transaction), transaction.status === 'failed' ? 'failed' : '' ]">
-            <span class="arrow-icon" *ngIf="transaction.status !== 'failed'">{{ getDisplayType(transaction) === 'credit'
-              ? '←' : '→' }}</span>
-          </div>
-          <div class="transaction-info">
-            <p class="transaction-account">{{ transaction.accountNumber }}</p>
-            <p class="transaction-date">{{ transaction.date | date: 'MMM dd, yyyy' }}</p>
-          </div>
-          <div class="transaction-amount"
-            [ngClass]="transaction.status === 'failed' ? 'failed' : getDisplayType(transaction)">
-            <ng-container *ngIf="transaction.status === 'failed'">₹{{ transaction.amount }}</ng-container>
-            <ng-container *ngIf="transaction.status !== 'failed'">{{ getTransactionSign(transaction) }}₹{{
-              transaction.amount }}</ng-container>
+
+      <mat-card class="card txn-table-card">
+        <div class="txn-toolbar">
+          <h2>All Transactions</h2>
+          <div class="filters">
+            <button class="filter-btn" [class.active]="currentFilter === 'all'" (click)="setFilter('all')">All</button>
+            <button class="filter-btn" [class.active]="currentFilter === 'today'" (click)="setFilter('today')">Today</button>
+            <button class="filter-btn" [class.active]="currentFilter === 'month'" (click)="setFilter('month')">This Month</button>
+            <button class="filter-btn" [class.active]="currentFilter === 'year'" (click)="setFilter('year')">This Year</button>
           </div>
         </div>
-      </div>
-      <button *ngIf="hasMoreTransactions" class="load-more-button" (click)="loadMore()">Load More</button>
-    </mat-card>
-  </main>
 
-  <!-- Modal Overlay -->
-  <div *ngIf="selectedTransaction" class="modal-overlay" (click)="closeTransactionDetail()"></div>
+        <div class="txn-table">
+          <div class="txn-table-head">
+            <span>Account</span>
+            <span>Date</span>
+            <span>Type</span>
+            <span>Status</span>
+            <span class="col-amount">Amount</span>
+          </div>
 
-  <!-- Detailed Transaction Modal -->
-  <div *ngIf="selectedTransaction" class="transaction-detail-modal">
-    <button class="close-button" (click)="closeTransactionDetail()">✕</button>
-    <div class="detail-content">
-      <div class="detail-header"
+          <div *ngFor="let transaction of displayedTransactions; let i = index"
+            class="txn-table-row"
+            [ngClass]="getDisplayType(transaction)"
+            (click)="openTransactionDetail(transaction, i)">
+            <span class="txn-account">{{ transaction.accountNumber }}</span>
+            <span class="txn-date">{{ transaction.date | date: 'MMM dd, yyyy' }}</span>
+            <span class="txn-type">{{ getDisplayType(transaction) === 'credit' ? 'Received' : 'Sent' }}</span>
+            <span class="status-chip"
+              [ngClass]="{
+                'chip-success': transaction.status === 'completed' || transaction.status === 'SUCCESS',
+                'chip-failed': transaction.status === 'failed' || transaction.status === 'FAILED',
+                'chip-pending': transaction.status === 'pending'
+              }">{{ transaction.status | titlecase }}</span>
+            <span class="txn-amount col-amount"
+              [ngClass]="transaction.status === 'failed' || transaction.status === 'FAILED' ? 'failed' : getDisplayType(transaction)">
+              <ng-container *ngIf="transaction.status === 'failed' || transaction.status === 'FAILED'">₹{{ transaction.amount }}</ng-container>
+              <ng-container *ngIf="transaction.status !== 'failed' && transaction.status !== 'FAILED'">{{ getTransactionSign(transaction) }}₹{{ transaction.amount }}</ng-container>
+            </span>
+          </div>
+
+          <p *ngIf="displayedTransactions.length === 0" class="no-activity">No transactions found for this filter.</p>
+        </div>
+
+        <button *ngIf="hasMoreTransactions" class="load-more-button" (click)="loadMore()">Load More</button>
+      </mat-card>
+    </main>
+  </div>
+</div>
+
+<!-- Modal Overlay -->
+<div *ngIf="selectedTransaction" class="modal-overlay" (click)="closeTransactionDetail()"></div>
+
+<!-- Detailed Transaction Modal -->
+<div *ngIf="selectedTransaction" class="transaction-detail-modal">
+  <button class="close-button" (click)="closeTransactionDetail()">✕</button>
+  <div class="detail-content">
+    <div class="detail-header"
+      [ngClass]="[ getDisplayType(selectedTransaction), selectedTransaction.status === 'failed' ? 'failed' : '' ]">
+      <div class="detail-arrow"
         [ngClass]="[ getDisplayType(selectedTransaction), selectedTransaction.status === 'failed' ? 'failed' : '' ]">
-        <div class="detail-arrow"
-          [ngClass]="[ getDisplayType(selectedTransaction), selectedTransaction.status === 'failed' ? 'failed' : '' ]">
-          <span class="arrow-icon-large" *ngIf="selectedTransaction.status !== 'failed'">{{
-            getDisplayType(selectedTransaction) === 'credit' ? '←' : '→' }}</span>
-        </div>
-        <p class="detail-type">{{ getDisplayType(selectedTransaction) === 'credit' ? 'Money Received' : 'Money Sent' }}
-        </p>
+        <span class="arrow-icon-large" *ngIf="selectedTransaction.status !== 'failed'">{{
+          getDisplayType(selectedTransaction) === 'credit' ? '←' : '→' }}</span>
       </div>
-      <div class="detail-info">
-        <p class="detail-amount"
-          [ngClass]="selectedTransaction.status === 'failed' ? 'failed' : getDisplayType(selectedTransaction)">
-          <ng-container *ngIf="selectedTransaction.status === 'failed'">₹{{ selectedTransaction.amount }}</ng-container>
-          <ng-container *ngIf="selectedTransaction.status !== 'failed'">{{ getTransactionSign(selectedTransaction) }}₹{{
-            selectedTransaction.amount }}</ng-container>
-        </p>
-        <div class="detail-grid">
-          <div class="detail-item">
-            <p class="detail-label">Account Number</p>
-            <p class="detail-value">{{ selectedTransaction.accountNumber }}</p>
-          </div>
-          <div class="detail-item">
-            <p class="detail-label">Date</p>
-            <p class="detail-value">{{ selectedTransaction.date | date: 'MMM dd, yyyy' }}</p>
-          </div>
-          <div class="detail-item">
-            <p class="detail-label">Time</p>
-            <p class="detail-value">{{ selectedTransaction.date | date: 'hh:mm a' }}</p>
-          </div>
-          <div class="detail-item">
-            <p class="detail-label">Status</p>
-            <p class="detail-value" [ngClass]="'status-' + selectedTransaction.status">{{ selectedTransaction.status |
-              titlecase }}</p>
-          </div>
-          <div class="detail-item">
-            <p class="detail-label">Reference ID</p>
-            <p class="detail-value">{{ selectedTransaction.referenceId }}</p>
-          </div>
-          <div class="detail-item" *ngIf="selectedTransaction.description">
-            <p class="detail-label">Description</p>
-            <p class="detail-value">{{ selectedTransaction.description }}</p>
-          </div>
+      <p class="detail-type">{{ getDisplayType(selectedTransaction) === 'credit' ? 'Money Received' : 'Money Sent' }}</p>
+    </div>
+    <div class="detail-info">
+      <p class="detail-amount"
+        [ngClass]="selectedTransaction.status === 'failed' ? 'failed' : getDisplayType(selectedTransaction)">
+        <ng-container *ngIf="selectedTransaction.status === 'failed'">₹{{ selectedTransaction.amount }}</ng-container>
+        <ng-container *ngIf="selectedTransaction.status !== 'failed'">{{ getTransactionSign(selectedTransaction) }}₹{{
+          selectedTransaction.amount }}</ng-container>
+      </p>
+      <div class="detail-grid">
+        <div class="detail-item">
+          <p class="detail-label">Account Number</p>
+          <p class="detail-value">{{ selectedTransaction.accountNumber }}</p>
+        </div>
+        <div class="detail-item">
+          <p class="detail-label">Date</p>
+          <p class="detail-value">{{ selectedTransaction.date | date: 'MMM dd, yyyy' }}</p>
+        </div>
+        <div class="detail-item">
+          <p class="detail-label">Time</p>
+          <p class="detail-value">{{ selectedTransaction.date | date: 'hh:mm a' }}</p>
+        </div>
+        <div class="detail-item">
+          <p class="detail-label">Status</p>
+          <p class="detail-value" [ngClass]="'status-' + selectedTransaction.status">{{ selectedTransaction.status | titlecase }}</p>
+        </div>
+        <div class="detail-item">
+          <p class="detail-label">Reference ID</p>
+          <p class="detail-value">{{ selectedTransaction.referenceId }}</p>
+        </div>
+        <div class="detail-item" *ngIf="selectedTransaction.description">
+          <p class="detail-label">Description</p>
+          <p class="detail-value">{{ selectedTransaction.description }}</p>
         </div>
       </div>
     </div>
   </div>
-
-  <nav class="bottom-nav">
-    <button type="button" class="nav-item" mat-button routerLink="/dashboard" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Dashboard</button>
-    <button type="button" class="nav-item" mat-button routerLink="/history" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">History</button>
-    <button type="button" class="nav-item" mat-button routerLink="/transfer" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">New Transfer</button>
-    <button type="button" class="nav-item" mat-button routerLink="/analytics" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Analytics</button>
-    <button type="button" class="nav-item" mat-button routerLink="/rewards" routerLinkActive="active"
-      [routerLinkActiveOptions]="routerLinkActiveOptions">Rewards</button>
-    <button type="button" class="nav-item logout" mat-button (click)="onLogout()">Log out</button>
-  </nav>
-</section>
-
-<footer class="app-footer">
-  <div class="footer-content">
-    <div class="footer-section">
-      <h4 class="footer-heading">Support</h4>
-      <button type="button" class="footer-link">Security</button>
-      <button type="button" class="footer-link">Preferences</button>
-      <button type="button" class="footer-link">Help & Support</button>
-    </div>
-    <div class="footer-section">
-      <h4 class="footer-heading">Legal</h4>
-      <button type="button" class="footer-link">Privacy Policy</button>
-      <button type="button" class="footer-link">Terms & Conditions</button>
-      <button type="button" class="footer-link">Cookie Policy</button>
-    </div>
-    <div class="footer-section">
-      <h4 class="footer-heading">Contact</h4>
-      <p class="footer-text">Email: support@payfid.com</p>
-      <p class="footer-text">Phone: +91 1800 123 4567</p>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p class="footer-copyright">&copy; 2026 PayFid. All rights reserved.</p>
-  </div>
-</footer>
+</div>

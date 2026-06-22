@@ -164,6 +164,14 @@
   border-color: var(--teal-700);
 }
 
+.field ::ng-deep .mat-mdc-text-field-wrapper {
+  transition: box-shadow var(--pf-transition, 200ms ease-in-out);
+}
+
+.field ::ng-deep .mdc-text-field--focused .mat-mdc-text-field-wrapper {
+  box-shadow: 0 0 0 3px rgba(28, 93, 94, 0.12);
+}
+
 .link {
   border: none;
   background: none;
