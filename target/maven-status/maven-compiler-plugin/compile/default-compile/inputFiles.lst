@@ -1,5 +1,6 @@
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\aspect\LoggingAspect.java
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\config\CorsConfig.java
+C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\config\DatabaseSchemaFixer.java
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\config\JwtAuthenticationEntryPoint.java
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\config\SecurityConfig.java
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\controller\AccountController.java
@@ -17,6 +18,7 @@ C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\com
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\AuthResponse.java
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\CredentialsResponse.java
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\ForgotPasswordRequest.java
+C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\ForgotPasswordResponse.java
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\IdempotentTransferRequest.java
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\LoginRequest.java
 C:\Users\user\Desktop\project\payfid-money-transfer-system\src\main\java\com\company\mts\dto\LoginResponse.java

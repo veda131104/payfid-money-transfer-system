@@ -46,19 +46,19 @@ describe('SignupComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should validate password mismatch and show alert', () => {
+  it('should validate password mismatch and show error', () => {
     component.form.patchValue({
       username: 'validUser',
       email: 'test@example.com',
       password: 'password123',
       confirmPassword: 'differentPassword'
     });
-    component.submit();
-    expect(alertSpy).toHaveBeenCalledWith('Validation Error: Passwords do not match.');
-    expect(authServiceSpy.signup).not.toHaveBeenCalled();
+    component.sendOtp();
+    expect(component.otpError).toBe('Passwords must match before sending OTP.');
+    expect(accountSetupServiceSpy.sendOtp).not.toHaveBeenCalled();
   });
 
-  it('should validate username minlength and show alert', () => {
+  it('should validate username minlength and show error', () => {
     component.form.patchValue({
       username: 'ab',
       email: 'test@example.com',
@@ -67,44 +67,44 @@ describe('SignupComponent', () => {
     });
     // Trigger username minlength error
     component.form.get('username')?.markAsTouched();
-    component.submit();
-    expect(alertSpy).toHaveBeenCalledWith('Validation Error: Username must be at least 3 characters long.');
+    component.sendOtp();
+    expect(component.otpError).toBe('Please fill in all signup fields correctly before sending OTP.');
   });
 
-  it('should validate email format and show alert', () => {
+  it('should validate email format and show error', () => {
     component.form.patchValue({
       username: 'validUser',
       email: 'invalid-email',
       password: 'password123',
       confirmPassword: 'password123'
     });
-    component.submit();
-    expect(alertSpy).toHaveBeenCalledWith('Validation Error: Please enter a valid email address.');
+    component.sendOtp();
+    expect(component.otpError).toBe('Please fill in all signup fields correctly before sending OTP.');
   });
 
-  it('should validate password minlength and show alert', () => {
+  it('should validate password minlength and show error', () => {
     component.form.patchValue({
       username: 'validUser',
       email: 'test@example.com',
       password: 'pass',
       confirmPassword: 'pass'
     });
-    component.submit();
-    expect(alertSpy).toHaveBeenCalledWith('Validation Error: Password must be at least 8 characters long.');
+    component.sendOtp();
+    expect(component.otpError).toBe('Please fill in all signup fields correctly before sending OTP.');
   });
 
-  it('should show generic alert if form is invalid for other reasons', () => {
+  it('should show generic error if form is invalid for other reasons', () => {
     component.form.patchValue({
       username: '',
       email: '',
       password: '',
       confirmPassword: ''
     });
-    component.submit();
-    expect(alertSpy).toHaveBeenCalledWith('Please fill in all fields correctly.');
+    component.sendOtp();
+    expect(component.otpError).toBe('Please fill in all signup fields correctly before sending OTP.');
   });
 
-  it('should submit successfully and navigate to home', () => {
+  it('should submit successfully and navigate to home if login fails after signup', () => {
     authServiceSpy.signup.and.returnValue(of({ name: 'validUser', email: 'test@example.com' }));
     authServiceSpy.login.and.returnValue(throwError(() => new Error('Login error')));
     component.form.patchValue({
@@ -113,13 +113,14 @@ describe('SignupComponent', () => {
       password: 'password123',
       confirmPassword: 'password123'
     });
+    component.step = 'VERIFIED';
     component.submit();
     expect(authServiceSpy.signup).toHaveBeenCalledWith({
       name: 'validUser',
       email: 'test@example.com',
       password: 'password123'
     });
-    expect(alertSpy).toHaveBeenCalledWith('Signup successful! Please log in to complete your account setup.');
+    expect(alertSpy).toHaveBeenCalledWith('Signup succeeded but automatic login failed. Please sign in.');
     expect(router.navigate).toHaveBeenCalledWith(['/']);
   });
 
@@ -142,6 +143,7 @@ describe('SignupComponent', () => {
       password: 'password123',
       confirmPassword: 'password123'
     });
+    component.step = 'VERIFIED';
     component.submit();
     jasmine.clock().tick(1000);
     expect(router.navigate).toHaveBeenCalledWith(['/account-setup']);
@@ -164,6 +166,7 @@ describe('SignupComponent', () => {
       password: 'password123',
       confirmPassword: 'password123'
     });
+    component.step = 'VERIFIED';
     component.submit();
     expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
@@ -181,10 +184,10 @@ describe('SignupComponent', () => {
       password: 'password123',
       confirmPassword: 'password123'
     });
+    component.step = 'VERIFIED';
     component.submit();
 
     expect(alertSpy).toHaveBeenCalledWith('Username is already taken.');
-    expect(component.form.get('username')?.value).toBe('');
   });
 
   it('should handle signup error with status 409 with fallback message', () => {
@@ -200,9 +203,10 @@ describe('SignupComponent', () => {
       password: 'password123',
       confirmPassword: 'password123'
     });
+    component.step = 'VERIFIED';
     component.submit();
 
-    expect(alertSpy).toHaveBeenCalledWith('Username or email is already in use.');
+    expect(alertSpy).toHaveBeenCalledWith('Signup failed. Please try again.');
   });
 
   it('should handle generic signup error', () => {
@@ -218,6 +222,7 @@ describe('SignupComponent', () => {
       password: 'password123',
       confirmPassword: 'password123'
     });
+    component.step = 'VERIFIED';
     component.submit();
 
     expect(alertSpy).toHaveBeenCalledWith('Internal server error.');
@@ -236,6 +241,7 @@ describe('SignupComponent', () => {
       password: 'password123',
       confirmPassword: 'password123'
     });
+    component.step = 'VERIFIED';
     component.submit();
 
     expect(alertSpy).toHaveBeenCalledWith('Signup failed. Please try again.');

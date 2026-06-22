@@ -120,6 +120,7 @@ describe('RewardsComponent', () => {
     accountSetupServiceSpy.getAccountByUser.and.returnValue(of({ accountNumber: '111122223333' }));
     accountSetupServiceSpy.getAccountByNumber.and.returnValue(of({ id: 99 }));
     rewardServiceSpy.initializeRewardAccount.and.returnValue(throwError(() => new Error('Init error')));
+    spyOn(console, 'error');
 
     fixture.detectChanges();
 
@@ -139,6 +140,7 @@ describe('RewardsComponent', () => {
       updatedAt: '2026-01-01'
     }));
     rewardServiceSpy.getRewardHistory.and.returnValue(throwError(() => new Error('History error')));
+    spyOn(console, 'error');
 
     fixture.detectChanges();
 
