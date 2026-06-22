@@ -1,7 +1,7 @@
 -- ==========================================
 -- SAMPLE DATA FOR BANK_DETAILS (25 ROWS)
 -- ==========================================
-INSERT INTO bank_details (account_number, bank_name, ifsc_code, branch_name, address, email, contact, user_name, credit_card_number, cvv, expiry_date, upi_id, pin, created_at) VALUES
+INSERT INTO bank_details (account_number, bank_name, ifsc_code, branch_name, address, email, contact, user_name, credit_card_number, cvv, expiry_date, upi_id, pin, created_on) VALUES
 ('100000000001', 'HDFC Bank', 'HDFC0001234', 'Mumbai Main', 'Marine Drive, Mumbai', 'amit.sharma@payfid.com', '9876543210', 'amit_sharma', '4111222233334444', '123', '12/28', 'amit@fihdfc', '1234', NOW()),
 ('100000000002', 'ICICI Bank', 'ICIC0005678', 'Bangalore Koramangala', '100ft Road, Bangalore', 'priya.nair@payfid.com', '9823456789', 'priya_nair', '4222333344445555', '456', '06/27', 'priya@icici', '5678', NOW()),
 ('100000000003', 'State Bank of India', 'SBIN0009012', 'Delhi Connaught Place', 'CP, New Delhi', 'rahul.verma@payfid.com', '9811223344', 'rahul_verma', '4333444455556666', '789', '09/26', 'rahul@oksbi', '9012', NOW()),
@@ -31,7 +31,7 @@ INSERT INTO bank_details (account_number, bank_name, ifsc_code, branch_name, add
 -- ==========================================
 -- SAMPLE DATA FOR ACCOUNTS (25 ROWS)
 -- ==========================================
-INSERT INTO accounts (account_number, holder_name, balance, status, created_at) VALUES
+INSERT INTO accounts (account_number, holder_name, balance, status, created_on) VALUES
 ('100000000001', 'Amit Sharma', 15000.50, 'ACTIVE', NOW()),
 ('100000000002', 'Priya Nair', 22400.00, 'ACTIVE', NOW()),
 ('100000000003', 'Rahul Verma', 8900.25, 'ACTIVE', NOW()),

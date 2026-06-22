@@ -11,13 +11,13 @@ desc TRANSACTION_LOGS [42001-224]
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]desc table TRANSACTION_LOGS"; expected "DELETE, DROP"; SQL statement:
 desc table TRANSACTION_LOGS [42001-224]
 2026-02-15 23:08:13.977602+05:30 jdbc[13]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "-- 3. Create the Bank Profile Details\000d\000aINSERT INTO BANK_DETAILS (ACCOUNT_NUMBER, USER_NAME, EMAIL, ADDRESS, BRANCH_NAME, BANK_NAME, CREDIT_CARD_NUMBER, EXPIRY_DATE, PIN, CREATED_AT, IFSC_CODE, CONTACT, UPI_ID) \000d\000aVALUES ('112233445566', 'shashini', 'shashinivasudevan202004@gmail.com', 'Thoraipakkam', 'Karapakkam', 'SBI', '0328579837', '09/27', '1234', CURRENT_TIMESTAMP(),SBI009, 9360949613, shashinivasudevan202004[*]@sibi)"; expected "(, ., [, ., ::, AT, FORMAT, *, /, %, +, -, ||, NOT, IS, ILIKE, REGEXP, AND, OR, ,, )"; SQL statement:
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "-- 3. Create the Bank Profile Details\000d\000aINSERT INTO BANK_DETAILS (ACCOUNT_NUMBER, USER_NAME, EMAIL, ADDRESS, BRANCH_NAME, BANK_NAME, CREDIT_CARD_NUMBER, EXPIRY_DATE, PIN, created_on, IFSC_CODE, CONTACT, UPI_ID) \000d\000aVALUES ('112233445566', 'shashini', 'shashinivasudevan202004@gmail.com', 'Thoraipakkam', 'Karapakkam', 'SBI', '0328579837', '09/27', '1234', CURRENT_TIMESTAMP(),SBI009, 9360949613, shashinivasudevan202004[*]@sibi)"; expected "(, ., [, ., ::, AT, FORMAT, *, /, %, +, -, ||, NOT, IS, ILIKE, REGEXP, AND, OR, ,, )"; SQL statement:
 -- 3. Create the Bank Profile Details
-INSERT INTO BANK_DETAILS (ACCOUNT_NUMBER, USER_NAME, EMAIL, ADDRESS, BRANCH_NAME, BANK_NAME, CREDIT_CARD_NUMBER, EXPIRY_DATE, PIN, CREATED_AT, IFSC_CODE, CONTACT, UPI_ID) 
+INSERT INTO BANK_DETAILS (ACCOUNT_NUMBER, USER_NAME, EMAIL, ADDRESS, BRANCH_NAME, BANK_NAME, CREDIT_CARD_NUMBER, EXPIRY_DATE, PIN, created_on, IFSC_CODE, CONTACT, UPI_ID) 
 VALUES ('112233445566', 'shashini', 'shashinivasudevan202004@gmail.com', 'Thoraipakkam', 'Karapakkam', 'SBI', '0328579837', '09/27', '1234', CURRENT_TIMESTAMP(),SBI009, 9360949613, shashinivasudevan202004@sibi) [42001-224]
 2026-02-15 23:08:21.502826+05:30 jdbc[13]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]NSERT INTO BANK_DETAILS (ACCOUNT_NUMBER, USER_NAME, EMAIL, ADDRESS, BRANCH_NAME, BANK_NAME, CREDIT_CARD_NUMBER, EXPIRY_DATE, PIN, CREATED_AT, IFSC_CODE, CONTACT, UPI_ID) \000d\000aVALUES ('112233445566', 'shashini', 'shashinivasudevan202004@gmail.com', 'Thoraipakkam', 'Karapakkam', 'SBI', '0328579837', '09/27', '1234', CURRENT_TIMESTAMP(),SBI009, 9360949613, shashinivasudevan202004@sibi)"; SQL statement:
-NSERT INTO BANK_DETAILS (ACCOUNT_NUMBER, USER_NAME, EMAIL, ADDRESS, BRANCH_NAME, BANK_NAME, CREDIT_CARD_NUMBER, EXPIRY_DATE, PIN, CREATED_AT, IFSC_CODE, CONTACT, UPI_ID) 
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "[*]NSERT INTO BANK_DETAILS (ACCOUNT_NUMBER, USER_NAME, EMAIL, ADDRESS, BRANCH_NAME, BANK_NAME, CREDIT_CARD_NUMBER, EXPIRY_DATE, PIN, created_on, IFSC_CODE, CONTACT, UPI_ID) \000d\000aVALUES ('112233445566', 'shashini', 'shashinivasudevan202004@gmail.com', 'Thoraipakkam', 'Karapakkam', 'SBI', '0328579837', '09/27', '1234', CURRENT_TIMESTAMP(),SBI009, 9360949613, shashinivasudevan202004@sibi)"; SQL statement:
+NSERT INTO BANK_DETAILS (ACCOUNT_NUMBER, USER_NAME, EMAIL, ADDRESS, BRANCH_NAME, BANK_NAME, CREDIT_CARD_NUMBER, EXPIRY_DATE, PIN, created_on, IFSC_CODE, CONTACT, UPI_ID) 
 VALUES ('112233445566', 'shashini', 'shashinivasudevan202004@gmail.com', 'Thoraipakkam', 'Karapakkam', 'SBI', '0328579837', '09/27', '1234', CURRENT_TIMESTAMP(),SBI009, 9360949613, shashinivasudevan202004@sibi) [42000-224]
 2026-02-15 23:42:38.175516+05:30 jdbc[13]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "ROLE" not found; SQL statement:
@@ -83,7 +83,7 @@ UPDATE AUTH_USERS SET ROLE = 'ADMIN' WHERE NAME = 'veda' [42122-224]
 	at java.base/java.lang.Thread.run(Thread.java:840)
 2026-02-15 23:46:04.680332+05:30 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "AU1_0.FIRST_LOGIN" not found; SQL statement:
-select au1_0.id,au1_0.created_at,au1_0.email,au1_0.first_login,au1_0.name,au1_0.password,au1_0.recovery_token,au1_0.recovery_token_expiry,au1_0.remember_token,au1_0.remember_token_expiry,au1_0.role from auth_users au1_0 where au1_0.remember_token=? [42122-224]
+select au1_0.id,au1_0.created_on,au1_0.email,au1_0.first_login,au1_0.name,au1_0.password,au1_0.recovery_token,au1_0.recovery_token_expiry,au1_0.remember_token,au1_0.remember_token_expiry,au1_0.role from auth_users au1_0 where au1_0.remember_token=? [42122-224]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	at org.h2.message.DbException.get(DbException.java:223)
@@ -245,7 +245,7 @@ select au1_0.id,au1_0.created_at,au1_0.email,au1_0.first_login,au1_0.name,au1_0.
 	at java.base/java.lang.Thread.run(Thread.java:840)
 2026-02-15 23:47:04.651914+05:30 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "AU1_0.FIRST_LOGIN" not found; SQL statement:
-select au1_0.id,au1_0.created_at,au1_0.email,au1_0.first_login,au1_0.name,au1_0.password,au1_0.recovery_token,au1_0.recovery_token_expiry,au1_0.remember_token,au1_0.remember_token_expiry,au1_0.role from auth_users au1_0 where upper(au1_0.name)=upper(?) [42122-224]
+select au1_0.id,au1_0.created_on,au1_0.email,au1_0.first_login,au1_0.name,au1_0.password,au1_0.recovery_token,au1_0.recovery_token_expiry,au1_0.remember_token,au1_0.remember_token_expiry,au1_0.role from auth_users au1_0 where upper(au1_0.name)=upper(?) [42122-224]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	at org.h2.message.DbException.get(DbException.java:223)

@@ -44,6 +44,7 @@ public class BankDetails {
     @Column(length = 4)
     private String pin;
 
+    @Column(name = "created_on")
     private LocalDateTime createdAt;
     private LocalDateTime lastUpdated;
 

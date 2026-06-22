@@ -30,7 +30,7 @@ public class Account {
     @Version
     private Integer version;
 
-    @Column(nullable = false)
+    @Column(name = "created_on", nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime lastUpdated;
