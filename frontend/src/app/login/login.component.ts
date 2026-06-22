@@ -53,7 +53,11 @@ export class LoginComponent {
         } else {
           localStorage.removeItem('remember_token');
         }
-        this.router.navigate(['/dashboard']);
+        if (res.firstLogin) {
+          this.router.navigate(['/account-setup']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (err) => {
         alert('Invalid username or password.');

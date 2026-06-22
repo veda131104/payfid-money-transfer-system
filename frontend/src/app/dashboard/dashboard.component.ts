@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
   processedToday = 0;
   activeTransfers = 0;
   recentTransactions: Transaction[] = [];
+  isFirstLogin = false;
 
   cardDetails = {
     number: '**** **** **** ****',
@@ -106,6 +107,23 @@ export class DashboardComponent implements OnInit {
     if (!num) return '**** **** **** ****';
     const last4 = num.slice(-4);
     return `**** **** **** ${last4}`;
+  }
+
+  getDisplayType(txn: Transaction): string {
+    // If we sent money, it's a debit (red). If we received, it's credit (green).
+    // Let's assume if it's 'credit' or we are the receiver, it's credit.
+    if (txn.type === 'credit') return 'credit';
+    if (txn.type === 'debit') return 'debit';
+
+    const currentUser = this.authService.getCurrentUser();
+    if (currentUser && txn.toAccountHolderName === currentUser.name) {
+      return 'credit';
+    }
+    return 'debit';
+  }
+
+  getTransactionSign(txn: Transaction): string {
+    return this.getDisplayType(txn) === 'credit' ? '+' : '-';
   }
 
   onLogout(): void {

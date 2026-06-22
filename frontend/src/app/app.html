@@ -1,1 +1,9 @@
 <router-outlet />
+
+<div class="session-expired-overlay" *ngIf="sessionExpired()">
+  <div class="session-expired-dialog">
+    <h2>Session replaced</h2>
+    <p>{{ sessionMessage() }}</p>
+    <p class="session-expired-footer">You will be redirected to the home page shortly.</p>
+  </div>
+</div>

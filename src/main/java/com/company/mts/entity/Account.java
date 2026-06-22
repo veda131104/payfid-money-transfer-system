@@ -14,7 +14,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 12)
+    @Column(unique = true, nullable = false, length = 18)
     private String accountNumber;
 
     @Column(nullable = false)
@@ -30,7 +30,7 @@ public class Account {
     @Version
     private Integer version;
 
-    @Column(nullable = false)
+    @Column(name = "created_on", nullable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime lastUpdated;

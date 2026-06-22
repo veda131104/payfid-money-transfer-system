@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
-import { describe, it, beforeEach, afterEach, expect } from 'vitest';
 
 describe('AuthService', () => {
     let service: AuthService;
@@ -38,7 +37,7 @@ describe('AuthService', () => {
     });
 
     it('should signup', () => {
-        const mockResponse = { name: 'test' };
+        const mockResponse = { name: 'test', email: 'test@test.com' };
         const payload = { name: 'test', password: 'pass', email: 'test@test.com' };
         service.signup(payload).subscribe(res => {
             expect(res).toEqual(mockResponse);
@@ -49,7 +48,7 @@ describe('AuthService', () => {
     });
 
     it('should login and set current user', () => {
-        const mockResponse = { name: 'test', rememberToken: 'token' };
+        const mockResponse = { userId: 1, name: 'test', email: 'test@company.com', token: 'token', rememberToken: 'token' };
         const payload = { name: 'test', password: 'pass', rememberMe: true };
         service.login(payload).subscribe(res => {
             expect(service.getCurrentUser()?.name).toEqual('test');
@@ -82,11 +81,12 @@ describe('AuthService', () => {
     });
 
     it('should login with token', () => {
-        const mockResponse = { name: 'test' };
+        const mockResponse = { userId: 1, name: 'test', email: 'test@company.com', token: 'token', tokenType: 'Bearer' };
         service.loginWithToken('token').subscribe(res => {
             expect(service.getCurrentUser()?.name).toEqual('test');
         });
-        const req = httpMock.expectOne('http://localhost:8080/api/v1/auth/verify-token?token=token');
+        const req = httpMock.expectOne('http://localhost:8080/api/v1/auth/login-with-token');
+        expect(req.request.method).toBe('POST');
         req.flush(mockResponse);
     });
 });

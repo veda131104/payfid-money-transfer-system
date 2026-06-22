@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -24,7 +24,7 @@ import { AuthService } from '../services/auth.service';
   templateUrl: './account-setup.component.html',
   styleUrls: ['./account-setup.component.scss']
 })
-export class AccountSetupComponent {
+export class AccountSetupComponent implements OnInit {
   form!: FormGroup;
   lastSentOtp = '';
   isEmailVerified = false;
@@ -44,7 +44,7 @@ export class AccountSetupComponent {
     private readonly router: Router
   ) {
     this.form = this.fb.nonNullable.group({
-      accountNumber: ['', [Validators.required]],
+      accountNumber: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(18), Validators.pattern(/^\d+$/)]],
       bankName: ['', [Validators.required]],
       branchName: ['', [Validators.required]],
       address: ['', [Validators.required]],
@@ -78,20 +78,43 @@ export class AccountSetupComponent {
     });
   }
 
+  ngOnInit(): void {
+    console.log('[AccountSetup] ngOnInit: Checking user session...');
+    const user = this.authService.getCurrentUser();
+    console.log('[AccountSetup] ngOnInit: Current user:', user);
+    if (user?.name) {
+      console.log('[AccountSetup] ngOnInit: Querying bank details for user:', user.name);
+      this.svc.getAccountByUser(user.name).subscribe({
+        next: (res) => {
+          console.log('[AccountSetup] ngOnInit: Bank details found for user! Redirecting to dashboard. Details:', res);
+          alert('Your account is already set up! Redirecting to dashboard.');
+          this.router.navigate(['/dashboard']);
+        },
+        error: (err) => {
+          console.log('[AccountSetup] ngOnInit: No existing bank details found. Staying on page. Error details:', err);
+        }
+      });
+    } else {
+      console.log('[AccountSetup] ngOnInit: No user session found. Remaining on page (needs login to submit).');
+    }
+  }
+
   sendOtp(): void {
     const contact = this.form.get('email')?.value || '';
+    console.log('[AccountSetup] sendOtp: Attempting to send OTP to contact:', contact);
     if (!contact) {
       alert('Please enter an email address first');
       return;
     }
     this.svc.sendOtp({ contact }).subscribe({
-      next: (resp) => {
-        this.otpSentMessage = `OTP has been sent to ${contact}. Valid for 10 minutes.`;
+      next: (res) => {
+        console.log('[AccountSetup] sendOtp: OTP sent successfully. Response:', res);
+        this.otpSentMessage = `OTP sent to ${contact}. Please check your inbox and enter the OTP below.`;
       },
       error: (err) => {
-        const errMsg = err?.error?.message || err?.message || 'Unknown error';
-        alert('Failed to send OTP. Error: ' + errMsg);
-        console.error('OTP Send Error:', err);
+        const errMsg = err?.error?.message || err?.message || 'Failed to send email. Please check your email address.';
+        console.error('[AccountSetup] sendOtp: Failed to send OTP. Error:', err);
+        alert('Failed to send OTP: ' + errMsg);
       }
     });
   }
@@ -99,63 +122,101 @@ export class AccountSetupComponent {
   verifyOtp(): void {
     const contact = this.form.get('email')?.value || '';
     const otp = this.form.get('otp')?.value || '';
+    console.log('[AccountSetup] verifyOtp: Attempting to verify OTP for contact:', contact, 'with OTP:', otp);
     if (!contact || !otp) {
       alert('Please enter email and OTP');
       return;
     }
-    this.svc.verifyOtp({ contact, otp }).subscribe(resp => {
-      if (resp.verified) {
-        this.isEmailVerified = true;
-        alert('Email verified successfully!');
-      } else {
-        this.isEmailVerified = false;
-        alert('Invalid OTP. Please try again.');
+    this.svc.verifyOtp({ contact, otp }).subscribe({
+      next: (resp) => {
+        console.log('[AccountSetup] verifyOtp: Response received:', resp);
+        if (resp.verified) {
+          this.isEmailVerified = true;
+          console.log('[AccountSetup] verifyOtp: Verification SUCCESS');
+          alert('Email verified successfully!');
+        } else {
+          this.isEmailVerified = false;
+          console.warn('[AccountSetup] verifyOtp: Verification FAILED - invalid OTP');
+          alert('Invalid OTP. Please try again.');
+        }
+      },
+      error: (err) => {
+        console.error('[AccountSetup] verifyOtp: Error during OTP verification API call:', err);
+        alert('Error verifying OTP: ' + (err?.error?.message || err?.message));
       }
     });
   }
 
   submit(): void {
+    console.log('[AccountSetup] submit: Starting account setup form submission...');
+    console.log('[AccountSetup] submit: Form valid status:', this.form.valid);
+    console.log('[AccountSetup] submit: Form value:', this.form.value);
+
     if (this.form.invalid) {
+      console.warn('[AccountSetup] submit: Submission aborted. Form is invalid. Fields errors:', this.form.errors);
+      const accNoControl = this.form.get('accountNumber');
+      if (accNoControl && accNoControl.invalid && (accNoControl.hasError('pattern') || accNoControl.hasError('minlength') || accNoControl.hasError('maxlength'))) {
+        alert('Validation Error: Account Number must be between 9 and 18 digits (numbers only).');
+        accNoControl.markAsTouched();
+        return;
+      }
       alert('Please fill in all mandatory fields correctly before proceeding.');
       this.form.markAllAsTouched();
       return;
     }
 
     const accNo = this.form.get('accountNumber')?.value || '';
-    if (accNo.length !== 12) {
-      alert('Validation Error: Account Number must be exactly 12 digits.');
+    console.log('[AccountSetup] submit: Validating account number format:', accNo);
+    if (!/^\d{9,18}$/.test(accNo)) {
+      console.warn('[AccountSetup] submit: Submission aborted. Account Number regex mismatch.');
+      alert('Validation Error: Account Number must be between 9 and 18 digits (numbers only).');
       this.form.get('accountNumber')?.markAsTouched();
       return;
     }
 
+    console.log('[AccountSetup] submit: Checking email verification status. isEmailVerified:', this.isEmailVerified);
     if (!this.isEmailVerified) {
+      console.warn('[AccountSetup] submit: Submission aborted. Email not verified.');
       alert('Security Requirement: Please verify your email address using the OTP sent to your inbox before completing setup.');
       this.form.get('otp')?.markAsTouched();
       return;
     }
 
+    const enteredOtp = this.form.get('otp')?.value || '';
+    if (!enteredOtp) {
+      console.warn('[AccountSetup] submit: Submission aborted. OTP missing.');
+      alert('Please enter the OTP from your email before completing setup.');
+      this.form.get('otp')?.markAsTouched();
+      return;
+    }
+
     const user = this.authService.getCurrentUser();
+    console.log('[AccountSetup] submit: Fetching current session user:', user);
+    if (!user?.name) {
+      console.warn('[AccountSetup] submit: Submission aborted. No user name in session.');
+      alert('You are not logged in. Please log in again and retry.');
+      this.router.navigate(['/login']);
+      return;
+    }
+
     const payload = {
       ...this.form.getRawValue(),
-      userName: user?.name
+      userName: user.name
     };
+    console.log('[AccountSetup] submit: Sending account setup payload to backend:', payload);
 
     this.svc.create(payload).subscribe({
       next: (response) => {
-        this.accountData = response;
-        this.setupComplete = true;
-        this.loadAccountBalance();
-        // Refresh form for display
-        this.editDetailsForm.patchValue({
-          email: payload.email,
-          phoneNumber: payload.phoneNumber,
-          address: payload.address,
-          creditCardNumber: payload.creditCardNumber,
-          cvv: payload.cvv,
-          expiryDate: payload.expiryDate
-        });
+        console.log('[AccountSetup] submit: Account setup SUCCESS. Response from backend:', response);
+        alert('Account setup completed successfully!');
+        this.router.navigate(['/dashboard']);
       },
-      error: (e) => alert('Error saving: ' + e?.message)
+      error: (e) => {
+        console.error('[AccountSetup] submit: Account setup FAILED. Backend error object:', e);
+        const msg = e?.error?.message || e?.message || 'An unexpected error occurred during account setup.';
+        console.error('[AccountSetup] submit: Extracted error message to show user:', msg);
+        alert('Error saving: ' + msg);
+      }
     });
   }
 

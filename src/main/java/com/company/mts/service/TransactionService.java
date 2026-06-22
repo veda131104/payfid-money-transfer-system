@@ -9,6 +9,7 @@ import com.company.mts.repository.BankDetailsRepository;
 import com.company.mts.repository.TransactionLogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +27,16 @@ public class TransactionService {
         private final TransactionLogRepository transactionLogRepository;
         private final AccountRepository accountRepository;
         private final BankDetailsRepository bankDetailsRepository;
+        private final RewardService rewardService;
 
         public TransactionService(TransactionLogRepository transactionLogRepository,
                         AccountRepository accountRepository,
-                        BankDetailsRepository bankDetailsRepository) {
+                        BankDetailsRepository bankDetailsRepository,
+                        @Lazy RewardService rewardService) {
                 this.transactionLogRepository = transactionLogRepository;
                 this.accountRepository = accountRepository;
                 this.bankDetailsRepository = bankDetailsRepository;
+                this.rewardService = rewardService;
         }
 
         /**
@@ -106,6 +110,13 @@ public class TransactionService {
 
                         logger.info("Transfer completed successfully - TX ID: {}, Idempotency Key: {}",
                                         savedTx.getId(), idempotencyKey);
+
+                        // Evaluate and grant reward points for eligible transfers
+                        try {
+                                rewardService.evaluateAndGrantReward(savedTx.getId());
+                        } catch (Exception rewardEx) {
+                                logger.warn("Reward evaluation failed for TX {}: {}", savedTx.getId(), rewardEx.getMessage());
+                        }
 
                         return convertToDTO(savedTx, fromAccount, toAccount);
 
@@ -192,13 +203,21 @@ public class TransactionService {
                                         .build();
 
                         TransactionLog savedTx = transactionLogRepository.save(txLog);
+
+                        // Evaluate reward for internal transfer
+                        try {
+                                rewardService.evaluateAndGrantReward(savedTx.getId());
+                        } catch (Exception rewardEx) {
+                                logger.warn("Reward evaluation failed for TX {}: {}", savedTx.getId(), rewardEx.getMessage());
+                        }
+
                         return convertToDTO(savedTx, fromAccount, toAccount);
                 } else {
                         // External Debit Case
-                        // 12-Digit Rule Verification
-                        if (toAccountNumber == null || !toAccountNumber.matches("\\d{12}")) {
+                        // Account Number Range Verification (9-18 digits)
+                        if (toAccountNumber == null || !toAccountNumber.matches("\\d{9,18}")) {
                                 throw new IllegalArgumentException(
-                                                "Recipient account number must be 12 digits for external transfers.");
+                                                "Recipient account number must be between 9 and 18 digits for external transfers.");
                         }
 
                         logger.info("Recipient {} not found in system. Processing as external debit.", toAccountNumber);
