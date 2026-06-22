@@ -28,7 +28,7 @@
 
 // ── Sidebar ──────────────────────────────────────────────
 .app-sidebar {
-  width: 248px;
+  width: 260px;
   flex-shrink: 0;
   background: #ffffff;
   border-right: 1px solid #e8eaed;
@@ -42,6 +42,7 @@
   transition: width 220ms ease-in-out;
   overflow: hidden;
 }
+
 
 .sidebar-brand {
   display: flex;
@@ -201,7 +202,7 @@
 // ── Main area ────────────────────────────────────────────
 .app-main {
   flex: 1;
-  margin-left: 248px;
+  margin-left: 260px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -260,6 +261,10 @@
 .page-content {
   flex: 1;
   padding: 1.5rem 1.75rem 2rem;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .page-heading {
@@ -397,9 +402,46 @@
 // ── Dashboard split ──────────────────────────────────────
 .dashboard-split {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 7fr 3fr;
   gap: 1.25rem;
   align-items: start;
+}
+
+// ── KPI Card Enhancements ────────────────────────────────
+.kpi-card {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem !important;
+  border-radius: 12px !important;
+  background: #ffffff;
+  border: 1px solid #e8eaed !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  transition: transform 200ms ease-in-out, box-shadow 200ms ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(22, 42, 52, 0.08) !important;
+  }
+}
+
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-icon-wrapper {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background: rgba(29, 59, 79, 0.06);
+  color: #1d3b4f;
+  flex-shrink: 0;
 }
 
 // ── VISA widget ──────────────────────────────────────────
@@ -407,19 +449,20 @@
   background: linear-gradient(145deg, #1d3b4f 0%, #215a66 50%, #2d4a6f 100%);
   padding: 0;
   overflow: hidden;
-  min-height: 220px;
+  min-height: 200px;
   box-shadow: 0 8px 28px rgba(29, 59, 79, 0.22);
+  border-radius: 12px !important;
 }
 
 .card-glass {
   height: 100%;
-  min-height: 220px;
+  min-height: 200px;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 14px;
-  margin: 1rem;
-  padding: 1.35rem;
+  border-radius: 12px;
+  margin: 0.75rem;
+  padding: 1.15rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -428,17 +471,17 @@
 }
 
 .card-chip {
-  width: 40px;
-  height: 30px;
+  width: 36px;
+  height: 26px;
   background: linear-gradient(135deg, #e5c185, #c0a060);
   border-radius: 5px;
 }
 
 .card-number {
   font-family: 'Inter', monospace;
-  font-size: 1.15rem;
-  letter-spacing: 0.14em;
-  margin: 1.25rem 0;
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  margin: 1rem 0;
 }
 
 .card-info {
@@ -448,7 +491,7 @@
 }
 
 .card-label {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   opacity: 0.75;
@@ -457,19 +500,248 @@
 
 .card-holder,
 .card-expiry {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   margin: 0;
 }
 
 .card-brand {
   position: absolute;
-  top: 1.35rem;
-  right: 1.35rem;
+  top: 1.15rem;
+  right: 1.15rem;
   font-weight: 700;
   font-style: italic;
-  font-size: 1.1rem;
+  font-size: 1rem;
   opacity: 0.9;
+}
+
+// ── Quick Actions widget ─────────────────────────────────
+.quick-actions-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #e8eaed;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.quick-actions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.btn-quick-action {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e8eaed;
+  background: #ffffff;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #1d3b4f;
+  font-size: 0.875rem;
+  transition: all 150ms ease-in-out;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(29, 59, 79, 0.04);
+    border-color: #1d3b4f;
+    transform: translateY(-1px);
+  }
+  
+  .action-icon {
+    font-size: 1.15rem;
+    color: #215a66;
+  }
+}
+
+// ── Risk/alerts widget ───────────────────────────────────
+.risk-widget {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #e8eaed;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.risk-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.risk-badge {
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  
+  &.safe {
+    background: #ecfdf5;
+    color: #047857;
+  }
+  &.warn {
+    background: #fffbeb;
+    color: #b45309;
+  }
+}
+
+.risk-metric-text {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.risk-alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.risk-alert-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.65rem;
+  background: #fdf2f2;
+  border-left: 3px solid #ef4444;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  
+  &.info {
+    background: #eff6ff;
+    border-left-color: #3b82f6;
+  }
+  
+  .alert-title {
+    font-weight: 600;
+    color: #1f2937;
+  }
+  
+  .alert-desc {
+    color: #4b5563;
+  }
+}
+
+// ── Bottom section (whitespace fix) ──────────────────────
+.dashboard-bottom {
+  display: grid;
+  grid-template-columns: 7fr 3fr;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+  align-items: stretch;
+}
+
+.charts-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.chart-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #e8eaed;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
+  h3 {
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .chart-wrapper {
+    position: relative;
+    flex-grow: 1;
+    min-height: 200px;
+    max-height: 240px;
+  }
+}
+
+.activity-feed-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #e8eaed;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  h3 {
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+  }
+}
+
+.timeline-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  overflow-y: auto;
+  max-height: 240px;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  position: relative;
+  
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 15px;
+    bottom: -15px;
+    width: 1px;
+    background: #e5e7eb;
+  }
+  
+  .timeline-dot {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #3b82f6;
+    flex-shrink: 0;
+    margin-top: 2px;
+    
+    &.danger { background: #ef4444; }
+    &.warning { background: #f59e0b; }
+    &.success { background: #10b981; }
+  }
+  
+  .timeline-content {
+    display: flex;
+    flex-direction: column;
+    
+    .timeline-title {
+      font-weight: 600;
+      color: #1f2937;
+    }
+    .timeline-desc {
+      color: #4b5563;
+      margin-top: 0.1rem;
+    }
+    .timeline-time {
+      font-size: 0.7rem;
+      color: #9ca3af;
+      margin-top: 0.1rem;
+    }
+  }
 }
 
 // ── Recent payments list ─────────────────────────────────
@@ -480,7 +752,7 @@
 
 .payments-list-header {
   display: grid;
-  grid-template-columns: 1fr auto auto auto;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
   gap: 1rem;
   padding: 0.5rem 1rem;
   font-size: 0.7rem;
@@ -493,7 +765,7 @@
 
 .payment-row {
   display: grid;
-  grid-template-columns: 1fr auto auto auto;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
   gap: 1rem;
   align-items: center;
   padding: 0.85rem 1rem;
@@ -523,10 +795,15 @@
 .payment-amount {
   font-weight: 700;
   font-size: 0.9rem;
-  text-align: right;
+  text-align: left;
 
   &.credit { color: #047857; }
   &.debit  { color: #b91c1c; }
+}
+
+.payment-time {
+  font-size: 0.8rem;
+  color: #6b7280;
 }
 
 .no-activity {
@@ -543,28 +820,67 @@
 @media (max-width: 1100px) {
   .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dashboard-split { grid-template-columns: 1fr; }
+  .dashboard-bottom { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 768px) {
   .app-sidebar {
-    transform: translateX(-100%);
-    transition: transform 220ms ease-in-out;
+    width: 68px;
+    
+    .brand-name,
+    .sidebar-label {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      display: none;
+    }
+    
+    .sidebar-brand {
+      justify-content: center;
+      padding-inline: 0.75rem;
+    }
+
+    .sidebar-link {
+      justify-content: center;
+      padding-inline: 0.65rem;
+    }
+    
+    .sidebar-collapse-btn .collapse-icon {
+      transform: rotate(180deg);
+    }
+  }
+
+  .app-main {
+    margin-left: 68px;
   }
 
   .sidebar-toggle:checked ~ .app-sidebar {
-    transform: translateX(0);
-    width: 248px;
+    width: 260px;
 
     .brand-name,
     .sidebar-label {
       opacity: 1;
       width: auto;
+      display: inline-block;
+    }
+
+    .sidebar-brand {
+      justify-content: flex-start;
+      padding-inline: 1.25rem;
+    }
+
+    .sidebar-link {
+      justify-content: flex-start;
+      padding-inline: 0.85rem;
+    }
+
+    .sidebar-collapse-btn .collapse-icon {
+      transform: rotate(0deg);
     }
   }
 
-  .app-main,
   .sidebar-toggle:checked ~ .app-main {
-    margin-left: 0;
+    margin-left: 260px;
   }
 
   .kpi-grid { grid-template-columns: 1fr; }
@@ -574,5 +890,41 @@
   .payment-row {
     grid-template-columns: 1fr auto;
     grid-template-rows: auto auto;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .charts-container {
+    grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 480px) {
+  .page-content {
+    padding: 1rem 0.75rem 1.5rem;
+  }
+
+  .app-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .payment-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #f0f1f3;
+  }
+
+  .payment-amount {
+    text-align: left !important;
+  }
+  
+  .visa-widget {
+    max-width: 100%;
+    margin-inline: 0;
+  }
+}
+
+

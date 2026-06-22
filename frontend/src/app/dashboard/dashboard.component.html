@@ -23,11 +23,6 @@
         <span class="sidebar-icon">☰</span>
         <span class="sidebar-label">History</span>
       </a>
-      <a class="sidebar-link" routerLink="/analytics" routerLinkActive="active"
-        [routerLinkActiveOptions]="routerLinkActiveOptions">
-        <span class="sidebar-icon">◫</span>
-        <span class="sidebar-label">Analytics</span>
-      </a>
       <a class="sidebar-link" routerLink="/rewards" routerLinkActive="active"
         [routerLinkActiveOptions]="routerLinkActiveOptions">
         <span class="sidebar-icon">★</span>
@@ -58,26 +53,37 @@
     <main class="page-content">
       <div class="page-heading">
         <h1>{{ isFirstLogin ? 'Welcome, ' : 'Welcome back, ' }}{{ userName }}</h1>
-        <p>Live status of your payout corridors and risk posture.</p>
+        <p>Live status of your payout corridors.</p>
       </div>
 
       <div class="kpi-grid">
-        <mat-card class="kpi-card kpi-primary">
-          <p class="kpi-label">Current Balance</p>
-          <p class="kpi-value">{{ balance | currency:'INR':'symbol':'1.2-2' }}</p>
-        </mat-card>
-        <mat-card class="kpi-card">
-          <p class="kpi-label">Processed Today</p>
-          <p class="kpi-value">{{ processedToday | currency:'INR':'symbol':'1.0-0' }}</p>
-        </mat-card>
-        <mat-card class="kpi-card">
-          <p class="kpi-label">Active Transfers</p>
-          <p class="kpi-value">{{ activeTransfers }}</p>
-        </mat-card>
-        <mat-card class="kpi-card">
-          <p class="kpi-label">At-risk Volume</p>
-          <p class="kpi-value">1.8%</p>
-        </mat-card>
+        <div class="kpi-card">
+          <div class="kpi-content">
+            <span class="kpi-label">Current Balance</span>
+            <span class="kpi-value">{{ balance | currency:'INR':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="kpi-icon-wrapper">
+            <span>💳</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-content">
+            <span class="kpi-label">Processed Today</span>
+            <span class="kpi-value">{{ processedToday | currency:'INR':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="kpi-icon-wrapper">
+            <span>📈</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-content">
+            <span class="kpi-label">Active Transfers</span>
+            <span class="kpi-value">{{ activeTransfers }}</span>
+          </div>
+          <div class="kpi-icon-wrapper">
+            <span>🔄</span>
+          </div>
+        </div>
       </div>
 
       <div class="dashboard-split">
@@ -91,7 +97,7 @@
               <span>Recipient / Sender</span>
               <span>Status</span>
               <span>Amount</span>
-              <span></span>
+              <span>Timestamp</span>
             </div>
             @for (txn of recentTransactions; track txn.id) {
             <div class="payment-row">
@@ -100,16 +106,20 @@
                   txn.toAccountHolderName) || 'System' }}</p>
                 <p class="payment-meta">{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}</p>
               </div>
-              <span class="status-chip"
-                [ngClass]="{
-                  'chip-success': txn.status === 'completed' || txn.status === 'SUCCESS',
-                  'chip-failed': txn.status === 'failed' || txn.status === 'FAILED',
-                  'chip-pending': txn.status === 'pending'
-                }">{{ txn.status | titlecase }}</span>
-              <span class="payment-amount" [ngClass]="getDisplayType(txn)">
-                {{ getTransactionSign(txn) }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
-              </span>
-              <span></span>
+              <div>
+                <span class="status-chip"
+                  [ngClass]="{
+                    'chip-success': txn.status === 'completed' || txn.status === 'SUCCESS',
+                    'chip-failed': txn.status === 'failed' || txn.status === 'FAILED',
+                    'chip-pending': txn.status === 'pending'
+                  }">{{ txn.status | titlecase }}</span>
+              </div>
+              <div>
+                <span class="payment-amount" [ngClass]="getDisplayType(txn)">
+                  {{ getTransactionSign(txn) }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
+                </span>
+              </div>
+              <span class="payment-time">{{ txn.date | date:'shortTime' }}</span>
             </div>
             } @empty {
             <p class="no-activity">No recent payments found.</p>
@@ -117,24 +127,60 @@
           </div>
         </mat-card>
 
-        <mat-card class="visa-widget">
-          <div class="card-glass">
-            <div class="card-brand">{{ cardDetails.type }}</div>
-            <div class="card-chip"></div>
-            <div class="card-number">{{ cardDetails.number }}</div>
-            <div class="card-info">
-              <div>
-                <p class="card-label">Card Holder</p>
-                <p class="card-holder">{{ cardDetails.holder }}</p>
-              </div>
-              <div>
-                <p class="card-label">Expires</p>
-                <p class="card-expiry">{{ cardDetails.expiry }}</p>
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <div class="visa-widget">
+            <div class="card-glass">
+              <div class="card-brand">{{ cardDetails.type }}</div>
+              <div class="card-chip"></div>
+              <div class="card-number">{{ cardDetails.number }}</div>
+              <div class="card-info">
+                <div>
+                  <p class="card-label">Card Holder</p>
+                  <p class="card-holder">{{ cardDetails.holder }}</p>
+                </div>
+                <div>
+                  <p class="card-label">Expires</p>
+                  <p class="card-expiry">{{ cardDetails.expiry }}</p>
+                </div>
               </div>
             </div>
           </div>
-        </mat-card>
+
+          <div class="quick-actions-card">
+            <div class="card-header">
+              <h2>Quick Actions</h2>
+            </div>
+            <div class="quick-actions-grid">
+              <button class="btn-quick-action" type="button" (click)="sendMoney()">
+                <span class="action-icon">💸</span>
+                <span>Send Money</span>
+              </button>
+              <button class="btn-quick-action" type="button" (click)="requestOtp()">
+                <span class="action-icon">🔐</span>
+                <span>Request OTP</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+
+        <div class="activity-feed-card">
+          <h3>Activity Feed</h3>
+          <div class="timeline-feed">
+            @for (log of activityLogs; track log.id) {
+              <div class="timeline-item">
+                <div class="timeline-dot" [ngClass]="log.type"></div>
+                <div class="timeline-content">
+                  <span class="timeline-title">{{ log.title }}</span>
+                  <span class="timeline-desc">{{ log.desc }}</span>
+                  <span class="timeline-time">{{ log.time }}</span>
+                </div>
+              </div>
+            } @empty {
+              <p class="no-activity">No recent feed activities.</p>
+            }
+          </div>
+        </div>
     </main>
   </div>
 </div>
