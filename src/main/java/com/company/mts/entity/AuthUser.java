@@ -22,7 +22,7 @@ public class AuthUser {
     @Column(nullable = false)
     private String role = "USER";
 
-    @Column(nullable = false)
+    @Column(name = "created_on", nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist

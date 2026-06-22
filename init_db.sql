@@ -5,10 +5,12 @@
 USE money_transfer_system;
 
 -- Drop tables if they exist (clean slate)
+SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS transaction_logs;
 DROP TABLE IF EXISTS bank_details;
 DROP TABLE IF EXISTS accounts;
 DROP TABLE IF EXISTS auth_users;
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- Accounts Table
 CREATE TABLE IF NOT EXISTS accounts (
@@ -18,7 +20,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     balance DECIMAL(19, 2) NOT NULL DEFAULT 0.00,
     status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
     version INT DEFAULT 0,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_updated TIMESTAMP NULL,
     CONSTRAINT chk_balance CHECK (balance >= 0),
     CONSTRAINT chk_status CHECK (status IN ('ACTIVE', 'LOCKED', 'CLOSED'))
@@ -40,7 +42,7 @@ CREATE TABLE IF NOT EXISTS bank_details (
     expiry_date VARCHAR(10),
     upi_id VARCHAR(255) UNIQUE,
     pin VARCHAR(10),
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_updated TIMESTAMP NULL
 );
 
@@ -71,11 +73,13 @@ CREATE TABLE IF NOT EXISTS auth_users (
     name VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) UNIQUE,
     password VARCHAR(255) NOT NULL,
+    first_login BOOLEAN NOT NULL DEFAULT FALSE,
+    role VARCHAR(255) NOT NULL DEFAULT 'USER',
     recovery_token VARCHAR(255) UNIQUE,
     recovery_token_expiry TIMESTAMP NULL,
     remember_token VARCHAR(255) UNIQUE,
     remember_token_expiry TIMESTAMP NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Indexes for performance

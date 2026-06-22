@@ -199,7 +199,7 @@ spring:
 ### accounts
 - id, account_number (unique), holder_name
 - balance, status, version (optimistic locking)
-- created_at, last_updated
+- created_on, last_updated
 
 ### transaction_logs
 - id, from_account_id, to_account_id
