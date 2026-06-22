@@ -1,19 +1,7 @@
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background-color: #7b1fa2;
-  z-index: 9999;
-  pointer-events: none;
-}
-
 .session-expired-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.75);
+  background-color: rgba(15, 23, 42, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -23,27 +11,30 @@ body::before {
 
 .session-expired-dialog {
   background: #ffffff;
-  color: #1f1f1f;
+  color: #1e293b;
   max-width: 420px;
   width: min(90%, 420px);
-  padding: 24px;
+  padding: 2rem;
   border-radius: 16px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
   text-align: center;
 }
 
 .session-expired-dialog h2 {
-  margin: 0 0 16px;
-  font-size: 1.5rem;
+  margin: 0 0 1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .session-expired-dialog p {
-  margin: 0 0 12px;
+  margin: 0 0 0.75rem;
   line-height: 1.6;
+  color: #64748b;
 }
 
 .session-expired-footer {
   margin-top: 1rem;
-  color: #666;
-  font-size: 0.95rem;
+  color: #94a3b8;
+  font-size: 0.85rem;
 }

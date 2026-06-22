@@ -8,7 +8,9 @@ import com.company.mts.dto.ForgotPasswordRequest;
 import com.company.mts.dto.CredentialsResponse;
 import com.company.mts.entity.AuthUser;
 import com.company.mts.service.AuthService;
+import com.company.mts.security.CryptoService;
 import com.company.mts.security.JwtTokenProvider;
+import com.company.mts.repository.AuthUserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,12 @@ class AuthControllerIntegrationTest {
 
     @MockBean
     private JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
+    private CryptoService cryptoService;
+
+    @MockBean
+    private AuthUserRepository authUserRepository;
 
     @Autowired
     private ObjectMapper objectMapper;

@@ -112,6 +112,11 @@ public class AuthUser {
 
     private LocalDateTime rememberTokenExpiry;
 
+    @Column(length = 500)
+    private String refreshToken;
+
+    private LocalDateTime refreshTokenExpiry;
+
     public String getRememberToken() {
         return rememberToken;
     }
@@ -135,4 +140,9 @@ public class AuthUser {
     public void setRole(String role) {
         this.role = role;
     }
+
+    public String getRefreshToken() { return refreshToken; }
+    public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
+    public LocalDateTime getRefreshTokenExpiry() { return refreshTokenExpiry; }
+    public void setRefreshTokenExpiry(LocalDateTime refreshTokenExpiry) { this.refreshTokenExpiry = refreshTokenExpiry; }
 }

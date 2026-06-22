@@ -80,9 +80,42 @@ CREATE TABLE IF NOT EXISTS auth_users (
     recovery_token_expiry TIMESTAMP,
     remember_token VARCHAR(255) UNIQUE,
     remember_token_expiry TIMESTAMP,
+    refresh_token VARCHAR(500),
+    refresh_token_expiry TIMESTAMP,
     created_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_auth_users_email ON auth_users(email);
 CREATE INDEX idx_auth_users_name ON auth_users(name);
+
+-- Vouchers Table
+CREATE TABLE IF NOT EXISTS vouchers (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(200) NOT NULL,
+    description VARCHAR(500),
+    point_cost INT NOT NULL,
+    cash_value DECIMAL(19,2),
+    category VARCHAR(50),
+    icon VARCHAR(100),
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    stock INT NOT NULL DEFAULT 999,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Voucher Redemptions Table
+CREATE TABLE IF NOT EXISTS voucher_redemptions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    account_id BIGINT NOT NULL,
+    voucher_id BIGINT NOT NULL,
+    voucher_code VARCHAR(50),
+    voucher_name VARCHAR(200) NOT NULL,
+    points_spent INT NOT NULL,
+    redemption_code VARCHAR(36) NOT NULL UNIQUE,
+    redeemed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(50) DEFAULT 'ACTIVE'
+);
+
+CREATE INDEX idx_redemption_account ON voucher_redemptions(account_id);
+CREATE INDEX idx_redemption_date ON voucher_redemptions(redeemed_at);
 

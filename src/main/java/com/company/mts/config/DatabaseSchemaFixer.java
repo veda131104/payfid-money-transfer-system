@@ -2,6 +2,7 @@ package com.company.mts.config;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @Component
+@Profile("!test")
 @Slf4j
 public class DatabaseSchemaFixer implements ApplicationRunner {
 

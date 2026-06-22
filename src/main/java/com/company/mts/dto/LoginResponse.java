@@ -15,6 +15,7 @@ public class LoginResponse {
     private String tokenType = "Bearer";
     private String rememberToken;
     private boolean firstLogin;
+    private String refreshToken;
 
     public LoginResponse(Long userId, String email, String name, String token, String rememberToken) {
         this.userId = userId;

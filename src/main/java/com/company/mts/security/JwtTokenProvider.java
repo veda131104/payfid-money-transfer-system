@@ -20,6 +20,8 @@ public class JwtTokenProvider {
     @Value("${app.jwt.expiration:86400000}")
     private int jwtExpirationMs;
 
+    private static final int REFRESH_EXPIRATION_MS = 7 * 24 * 60 * 60 * 1000;
+
     public String generateToken(AuthUser user) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
@@ -30,6 +32,22 @@ public class JwtTokenProvider {
                 .subject(user.getName())
                 .claim("userId", user.getId())
                 .claim("email", user.getEmail())
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+    }
+
+    public String generateRefreshToken(AuthUser user) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + REFRESH_EXPIRATION_MS);
+
+        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+
+        return Jwts.builder()
+                .subject(user.getName())
+                .claim("userId", user.getId())
+                .claim("type", "refresh")
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS512)

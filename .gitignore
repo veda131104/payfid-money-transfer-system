@@ -1,8 +1,8 @@
-# target/
-# !.mvn/wrapper/maven-wrapper.jar
-# !**/src/main/**/target/
-# !**/src/test/**/target/
-# .kotlin
+# Build outputs
+/target/
+/frontend/dist/
+/frontend/node_modules/
+*.jar
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -27,7 +27,7 @@
 /nbbuild/
 /dist/
 /nbdist/
-/.nb-gradle/
+/.gradle/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/

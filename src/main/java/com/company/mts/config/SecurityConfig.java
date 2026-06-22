@@ -1,5 +1,6 @@
 package com.company.mts.config;
 
+import com.company.mts.security.CryptoService;
 import com.company.mts.security.JwtAuthenticationFilter;
 import com.company.mts.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/auth/signup").permitAll()
                         .requestMatchers("/api/v1/auth/login").permitAll()
                         .requestMatchers("/api/v1/auth/login-with-token").permitAll()
+                        .requestMatchers("/api/v1/auth/refresh").permitAll()
+                        .requestMatchers("/api/v1/auth/public-key").permitAll()
                         .requestMatchers("/api/v1/auth/forgot-password").permitAll()
                         .requestMatchers("/api/v1/auth/reset-password/**").permitAll()
                         .requestMatchers("/api/v1/auth/verify-token").permitAll()

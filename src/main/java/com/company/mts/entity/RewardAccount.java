@@ -56,6 +56,13 @@ public class RewardAccount {
         this.totalPoints += pts;
     }
 
+    public void deductPoints(int pts) {
+        if (pts > this.totalPoints) {
+            throw new IllegalStateException("Insufficient points");
+        }
+        this.totalPoints -= pts;
+    }
+
     // ----- Getters / Setters -----
 
     public Long getId()                         { return id; }

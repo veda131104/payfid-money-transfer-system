@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -87,17 +88,30 @@ class AccountSetupControllerIntegrationTest {
                 .bankName("HDFC Bank")
                 .upiId("johndoe@fihdfc")
                 .build();
+
+        // Pre-verify the email for OTP flow (controller now requires OTP verification before setup)
+        @SuppressWarnings("unchecked")
+        Set<String> vc = (Set<String>) org.springframework.test.util.ReflectionTestUtils.getField(accountSetupController, "verifiedContacts");
+        if (vc != null) { vc.add("john@test.com"); }
     }
 
     @Test
-    void create_MissingUserName_ReturnsBadRequest() throws Exception {
-        validRequest.setUserName("");
+    void create_MissingEmailVerification_ReturnsBadRequest() throws Exception {
+        // Remove email verification so the controller rejects
+        String email = normalizeContact(validRequest.getEmail());
+        @SuppressWarnings("unchecked")
+        Set<String> vc = (Set<String>) org.springframework.test.util.ReflectionTestUtils.getField(accountSetupController, "verifiedContacts");
+        if (vc != null) { vc.remove(email); }
 
         mockMvc.perform(post("/api/v1/account-setup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(validRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("User not logged in or session expired. Please log in and try again."));
+                .andExpect(jsonPath("$.message").value("Email verification required. Please verify the OTP sent to your email before completing setup."));
+    }
+
+    private String normalizeContact(String contact) {
+        return contact == null ? null : contact.trim().toLowerCase();
     }
 
     @Test
@@ -197,6 +211,11 @@ class AccountSetupControllerIntegrationTest {
             when(bankDetailsService.findByAccountNumber("123456789012")).thenReturn(Optional.empty());
             when(bankDetailsService.save(any(BankDetails.class))).thenReturn(details);
             when(accountRepository.existsByAccountNumber("123456789012")).thenReturn(true);
+
+            // Re-verify email (each request consumes the verification)
+            @SuppressWarnings("unchecked")
+            Set<String> vc = (Set<String>) org.springframework.test.util.ReflectionTestUtils.getField(accountSetupController, "verifiedContacts");
+            if (vc != null) { vc.add("john@test.com"); }
 
             mockMvc.perform(post("/api/v1/account-setup")
                     .contentType(MediaType.APPLICATION_JSON)
