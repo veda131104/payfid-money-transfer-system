@@ -3,14 +3,15 @@ import { AnalyticsComponent } from './analytics.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AnalyticsService } from '../services/analytics.service';
+import { AuthService } from '../services/auth.service';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 describe('AnalyticsComponent', () => {
     let component: AnalyticsComponent;
     let fixture: ComponentFixture<AnalyticsComponent>;
     let analyticsService: AnalyticsService;
+    let authService: AuthService;
 
     beforeEach(async () => {
         // Mock localStorage
@@ -26,31 +27,32 @@ describe('AnalyticsComponent', () => {
         Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
         // Mock Canvas getContext to avoid Chart.js errors
-        (window.HTMLCanvasElement.prototype as any).getContext = vi.fn().mockReturnValue({
-            fillRect: vi.fn(),
-            clearRect: vi.fn(),
-            getImageData: vi.fn(),
-            putImageData: vi.fn(),
-            createImageData: vi.fn(),
-            setTransform: vi.fn(),
-            drawImage: vi.fn(),
-            save: vi.fn(),
-            restore: vi.fn(),
-            beginPath: vi.fn(),
-            moveTo: vi.fn(),
-            lineTo: vi.fn(),
-            closePath: vi.fn(),
-            stroke: vi.fn(),
-            translate: vi.fn(),
-            scale: vi.fn(),
-            rotate: vi.fn(),
-            arc: vi.fn(),
-            fill: vi.fn(),
-            measureText: vi.fn().mockReturnValue({ width: 0 }),
-            transform: vi.fn(),
-            rect: vi.fn(),
-            clip: vi.fn(),
-        });
+        const dummyCtx = {
+            fillRect: jasmine.createSpy('fillRect'),
+            clearRect: jasmine.createSpy('clearRect'),
+            getImageData: jasmine.createSpy('getImageData'),
+            putImageData: jasmine.createSpy('putImageData'),
+            createImageData: jasmine.createSpy('createImageData'),
+            setTransform: jasmine.createSpy('setTransform'),
+            drawImage: jasmine.createSpy('drawImage'),
+            save: jasmine.createSpy('save'),
+            restore: jasmine.createSpy('restore'),
+            beginPath: jasmine.createSpy('beginPath'),
+            moveTo: jasmine.createSpy('moveTo'),
+            lineTo: jasmine.createSpy('lineTo'),
+            closePath: jasmine.createSpy('closePath'),
+            stroke: jasmine.createSpy('stroke'),
+            translate: jasmine.createSpy('translate'),
+            scale: jasmine.createSpy('scale'),
+            rotate: jasmine.createSpy('rotate'),
+            arc: jasmine.createSpy('arc'),
+            fill: jasmine.createSpy('fill'),
+            measureText: jasmine.createSpy('measureText').and.returnValue({ width: 0 }),
+            transform: jasmine.createSpy('transform'),
+            rect: jasmine.createSpy('rect'),
+            clip: jasmine.createSpy('clip'),
+        };
+        (window.HTMLCanvasElement.prototype as any).getContext = jasmine.createSpy('getContext').and.returnValue(dummyCtx);
 
         await TestBed.configureTestingModule({
             imports: [
@@ -59,12 +61,13 @@ describe('AnalyticsComponent', () => {
                 RouterTestingModule,
                 NoopAnimationsModule
             ],
-            providers: [AnalyticsService]
+            providers: [AnalyticsService, AuthService]
         }).compileComponents();
 
         fixture = TestBed.createComponent(AnalyticsComponent);
         component = fixture.componentInstance;
         analyticsService = TestBed.inject(AnalyticsService);
+        authService = TestBed.inject(AuthService);
     });
 
     it('should create', () => {
@@ -72,10 +75,11 @@ describe('AnalyticsComponent', () => {
     });
 
     it('should load all analytics data on init', () => {
-        vi.spyOn(analyticsService, 'getTransactionVolume').mockReturnValue(of([]));
-        vi.spyOn(analyticsService, 'getAccountActivity').mockReturnValue(of([]));
-        vi.spyOn(analyticsService, 'getSuccessRate').mockReturnValue(of({ success: 0, failed: 0, pending: 0 }));
-        vi.spyOn(analyticsService, 'getPeakHours').mockReturnValue(of([]));
+        spyOn(authService, 'getCurrentUser').and.returnValue({ name: 'testuser', email: 'testuser@company.com' });
+        spyOn(analyticsService, 'getTransactionVolume').and.returnValue(of([]));
+        spyOn(analyticsService, 'getAccountActivity').and.returnValue(of([]));
+        spyOn(analyticsService, 'getSuccessRate').and.returnValue(of({ success: 0, failed: 0, pending: 0 }));
+        spyOn(analyticsService, 'getPeakHours').and.returnValue(of([]));
 
         component.ngOnInit();
 
@@ -86,8 +90,10 @@ describe('AnalyticsComponent', () => {
     });
 
     it('should handle logout correctly', () => {
-        const routerSpy = vi.spyOn((component as any).router, 'navigate');
+        spyOn(authService, 'clearSession');
+        const routerSpy = spyOn((component as any).router, 'navigate');
         component.onLogout();
         expect(routerSpy).toHaveBeenCalledWith(['/']);
+        expect(authService.clearSession).toHaveBeenCalled();
     });
 });

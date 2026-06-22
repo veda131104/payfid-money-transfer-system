@@ -3,6 +3,7 @@ package com.company.mts.service;
 import com.company.mts.entity.Account;
 import com.company.mts.entity.AccountStatus;
 import com.company.mts.exception.DuplicateAccountException;
+import com.company.mts.exception.InactiveAccountException;
 import com.company.mts.exception.InsufficientBalanceException;
 import com.company.mts.exception.ResourceNotFoundException;
 import com.company.mts.repository.AccountRepository;
@@ -194,4 +195,144 @@ class AccountServiceTest {
         Account result = accountService.closeAccount(1L);
         assertEquals(AccountStatus.CLOSED, result.getStatus());
     }
-}
+
+    @Test
+    void createAccount_InvalidHolderName_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> accountService.createAccount(null, BigDecimal.TEN));
+        assertThrows(IllegalArgumentException.class, () -> accountService.createAccount("   ", BigDecimal.TEN));
+    }
+
+    @Test
+    void createAccount_InitialBalanceNull_ThrowsException() {
+        // Since MINIMUM_INITIAL_BALANCE is 100.00, initialBalance = null falls back to 0.00 and throws IllegalArgumentException
+        assertThrows(IllegalArgumentException.class, () -> accountService.createAccount("John Doe", null));
+    }
+
+    @Test
+    void createAccount_ExceedsMaxBalance_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> accountService.createAccount("John Doe", new BigDecimal("1000001")));
+    }
+
+    @Test
+    void getAccountByAccountNumber_Empty_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> accountService.getAccountByAccountNumber(null));
+        assertThrows(IllegalArgumentException.class, () -> accountService.getAccountByAccountNumber("   "));
+    }
+
+    @Test
+    void getAccountByAccountNumber_NotFound_ThrowsException() {
+        when(accountRepository.findByAccountNumber("invalid")).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> accountService.getAccountByAccountNumber("invalid"));
+    }
+
+    @Test
+    void getAccountByHolderName_Empty_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> accountService.getAccountByHolderName(null));
+        assertThrows(IllegalArgumentException.class, () -> accountService.getAccountByHolderName("   "));
+    }
+
+    @Test
+    void getAccountByHolderName_NotFound_ThrowsException() {
+        when(accountRepository.findByHolderNameIgnoreCase("invalid")).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> accountService.getAccountByHolderName("invalid"));
+    }
+
+    @Test
+    void transfer_SameAccount_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> accountService.transfer(1L, 1L, BigDecimal.TEN));
+    }
+
+    @Test
+    void transfer_InvalidAmount_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> accountService.transfer(1L, 2L, null));
+        assertThrows(IllegalArgumentException.class, () -> accountService.transfer(1L, 2L, BigDecimal.ZERO));
+        assertThrows(IllegalArgumentException.class, () -> accountService.transfer(1L, 2L, new BigDecimal("-10")));
+    }
+
+    @Test
+    void transfer_SenderNotFound_ThrowsException() {
+        when(accountRepository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> accountService.transfer(1L, 2L, BigDecimal.TEN));
+    }
+
+    @Test
+    void transfer_ReceiverNotFound_ThrowsException() {
+        when(accountRepository.findById(1L)).thenReturn(Optional.of(testAccount));
+        when(accountRepository.findById(2L)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> accountService.transfer(1L, 2L, BigDecimal.TEN));
+    }
+
+    @Test
+    void transfer_SenderInactive_ThrowsException() {
+        Account toAccount = Account.builder().id(2L).status(AccountStatus.ACTIVE).build();
+        testAccount.setStatus(AccountStatus.LOCKED);
+
+        when(accountRepository.findById(1L)).thenReturn(Optional.of(testAccount));
+        when(accountRepository.findById(2L)).thenReturn(Optional.of(toAccount));
+
+        assertThrows(InactiveAccountException.class, () -> accountService.transfer(1L, 2L, BigDecimal.TEN));
+    }
+
+    @Test
+    void transfer_ReceiverInactive_ThrowsException() {
+        Account toAccount = Account.builder().id(2L).status(AccountStatus.CLOSED).build();
+
+        when(accountRepository.findById(1L)).thenReturn(Optional.of(testAccount));
+        when(accountRepository.findById(2L)).thenReturn(Optional.of(toAccount));
+
+        assertThrows(InactiveAccountException.class, () -> accountService.transfer(1L, 2L, BigDecimal.TEN));
+    }
+
+    @Test
+    void transferByAccountNumber_EmptyAccountNumbers_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> accountService.transferByAccountNumber(null, "123", BigDecimal.TEN));
+        assertThrows(IllegalArgumentException.class, () -> accountService.transferByAccountNumber("", "123", BigDecimal.TEN));
+        assertThrows(IllegalArgumentException.class, () -> accountService.transferByAccountNumber("123", null, BigDecimal.TEN));
+        assertThrows(IllegalArgumentException.class, () -> accountService.transferByAccountNumber("123", "", BigDecimal.TEN));
+    }
+
+    @Test
+    void transferByAccountNumber_SameAccount_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> accountService.transferByAccountNumber("123", "123", BigDecimal.TEN));
+    }
+
+    @Test
+    void transferByAccountNumber_InvalidAmount_ThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> accountService.transferByAccountNumber("123", "456", null));
+        assertThrows(IllegalArgumentException.class, () -> accountService.transferByAccountNumber("123", "456", BigDecimal.ZERO));
+    }
+
+    @Test
+    void transferByAccountNumber_SenderNotFound_ThrowsException() {
+        when(accountRepository.findByAccountNumber("123")).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> accountService.transferByAccountNumber("123", "456", BigDecimal.TEN));
+    }
+
+    @Test
+    void transferByAccountNumber_ReceiverNotFound_ThrowsException() {
+        when(accountRepository.findByAccountNumber("123")).thenReturn(Optional.of(testAccount));
+        when(accountRepository.findByAccountNumber("456")).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> accountService.transferByAccountNumber("123", "456", BigDecimal.TEN));
+    }
+
+    @Test
+    void transferByAccountNumber_SenderInactive_ThrowsException() {
+        Account toAccount = Account.builder().accountNumber("456").status(AccountStatus.ACTIVE).build();
+        testAccount.setStatus(AccountStatus.LOCKED);
+
+        when(accountRepository.findByAccountNumber("123")).thenReturn(Optional.of(testAccount));
+        when(accountRepository.findByAccountNumber("456")).thenReturn(Optional.of(toAccount));
+
+        assertThrows(InactiveAccountException.class, () -> accountService.transferByAccountNumber("123", "456", BigDecimal.TEN));
+    }
+
+    @Test
+    void transferByAccountNumber_ReceiverInactive_ThrowsException() {
+        Account toAccount = Account.builder().accountNumber("456").status(AccountStatus.CLOSED).build();
+
+        when(accountRepository.findByAccountNumber("123")).thenReturn(Optional.of(testAccount));
+        when(accountRepository.findByAccountNumber("456")).thenReturn(Optional.of(toAccount));
+
+        assertThrows(InactiveAccountException.class, () -> accountService.transferByAccountNumber("123", "456", BigDecimal.TEN));
+    }
+}

@@ -68,5 +68,13 @@ public class AuthResponse {
     public void setFirstLogin(boolean firstLogin) {
         this.firstLogin = firstLogin;
     }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }
 

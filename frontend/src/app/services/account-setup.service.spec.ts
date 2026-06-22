@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AccountSetupService } from './account-setup.service';
-import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 
 describe('AccountSetupService', () => {
     let service: AccountSetupService;

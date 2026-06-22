@@ -47,4 +47,70 @@ class BankDetailsServiceTest {
         assertEquals("1234", result.getPin());
         verify(repository).save(details);
     }
+
+    @Test
+    void save_Success() {
+        BankDetails details = new BankDetails();
+        when(repository.save(details)).thenReturn(details);
+        BankDetails result = bankDetailsService.save(details);
+        assertNotNull(result);
+        verify(repository).save(details);
+    }
+
+    @Test
+    void findByAccountNumber_Found() {
+        BankDetails details = new BankDetails();
+        when(repository.findByAccountNumber("123")).thenReturn(Optional.of(details));
+        Optional<BankDetails> result = bankDetailsService.findByAccountNumber("123");
+        assertTrue(result.isPresent());
+    }
+
+    @Test
+    void findByAccountNumber_NotFound() {
+        when(repository.findByAccountNumber("123")).thenReturn(Optional.empty());
+        Optional<BankDetails> result = bankDetailsService.findByAccountNumber("123");
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    void findById_Found() {
+        BankDetails details = new BankDetails();
+        when(repository.findById(1L)).thenReturn(Optional.of(details));
+        Optional<BankDetails> result = bankDetailsService.findById(1L);
+        assertTrue(result.isPresent());
+    }
+
+    @Test
+    void findById_NotFound() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+        Optional<BankDetails> result = bankDetailsService.findById(1L);
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    void findByUserName_Found() {
+        BankDetails details = new BankDetails();
+        when(repository.findByUserName("user")).thenReturn(Optional.of(details));
+        Optional<BankDetails> result = bankDetailsService.findByUserName("user");
+        assertTrue(result.isPresent());
+    }
+
+    @Test
+    void findByUserName_NotFound() {
+        when(repository.findByUserName("user")).thenReturn(Optional.empty());
+        Optional<BankDetails> result = bankDetailsService.findByUserName("user");
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    void setupUpi_NotFound_ThrowsException() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> bankDetailsService.setupUpi(1L, "upi"));
+    }
+
+    @Test
+    void updatePin_NotFound_ThrowsException() {
+        when(repository.findByUserName("user")).thenReturn(Optional.empty());
+        assertThrows(IllegalArgumentException.class, () -> bankDetailsService.updatePin("user", "1234"));
+    }
 }

@@ -7,7 +7,6 @@ import { AccountSetupService } from '../services/account-setup.service';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { AuthService } from '../services/auth.service';
 
 describe('TransferComponent', () => {
@@ -31,33 +30,34 @@ describe('TransferComponent', () => {
     Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
     // Mock Canvas for charts
+    const dummyCtx = {
+      clearRect: jasmine.createSpy('clearRect'),
+      fillRect: jasmine.createSpy('fillRect'),
+      getImageData: jasmine.createSpy('getImageData'),
+      putImageData: jasmine.createSpy('putImageData'),
+      createImageData: jasmine.createSpy('createImageData'),
+      setTransform: jasmine.createSpy('setTransform'),
+      drawImage: jasmine.createSpy('drawImage'),
+      save: jasmine.createSpy('save'),
+      restore: jasmine.createSpy('restore'),
+      beginPath: jasmine.createSpy('beginPath'),
+      moveTo: jasmine.createSpy('moveTo'),
+      lineTo: jasmine.createSpy('lineTo'),
+      closePath: jasmine.createSpy('closePath'),
+      stroke: jasmine.createSpy('stroke'),
+      fill: jasmine.createSpy('fill'),
+      measureText: jasmine.createSpy('measureText').and.returnValue({ width: 0 }),
+      fillText: jasmine.createSpy('fillText'),
+      strokeText: jasmine.createSpy('strokeText'),
+      arc: jasmine.createSpy('arc'),
+      rect: jasmine.createSpy('rect'),
+      clip: jasmine.createSpy('clip'),
+      translate: jasmine.createSpy('translate'),
+      scale: jasmine.createSpy('scale'),
+      rotate: jasmine.createSpy('rotate'),
+    };
     Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
-      value: vi.fn(() => ({
-        clearRect: vi.fn(),
-        fillRect: vi.fn(),
-        getImageData: vi.fn(),
-        putImageData: vi.fn(),
-        createImageData: vi.fn(),
-        setTransform: vi.fn(),
-        drawImage: vi.fn(),
-        save: vi.fn(),
-        restore: vi.fn(),
-        beginPath: vi.fn(),
-        moveTo: vi.fn(),
-        lineTo: vi.fn(),
-        closePath: vi.fn(),
-        stroke: vi.fn(),
-        fill: vi.fn(),
-        measureText: vi.fn(() => ({ width: 0 })),
-        fillText: vi.fn(),
-        strokeText: vi.fn(),
-        arc: vi.fn(),
-        rect: vi.fn(),
-        clip: vi.fn(),
-        translate: vi.fn(),
-        scale: vi.fn(),
-        rotate: vi.fn(),
-      }))
+      value: jasmine.createSpy('getContext').and.returnValue(dummyCtx)
     });
 
     await TestBed.configureTestingModule({
@@ -84,14 +84,14 @@ describe('TransferComponent', () => {
   });
 
   it('should load account data on init', () => {
-    vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
-    vi.spyOn(accountSetupService, 'getAccountByUser').mockReturnValue(of({ accountNumber: '123456789012' }));
+    spyOn(authService, 'getCurrentUser').and.returnValue({ name: 'testuser', email: 'testuser@company.com' });
+    spyOn(accountSetupService, 'getAccountByUser').and.returnValue(of({ accountNumber: '123456789012' }));
     component.ngOnInit();
     expect(accountSetupService.getAccountByUser).toHaveBeenCalled();
   });
 
   it('should execute transfer successfully', () => {
-    vi.spyOn(transactionService, 'executeTransfer').mockReturnValue(of({ status: 'SUCCESS' }));
+    spyOn(transactionService, 'executeTransfer').and.returnValue(of({ status: 'SUCCESS' }));
     component.pin = '1234';
     component.userPin = '1234';
     component.myAccountNumber = '123456789012';

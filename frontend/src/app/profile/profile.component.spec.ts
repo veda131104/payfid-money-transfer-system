@@ -7,13 +7,15 @@ import { AccountSetupService } from '../services/account-setup.service';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 describe('ProfileComponent', () => {
     let component: ProfileComponent;
     let fixture: ComponentFixture<ProfileComponent>;
     let authService: AuthService;
     let accountSetupService: AccountSetupService;
+    let getCurrentUserSpy: jasmine.Spy;
+    let getAccountByUserSpy: jasmine.Spy;
+    let updateAccountSpy: jasmine.Spy;
 
     beforeEach(async () => {
         // Mock localStorage
@@ -46,9 +48,9 @@ describe('ProfileComponent', () => {
         accountSetupService = TestBed.inject(AccountSetupService);
 
         // Add default mocks to prevent subscription errors
-        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
-        vi.spyOn(accountSetupService, 'getAccountByUser').mockReturnValue(of({ holderName: 'testuser', createdAt: new Date().toISOString() }));
-        vi.spyOn(accountSetupService, 'updateAccount').mockReturnValue(of({ name: 'updated' }));
+        getCurrentUserSpy = spyOn(authService, 'getCurrentUser').and.returnValue({ name: 'testuser', email: 'testuser@company.com' });
+        getAccountByUserSpy = spyOn(accountSetupService, 'getAccountByUser').and.returnValue(of({ holderName: 'testuser', createdAt: new Date().toISOString() }));
+        updateAccountSpy = spyOn(accountSetupService, 'updateAccount').and.returnValue(of({ name: 'updated' }));
     });
 
     afterEach(() => {
@@ -60,8 +62,8 @@ describe('ProfileComponent', () => {
     });
 
     it('should load profile data on init', () => {
-        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
-        vi.spyOn(accountSetupService, 'getAccountByUser').mockReturnValue(of({ holderName: 'testuser', upiId: 'test@upi' }));
+        getCurrentUserSpy.and.returnValue({ name: 'testuser', email: 'testuser@company.com' });
+        getAccountByUserSpy.and.returnValue(of({ holderName: 'testuser', upiId: 'test@upi' }));
 
         component.ngOnInit();
 
@@ -70,8 +72,8 @@ describe('ProfileComponent', () => {
 
     it('should update profile successfully', () => {
         fixture.detectChanges();
-        vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
-        vi.spyOn(accountSetupService, 'updateAccount').mockReturnValue(of({ name: 'updated' }));
+        getCurrentUserSpy.and.returnValue({ name: 'testuser', email: 'testuser@company.com' });
+        updateAccountSpy.and.returnValue(of({ name: 'updated' }));
 
         component.profileForm.patchValue({
             email: 'test@example.com',

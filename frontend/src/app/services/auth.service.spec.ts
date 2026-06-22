@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
-import { describe, it, beforeEach, afterEach, expect } from 'vitest';
 
 describe('AuthService', () => {
     let service: AuthService;
@@ -38,7 +37,7 @@ describe('AuthService', () => {
     });
 
     it('should signup', () => {
-        const mockResponse = { name: 'test' };
+        const mockResponse = { name: 'test', email: 'test@test.com' };
         const payload = { name: 'test', password: 'pass', email: 'test@test.com' };
         service.signup(payload).subscribe(res => {
             expect(res).toEqual(mockResponse);

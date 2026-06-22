@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TransactionService } from './transaction.service';
-import { describe, it, beforeEach, afterEach, expect } from 'vitest';
 
 describe('TransactionService', () => {
     let service: TransactionService;
@@ -56,6 +55,6 @@ describe('TransactionService', () => {
         const tx: any = { id: '1', amount: '100', date: new Date(), type: 'debit', status: 'SUCCESS', referenceId: 'REF1' };
         service.addTransaction(tx);
         const history = service.getTransactions();
-        expect(history).toContainEqual(tx);
+        expect(history[0]).toEqual(tx);
     });
 });

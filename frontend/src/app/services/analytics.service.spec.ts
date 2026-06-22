@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { AnalyticsService } from './analytics.service';
-import { describe, it, beforeEach, afterEach, expect } from 'vitest';
 
 describe('AnalyticsService', () => {
     let service: AnalyticsService;

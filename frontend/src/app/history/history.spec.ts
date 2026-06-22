@@ -6,7 +6,6 @@ import { TransactionService } from '../services/transaction.service';
 import { AuthService } from '../services/auth.service';
 import { of } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { AccountSetupService } from '../services/account-setup.service';
 
 describe('HistoryComponent', () => {
@@ -15,6 +14,10 @@ describe('HistoryComponent', () => {
   let transactionService: TransactionService;
   let authService: AuthService;
   let accountSetupService: AccountSetupService;
+  let getCurrentUserSpy: jasmine.Spy;
+  let getAccountByUserSpy: jasmine.Spy;
+  let getAccountByNumberSpy: jasmine.Spy;
+  let getAccountHistorySpy: jasmine.Spy;
 
   beforeEach(async () => {
     // Mock localStorage
@@ -30,86 +33,87 @@ describe('HistoryComponent', () => {
     Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
     // Mock Canvas for charts
+    const dummyCtx = {
+      clearRect: jasmine.createSpy('clearRect'),
+      fillRect: jasmine.createSpy('fillRect'),
+      getImageData: jasmine.createSpy('getImageData'),
+      putImageData: jasmine.createSpy('putImageData'),
+      createImageData: jasmine.createSpy('createImageData'),
+      setTransform: jasmine.createSpy('setTransform'),
+      drawImage: jasmine.createSpy('drawImage'),
+      save: jasmine.createSpy('save'),
+      restore: jasmine.createSpy('restore'),
+      beginPath: jasmine.createSpy('beginPath'),
+      moveTo: jasmine.createSpy('moveTo'),
+      lineTo: jasmine.createSpy('lineTo'),
+      closePath: jasmine.createSpy('closePath'),
+      stroke: jasmine.createSpy('stroke'),
+      fill: jasmine.createSpy('fill'),
+      measureText: jasmine.createSpy('measureText').and.returnValue({ width: 0 }),
+      fillText: jasmine.createSpy('fillText'),
+      strokeText: jasmine.createSpy('strokeText'),
+      createLinearGradient: jasmine.createSpy('createLinearGradient').and.returnValue({
+        addColorStop: jasmine.createSpy('addColorStop')
+      }),
+      createRadialGradient: jasmine.createSpy('createRadialGradient').and.returnValue({
+        addColorStop: jasmine.createSpy('addColorStop')
+      }),
+      createPattern: jasmine.createSpy('createPattern'),
+      arc: jasmine.createSpy('arc'),
+      rect: jasmine.createSpy('rect'),
+      clip: jasmine.createSpy('clip'),
+      translate: jasmine.createSpy('translate'),
+      scale: jasmine.createSpy('scale'),
+      rotate: jasmine.createSpy('rotate'),
+      globalAlpha: 1,
+      globalCompositeOperation: 'source-over',
+      strokeStyle: '#000',
+      fillStyle: '#000',
+      shadowOffsetX: 0,
+      shadowOffsetY: 0,
+      shadowBlur: 0,
+      shadowColor: 'rgba(0, 0, 0, 0)',
+      lineWidth: 1,
+      lineCap: 'butt',
+      lineJoin: 'miter',
+      miterLimit: 10,
+      font: '10px sans-serif',
+      textAlign: 'start',
+      textBaseline: 'alphabetic',
+      direction: 'ltr',
+      imageSmoothingEnabled: true,
+      lineDashOffset: 0,
+      setLineDash: jasmine.createSpy('setLineDash'),
+      getLineDash: jasmine.createSpy('getLineDash').and.returnValue([]),
+      isPointInPath: jasmine.createSpy('isPointInPath'),
+      isPointInStroke: jasmine.createSpy('isPointInStroke'),
+      resetTransform: jasmine.createSpy('resetTransform'),
+      filter: 'none',
+      getContextAttributes: jasmine.createSpy('getContextAttributes').and.returnValue({
+        alpha: true,
+        desynchronized: false,
+        willReadFrequently: false
+      }),
+      drawFocusIfNeeded: jasmine.createSpy('drawFocusIfNeeded'),
+      scrollPathIntoView: jasmine.createSpy('scrollPathIntoView'),
+      roundRect: jasmine.createSpy('roundRect'),
+      ellipse: jasmine.createSpy('ellipse'),
+      reset: jasmine.createSpy('reset'),
+      getTransform: jasmine.createSpy('getTransform').and.returnValue({
+        a: 1, b: 0, c: 0, d: 1, e: 0, f: 0,
+        invertSelf: jasmine.createSpy('invertSelf'),
+        multiplySelf: jasmine.createSpy('multiplySelf'),
+        preMultiplySelf: jasmine.createSpy('preMultiplySelf'),
+        rotateSelf: jasmine.createSpy('rotateSelf'),
+        scaleSelf: jasmine.createSpy('scaleSelf'),
+        setTransform: jasmine.createSpy('setTransform'),
+        skewXSelf: jasmine.createSpy('skewXSelf'),
+        skewYSelf: jasmine.createSpy('skewYSelf'),
+        translateSelf: jasmine.createSpy('translateSelf')
+      })
+    };
     Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
-      value: vi.fn(() => ({
-        clearRect: vi.fn(),
-        fillRect: vi.fn(),
-        getImageData: vi.fn(),
-        putImageData: vi.fn(),
-        createImageData: vi.fn(),
-        setTransform: vi.fn(),
-        drawImage: vi.fn(),
-        save: vi.fn(),
-        restore: vi.fn(),
-        beginPath: vi.fn(),
-        moveTo: vi.fn(),
-        lineTo: vi.fn(),
-        closePath: vi.fn(),
-        stroke: vi.fn(),
-        fill: vi.fn(),
-        measureText: vi.fn(() => ({ width: 0 })),
-        fillText: vi.fn(),
-        strokeText: vi.fn(),
-        createLinearGradient: vi.fn(() => ({
-          addColorStop: vi.fn()
-        })),
-        createRadialGradient: vi.fn(() => ({
-          addColorStop: vi.fn()
-        })),
-        createPattern: vi.fn(),
-        arc: vi.fn(),
-        rect: vi.fn(),
-        clip: vi.fn(),
-        translate: vi.fn(),
-        scale: vi.fn(),
-        rotate: vi.fn(),
-        globalAlpha: 1,
-        globalCompositeOperation: 'source-over',
-        strokeStyle: '#000',
-        fillStyle: '#000',
-        shadowOffsetX: 0,
-        shadowOffsetY: 0,
-        shadowBlur: 0,
-        shadowColor: 'rgba(0, 0, 0, 0)',
-        lineWidth: 1,
-        lineCap: 'butt',
-        lineJoin: 'miter',
-        miterLimit: 10,
-        font: '10px sans-serif',
-        textAlign: 'start',
-        textBaseline: 'alphabetic',
-        direction: 'ltr',
-        imageSmoothingEnabled: true,
-        lineDashOffset: 0,
-        setLineDash: vi.fn(),
-        getLineDash: vi.fn(() => []),
-        isPointInPath: vi.fn(),
-        isPointInStroke: vi.fn(),
-        resetTransform: vi.fn(),
-        filter: 'none',
-        getContextAttributes: vi.fn(() => ({
-          alpha: true,
-          desynchronized: false,
-          willReadFrequently: false
-        })),
-        drawFocusIfNeeded: vi.fn(),
-        scrollPathIntoView: vi.fn(),
-        roundRect: vi.fn(),
-        ellipse: vi.fn(),
-        reset: vi.fn(),
-        getTransform: vi.fn(() => ({
-          a: 1, b: 0, c: 0, d: 1, e: 0, f: 0,
-          invertSelf: vi.fn(),
-          multiplySelf: vi.fn(),
-          preMultiplySelf: vi.fn(),
-          rotateSelf: vi.fn(),
-          scaleSelf: vi.fn(),
-          setTransform: vi.fn(),
-          skewXSelf: vi.fn(),
-          skewYSelf: vi.fn(),
-          translateSelf: vi.fn()
-        }))
-      }))
+      value: jasmine.createSpy('getContext').and.returnValue(dummyCtx)
     });
 
     await TestBed.configureTestingModule({
@@ -124,10 +128,10 @@ describe('HistoryComponent', () => {
     authService = TestBed.inject(AuthService);
     accountSetupService = TestBed.inject(AccountSetupService);
 
-    vi.spyOn(authService, 'getCurrentUser').mockReturnValue({ name: 'testuser', email: 'testuser@company.com' });
-    vi.spyOn(accountSetupService, 'getAccountByUser').mockReturnValue(of({ accountNumber: '123456789012' }));
-    vi.spyOn(accountSetupService, 'getAccountByNumber').mockReturnValue(of({ balance: 1000, id: 1 }));
-    vi.spyOn(transactionService, 'getAccountHistory').mockReturnValue(of([]));
+    getCurrentUserSpy = spyOn(authService, 'getCurrentUser').and.returnValue({ name: 'testuser', email: 'testuser@company.com' });
+    getAccountByUserSpy = spyOn(accountSetupService, 'getAccountByUser').and.returnValue(of({ accountNumber: '123456789012' }));
+    getAccountByNumberSpy = spyOn(accountSetupService, 'getAccountByNumber').and.returnValue(of({ balance: 1000, id: 1 }));
+    getAccountHistorySpy = spyOn(transactionService, 'getAccountHistory').and.returnValue(of([]));
 
     fixture.detectChanges();
   });
