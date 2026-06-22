@@ -84,9 +84,26 @@ export class SignupComponent {
     const { username, email, password } = this.form.getRawValue();
     this.authService.signup({ name: username, email, password }).subscribe({
       next: () => {
-        this.loading = false;
-        alert('Signup successful! Please log in to complete your account setup.');
-        this.router.navigate(['/']);
+        this.authService.login({ name: username, password, rememberMe: false }).subscribe({
+          next: (loginRes) => {
+            this.loading = false;
+            if (loginRes.rememberToken) {
+              localStorage.setItem('remember_token', loginRes.rememberToken);
+            } else {
+              localStorage.removeItem('remember_token');
+            }
+            if (loginRes.firstLogin) {
+              this.router.navigate(['/account-setup']);
+            } else {
+              this.router.navigate(['/dashboard']);
+            }
+          },
+          error: () => {
+            this.loading = false;
+            alert('Signup successful! Please log in to complete your account setup.');
+            this.router.navigate(['/']);
+          }
+        });
       },
       error: error => {
         this.loading = false;

@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
 @RequestMapping("/api/v1/account-setup")
@@ -47,9 +49,18 @@ public class AccountSetupController {
         log.info("[AccountSetupController] POST / - Received account setup request for userName='{}', accountNumber='{}', bankName='{}'",
                 request.getUserName(), request.getAccountNumber(), request.getBankName());
         try {
-            // Validate that userName is present (required for unique UPI ID generation)
+            // Ensure userName is present: prefer request value, otherwise try to infer from the security context (JWT)
             if (request.getUserName() == null || request.getUserName().isBlank()) {
-                log.warn("[AccountSetupController] POST / - REJECTED: Missing userName in request");
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated() && auth.getName() != null && !auth.getName().isBlank()) {
+                    request.setUserName(auth.getName());
+                    log.info("[AccountSetupController] POST / - Inferred userName '{}' from security context", auth.getName());
+                }
+            }
+
+            // If still missing, reject the request
+            if (request.getUserName() == null || request.getUserName().isBlank()) {
+                log.warn("[AccountSetupController] POST / - REJECTED: Missing userName in request and security context");
                 Map<String, String> error = new HashMap<>();
                 error.put("message", "User not logged in or session expired. Please log in and try again.");
                 return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);

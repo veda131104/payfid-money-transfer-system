@@ -143,24 +143,39 @@ public class AuthService {
     }
 
     public AuthUser loginWithToken(String token) {
-        log.info("[AuthService] loginWithToken: Verifying magic link token");
-        AuthUser user = authUserRepository.findByRecoveryToken(token)
-                .orElseThrow(() -> {
-                    log.warn("[AuthService] loginWithToken: Invalid recovery link token");
-                    return new IllegalArgumentException("Invalid recovery link");
-                });
+        log.info("[AuthService] loginWithToken: Verifying provided token");
 
-        if (user.getRecoveryTokenExpiry().isBefore(LocalDateTime.now())) {
-            log.warn("[AuthService] loginWithToken: Recovery link EXPIRED for user '{}'", user.getName());
-            throw new IllegalArgumentException("Recovery link has expired");
+        AuthUser user = authUserRepository.findByRecoveryToken(token)
+                .orElse(null);
+
+        if (user != null) {
+            log.info("[AuthService] loginWithToken: Found recovery token for user='{}'", user.getName());
+            if (user.getRecoveryTokenExpiry() == null || user.getRecoveryTokenExpiry().isBefore(LocalDateTime.now())) {
+                log.warn("[AuthService] loginWithToken: Recovery link EXPIRED for user '{}'", user.getName());
+                throw new IllegalArgumentException("Recovery link has expired");
+            }
+
+            // Clear token after use for security
+            user.setRecoveryToken(null);
+            user.setRecoveryTokenExpiry(null);
+            authUserRepository.save(user);
+
+            log.info("[AuthService] loginWithToken: User '{}' logged in successfully via recovery token", user.getName());
+            return user;
         }
 
-        // Clear token after use for security
-        user.setRecoveryToken(null);
-        user.setRecoveryTokenExpiry(null);
-        authUserRepository.save(user);
+        user = authUserRepository.findByRememberToken(token)
+                .orElseThrow(() -> {
+                    log.warn("[AuthService] loginWithToken: Invalid recovery or remember token");
+                    return new IllegalArgumentException("Invalid login token");
+                });
 
-        log.info("[AuthService] loginWithToken: User '{}' logged in successfully via magic link", user.getName());
+        if (user.getRememberTokenExpiry() == null || user.getRememberTokenExpiry().isBefore(LocalDateTime.now())) {
+            log.warn("[AuthService] loginWithToken: Remember token EXPIRED for user '{}'", user.getName());
+            throw new IllegalArgumentException("Remember token has expired");
+        }
+
+        log.info("[AuthService] loginWithToken: User '{}' logged in successfully via remember token", user.getName());
         return user;
     }
 
