@@ -174,17 +174,7 @@ public class AccountSetupController {
 
         // Use userName (always unique) as UPI prefix to avoid conflicts
         String prefix = userName.toLowerCase().replaceAll("[^a-z0-9]", "");
-        String suffix = "@upi";
-
-        String bank = bankName.toUpperCase();
-        if (bank.contains("HDFC"))
-            suffix = "@fihdfc";
-        else if (bank.contains("ICICI"))
-            suffix = "@icici";
-        else if (bank.contains("SBI"))
-            suffix = "@oksbi";
-        else if (bank.contains("AXIS"))
-            suffix = "@axisbank";
+        String suffix = "@payfid";
 
         String upiId = prefix + suffix;
         log.debug("[AccountSetupController] generateUpiId: userName='{}', bankName='{}' => upiId='{}'", userName, bankName, upiId);

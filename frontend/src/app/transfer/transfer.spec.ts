@@ -106,12 +106,12 @@ describe('TransferComponent', () => {
     expect(console.error).toHaveBeenCalled();
   });
 
-  it('should format account number input (digits only, max 18)', () => {
+  it('should format account number input (alphanumeric and @. allowed, max 50)', () => {
     const inputEl = document.createElement('input');
-    inputEl.value = '123-abc-45678901234567890';
+    inputEl.value = 'user@payfid-12345678901234567890123456789012345678901234567890';
     component.onAccountNumberInput({ target: inputEl } as any);
-    expect(inputEl.value).toBe('123456789012345678');
-    expect(component.accountNumber).toBe('123456789012345678');
+    expect(inputEl.value).toBe('user@payfid123456789012345678901234567890123456789');
+    expect(component.accountNumber).toBe('user@payfid123456789012345678901234567890123456789');
   });
 
   it('should format amount input (digits and single decimal point only)', () => {
@@ -152,17 +152,23 @@ describe('TransferComponent', () => {
     // Empty account number
     component.accountNumber = '';
     component.onSendMoney();
-    expect(alertSpy).toHaveBeenCalledWith("Please enter the recipient's account number.");
+    expect(alertSpy).toHaveBeenCalledWith("Please enter the recipient's account number or UPI ID.");
 
     // Length < 9
     component.accountNumber = '123';
     component.onSendMoney();
     expect(alertSpy).toHaveBeenCalledWith('Account number must be between 9 and 18 digits.');
 
-    // Self-transfer
+    // Self-transfer via account number
     component.accountNumber = '111122223333';
     component.onSendMoney();
-    expect(alertSpy).toHaveBeenCalledWith('Self-transfer is not allowed. Please enter a different recipient account number.');
+    expect(alertSpy).toHaveBeenCalledWith('self transfer is not allowed');
+
+    // Self-transfer via UPI ID
+    component.myUpiId = 'user@payfid';
+    component.accountNumber = 'user@payfid';
+    component.onSendMoney();
+    expect(alertSpy).toHaveBeenCalledWith('self transfer is not allowed');
 
     // Empty amount
     component.accountNumber = '999999999999';

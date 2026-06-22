@@ -146,6 +146,14 @@ public class TransactionService {
                 logger.info("Executing transfer by account numbers - From: {}, To: {}, Amount: {}",
                                 fromAccountNumber, toAccountNumber, amount);
 
+                // Resolve UPI ID to Account Number if it looks like a UPI ID
+                if (toAccountNumber != null && toAccountNumber.contains("@")) {
+                    final String upiId = toAccountNumber;
+                    BankDetails bankDetails = bankDetailsRepository.findByUpiId(upiId)
+                            .orElseThrow(() -> new IllegalArgumentException("Invalid UPI ID: " + upiId));
+                    toAccountNumber = bankDetails.getAccountNumber();
+                }
+
                 if (fromAccountNumber.equals(toAccountNumber)) {
                         throw new IllegalArgumentException("Self-transfer is not allowed.");
                 }

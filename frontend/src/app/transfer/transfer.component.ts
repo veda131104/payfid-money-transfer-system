@@ -38,6 +38,7 @@ export class TransferComponent {
   // Personalized data
   userName: string = 'User';
   myAccountNumber: string = '000000000000';
+  myUpiId: string = '';
 
   constructor(
     private router: Router,
@@ -54,6 +55,7 @@ export class TransferComponent {
         next: (details: any) => {
           if (details) {
             this.myAccountNumber = details.accountNumber;
+            this.myUpiId = details.upiId;
             this.userPin = details.pin || ''; // Remove fallback
             this.cdr.detectChanges();
           }
@@ -74,7 +76,7 @@ export class TransferComponent {
 
   onAccountNumberInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const value = input.value.replace(/[^0-9]/g, '').slice(0, 18);
+    const value = input.value.replace(/[^0-9a-zA-Z@.]/g, '').slice(0, 50);
     input.value = value;
     this.accountNumber = value;
   }
@@ -101,17 +103,19 @@ export class TransferComponent {
   onSendMoney(): void {
     // Validation
     if (!this.accountNumber.trim()) {
-      alert('Please enter the recipient\'s account number.');
+      alert('Please enter the recipient\'s account number or UPI ID.');
       return;
     }
 
-    if (this.accountNumber.length < 9 || this.accountNumber.length > 18) {
-      alert('Account number must be between 9 and 18 digits.');
-      return;
+    if (!this.accountNumber.includes('@')) {
+      if (this.accountNumber.length < 9 || this.accountNumber.length > 18) {
+        alert('Account number must be between 9 and 18 digits.');
+        return;
+      }
     }
 
-    if (this.accountNumber === this.myAccountNumber) {
-      alert('Self-transfer is not allowed. Please enter a different recipient account number.');
+    if (this.accountNumber === this.myAccountNumber || (this.myUpiId && this.accountNumber === this.myUpiId)) {
+      alert('self transfer is not allowed');
       return;
     }
 

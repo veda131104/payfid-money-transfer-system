@@ -67,15 +67,15 @@
             <p class="from-account-number">Account number: {{ myAccountNumber }}</p>
           </div>
 
-          <p>To Account Number</p>
+          <p>To Account Number or UPI ID</p>
           <!-- Input for Account Number -->
-          <input type="text" id="account-number" placeholder="Enter account number"
+          <input type="text" id="account-number" placeholder="Enter account number or UPI ID"
             (input)="onAccountNumberInput($event)" />
-          <p class="account-hint" *ngIf="accountNumber && accountNumber.length < 9"
+          <p class="account-hint" *ngIf="accountNumber && !accountNumber.includes('@') && accountNumber.length < 9"
             style="color: #f57c00; font-size: 0.8rem; margin-top: -0.5rem;">9-18 digits required ({{ accountNumber.length
             }}/18)</p>
-          <p class="account-hint" *ngIf="accountNumber && accountNumber === myAccountNumber"
-            style="color: #e53935; font-size: 0.8rem; margin-top: -0.5rem;">⚠ Self-transfer is not allowed. Please enter a different account number.</p>
+          <p class="account-hint" *ngIf="accountNumber && (accountNumber === myAccountNumber || accountNumber === myUpiId)"
+            style="color: #e53935; font-size: 0.8rem; margin-top: -0.5rem;">⚠ Self-transfer is not allowed. Please enter a different account number or UPI ID.</p>
 
           <p>&#8377;Amount</p>
           <!-- Input for Amount -->
@@ -86,7 +86,7 @@
           <input type="text" id="description" placeholder="Enter transaction description"
             (input)="onDescriptionInput($event)" />
 
-          <button class="send-button" type="button" mat-flat-button [disabled]="accountNumber === myAccountNumber" (click)="onSendMoney()">Send Money</button>
+          <button class="send-button" type="button" mat-flat-button [disabled]="accountNumber === myAccountNumber || accountNumber === myUpiId" (click)="onSendMoney()">Send Money</button>
         </div>
       </div>
 
