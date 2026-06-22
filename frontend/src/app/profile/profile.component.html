@@ -45,7 +45,7 @@
         </button>
         @if (!isNewUser) {
         <button class="pin-button" type="button" mat-stroked-button (click)="onOpenPinModal()">
-          Set PIN
+          {{ profileData.hasPin ? 'Reset PIN' : 'Set PIN' }}
         </button>
         }
       </div>

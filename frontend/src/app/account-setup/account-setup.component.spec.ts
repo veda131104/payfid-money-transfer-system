@@ -171,7 +171,7 @@ describe('AccountSetupComponent', () => {
       address: 'Test Addr',
       ifscCode: 'IFSC123',
       email: 'test@test.com',
-      phoneNumber: '12345678',
+      phoneNumber: '1234567890',
       creditCardNumber: '1111222233334444',
       cvv: '123',
       expiryDate: '12/28'
@@ -190,7 +190,7 @@ describe('AccountSetupComponent', () => {
       address: 'Test Addr',
       ifscCode: 'IFSC123',
       email: 'test@test.com',
-      phoneNumber: '12345678',
+      phoneNumber: '1234567890',
       creditCardNumber: '1111222233334444',
       cvv: '123',
       expiryDate: '12/28',
@@ -212,7 +212,7 @@ describe('AccountSetupComponent', () => {
       address: 'Test Addr',
       ifscCode: 'IFSC123',
       email: 'test@test.com',
-      phoneNumber: '12345678',
+      phoneNumber: '1234567890',
       creditCardNumber: '1111222233334444',
       cvv: '123',
       expiryDate: '12/28',
@@ -235,7 +235,7 @@ describe('AccountSetupComponent', () => {
       address: 'Test Addr',
       ifscCode: 'IFSC123',
       email: 'test@test.com',
-      phoneNumber: '12345678',
+      phoneNumber: '1234567890',
       creditCardNumber: '1111222233334444',
       cvv: '123',
       expiryDate: '12/28',
@@ -323,11 +323,11 @@ describe('AccountSetupComponent', () => {
     component.accountData = { email: 'bob@bob.com' };
     component.editDetailsForm.patchValue({
       email: 'new@bob.com',
-      phoneNumber: '9999',
+      phoneNumber: '1234567890',
       address: 'Addr',
-      creditCardNumber: '111',
-      cvv: '12',
-      expiryDate: '12'
+      creditCardNumber: '1111222233334444',
+      cvv: '123',
+      expiryDate: '12/28'
     });
     authServiceSpy.getCurrentUser.and.returnValue(null);
     component.saveEditDetails();
@@ -339,11 +339,11 @@ describe('AccountSetupComponent', () => {
     component.accountData = { email: 'bob@bob.com', address: 'Old' };
     component.editDetailsForm.patchValue({
       email: 'new@bob.com',
-      phoneNumber: '9999',
+      phoneNumber: '1234567890',
       address: 'New',
-      creditCardNumber: '111',
-      cvv: '12',
-      expiryDate: '12'
+      creditCardNumber: '1111222233334444',
+      cvv: '123',
+      expiryDate: '12/28'
     });
     const updatedMock = { email: 'new@bob.com', address: 'New' };
     svcSpy.updateAccount.and.returnValue(of(updatedMock));
@@ -360,11 +360,11 @@ describe('AccountSetupComponent', () => {
     component.accountData = { email: 'bob@bob.com' };
     component.editDetailsForm.patchValue({
       email: 'new@bob.com',
-      phoneNumber: '9999',
+      phoneNumber: '1234567890',
       address: 'New',
-      creditCardNumber: '111',
-      cvv: '12',
-      expiryDate: '12'
+      creditCardNumber: '1111222233334444',
+      cvv: '123',
+      expiryDate: '12/28'
     });
     svcSpy.updateAccount.and.returnValue(throwError(() => new Error('Server error')));
     component.saveEditDetails();

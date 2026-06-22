@@ -53,6 +53,7 @@ export class ProfileComponent implements OnInit {
     creditCardNumber: 'N/A',
     cvv: 'N/A',
     expiryDate: 'N/A',
+    hasPin: false
   };
 
   constructor(
@@ -95,6 +96,7 @@ export class ProfileComponent implements OnInit {
         this.profileData = {
           ...this.profileData,
           ...data,
+          hasPin: !!data.pin,
           joinDate: data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -150,6 +152,7 @@ export class ProfileComponent implements OnInit {
         this.profileData = {
           ...this.profileData,
           ...data,
+          hasPin: data.pin !== undefined ? !!data.pin : this.profileData.hasPin,
           joinDate: data.createdAt ? new Date(data.createdAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -221,6 +224,7 @@ export class ProfileComponent implements OnInit {
     this.accountSetupService.setPin(user.name, pin).subscribe({
       next: (resp) => {
         console.log('✅ [Profile] PIN update response:', resp);
+        this.profileData.hasPin = true;
         alert('Success! Your PIN has been set.');
         this.onClosePinModal();
       },

@@ -106,12 +106,12 @@ describe('TransferComponent', () => {
     expect(console.error).toHaveBeenCalled();
   });
 
-  it('should format account number input (digits only, max 12)', () => {
+  it('should format account number input (digits only, max 18)', () => {
     const inputEl = document.createElement('input');
-    inputEl.value = '123-abc-456789012345';
+    inputEl.value = '123-abc-45678901234567890';
     component.onAccountNumberInput({ target: inputEl } as any);
-    expect(inputEl.value).toBe('123456789012');
-    expect(component.accountNumber).toBe('123456789012');
+    expect(inputEl.value).toBe('123456789012345678');
+    expect(component.accountNumber).toBe('123456789012345678');
   });
 
   it('should format amount input (digits and single decimal point only)', () => {
@@ -154,10 +154,10 @@ describe('TransferComponent', () => {
     component.onSendMoney();
     expect(alertSpy).toHaveBeenCalledWith("Please enter the recipient's account number.");
 
-    // Length < 12
+    // Length < 9
     component.accountNumber = '123';
     component.onSendMoney();
-    expect(alertSpy).toHaveBeenCalledWith('Account number must be exactly 12 digits.');
+    expect(alertSpy).toHaveBeenCalledWith('Account number must be between 9 and 18 digits.');
 
     // Self-transfer
     component.accountNumber = '111122223333';

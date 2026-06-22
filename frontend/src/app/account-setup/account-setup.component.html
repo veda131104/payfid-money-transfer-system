@@ -62,10 +62,14 @@
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full">
-        <mat-label>Phone Number</mat-label>
-        <input matInput formControlName="phoneNumber" placeholder="+91 ..." />
+        <mat-label>Phone Number (10 digits)</mat-label>
+        <input matInput formControlName="phoneNumber" placeholder="e.g. 9876543210" maxlength="10"
+          inputmode="numeric" (input)="onPhoneInput($event)" />
         @if (form.get('phoneNumber')?.hasError('required') && form.get('phoneNumber')?.touched) {
         <mat-error>Phone Number is required</mat-error>
+        }
+        @if (form.get('phoneNumber')?.hasError('pattern') && form.get('phoneNumber')?.touched) {
+        <mat-error>Phone Number must be exactly 10 digits (no letters)</mat-error>
         }
       </mat-form-field>
 
@@ -88,26 +92,38 @@
       }
 
       <mat-form-field appearance="fill" class="full">
-        <mat-label>Credit Card Number</mat-label>
-        <input matInput formControlName="creditCardNumber" />
+        <mat-label>Credit Card Number (16 digits)</mat-label>
+        <input matInput formControlName="creditCardNumber" maxlength="16"
+          inputmode="numeric" (input)="onCreditCardInput($event)" placeholder="16-digit card number" />
         @if (form.get('creditCardNumber')?.hasError('required') && form.get('creditCardNumber')?.touched) {
         <mat-error>Credit Card Number is required</mat-error>
+        }
+        @if (form.get('creditCardNumber')?.hasError('pattern') && form.get('creditCardNumber')?.touched) {
+        <mat-error>Credit Card Number must be exactly 16 digits (no letters)</mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full">
-        <mat-label>CVV</mat-label>
-        <input matInput formControlName="cvv" maxlength="3" />
+        <mat-label>CVV (3 digits)</mat-label>
+        <input matInput formControlName="cvv" maxlength="3"
+          inputmode="numeric" (input)="onCvvInput($event)" placeholder="e.g. 123" />
         @if (form.get('cvv')?.hasError('required') && form.get('cvv')?.touched) {
         <mat-error>CVV is required</mat-error>
+        }
+        @if (form.get('cvv')?.hasError('pattern') && form.get('cvv')?.touched) {
+        <mat-error>CVV must be exactly 3 digits (no letters)</mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full">
         <mat-label>Expiry Date (MM/YY)</mat-label>
-        <input matInput formControlName="expiryDate" placeholder="MM/YY" maxlength="5" />
+        <input matInput formControlName="expiryDate" placeholder="MM/YY" maxlength="5"
+          inputmode="numeric" (input)="onExpiryInput($event)" />
         @if (form.get('expiryDate')?.hasError('required') && form.get('expiryDate')?.touched) {
         <mat-error>Expiry Date is required</mat-error>
+        }
+        @if (form.get('expiryDate')?.hasError('pattern') && form.get('expiryDate')?.touched) {
+        <mat-error>Expiry Date must be MM/YY with a valid month (01–12)</mat-error>
         }
       </mat-form-field>
 
@@ -192,8 +208,12 @@
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="full">
-          <mat-label>Phone Number</mat-label>
-          <input matInput formControlName="phoneNumber" />
+          <mat-label>Phone Number (10 digits)</mat-label>
+          <input matInput formControlName="phoneNumber" maxlength="10"
+            inputmode="numeric" (input)="onEditPhoneInput($event)" />
+          @if (editDetailsForm.get('phoneNumber')?.hasError('pattern') && editDetailsForm.get('phoneNumber')?.touched) {
+          <mat-error>Phone Number must be exactly 10 digits (no letters)</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="full">
@@ -202,18 +222,30 @@
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="full">
-          <mat-label>Credit Card Number</mat-label>
-          <input matInput formControlName="creditCardNumber" />
+          <mat-label>Credit Card Number (16 digits)</mat-label>
+          <input matInput formControlName="creditCardNumber" maxlength="16"
+            inputmode="numeric" (input)="onEditCreditCardInput($event)" />
+          @if (editDetailsForm.get('creditCardNumber')?.hasError('pattern') && editDetailsForm.get('creditCardNumber')?.touched) {
+          <mat-error>Must be exactly 16 digits (no letters)</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="full">
-          <mat-label>CVV</mat-label>
-          <input matInput formControlName="cvv" maxlength="3" />
+          <mat-label>CVV (3 digits)</mat-label>
+          <input matInput formControlName="cvv" maxlength="3"
+            inputmode="numeric" (input)="onEditCvvInput($event)" />
+          @if (editDetailsForm.get('cvv')?.hasError('pattern') && editDetailsForm.get('cvv')?.touched) {
+          <mat-error>CVV must be exactly 3 digits (no letters)</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="full">
           <mat-label>Expiry Date (MM/YY)</mat-label>
-          <input matInput formControlName="expiryDate" maxlength="5" />
+          <input matInput formControlName="expiryDate" maxlength="5"
+            inputmode="numeric" placeholder="MM/YY" (input)="onEditExpiryInput($event)" />
+          @if (editDetailsForm.get('expiryDate')?.hasError('pattern') && editDetailsForm.get('expiryDate')?.touched) {
+          <mat-error>Expiry Date must be MM/YY with a valid month (01–12)</mat-error>
+          }
         </mat-form-field>
 
         <div class="actions">

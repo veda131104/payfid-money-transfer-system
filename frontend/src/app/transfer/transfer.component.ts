@@ -74,7 +74,7 @@ export class TransferComponent {
 
   onAccountNumberInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const value = input.value.replace(/[^0-9]/g, '').slice(0, 12);
+    const value = input.value.replace(/[^0-9]/g, '').slice(0, 18);
     input.value = value;
     this.accountNumber = value;
   }
@@ -105,8 +105,8 @@ export class TransferComponent {
       return;
     }
 
-    if (this.accountNumber.length < 12) {
-      alert('Account number must be exactly 12 digits.');
+    if (this.accountNumber.length < 9 || this.accountNumber.length > 18) {
+      alert('Account number must be between 9 and 18 digits.');
       return;
     }
 

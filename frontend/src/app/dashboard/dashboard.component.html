@@ -71,32 +71,8 @@
       </div>
     </mat-card>
 
-    <mat-card class="card activity">
-      <div class="card-header">
-        <h2>Recent Activity</h2>
-        <button class="link" routerLink="/history">View all</button>
-      </div>
-      <div class="activity-list">
-        @for (txn of recentTransactions; track txn.id) {
-        <div class="activity-item">
-          <div class="activity-icon" [ngClass]="getDisplayType(txn)">
-            {{ getDisplayType(txn) === 'credit' ? '↓' : '↑' }}
-          </div>
-          <div class="activity-details">
-            <p class="activity-title">{{ txn.description || 'Money Transfer' }}</p>
-            <p class="activity-meta">{{ txn.date | date:'MMM d, h:mm a' }} • {{ txn.referenceId }}</p>
-          </div>
-          <div class="activity-amount" [ngClass]="getDisplayType(txn)">
-            {{ getTransactionSign(txn) }}{{ txn.amount | currency:'INR':'symbol':'1.2-2' }}
-          </div>
-        </div>
-        } @empty {
-        <p class="no-activity">No recent transactions found.</p>
-        }
-      </div>
-    </mat-card>
 
-    <mat-card class="card activity compliance">
+    <mat-card class="card activity">
       <div class="card-header">
         <h2>Recent Payments</h2>
         <button class="link" routerLink="/history">View all</button>
