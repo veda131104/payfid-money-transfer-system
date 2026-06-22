@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { of, throwError } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PopupService } from '../services/popup.service';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;
@@ -16,7 +17,6 @@ describe('LoginComponent', () => {
 
   beforeEach(async () => {
     authServiceSpy = jasmine.createSpyObj('AuthService', ['login']);
-    alertSpy = spyOn(window, 'alert');
 
     // Mock localStorage
     const localStorageMock = (() => {
@@ -47,6 +47,15 @@ describe('LoginComponent', () => {
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
     spyOn(router, 'navigate');
+
+    const popupService = TestBed.inject(PopupService);
+    const originalAlert = popupService.alert;
+    alertSpy = jasmine.createSpy('alert');
+    popupService.alert = (msg: string, title?: string) => {
+      alertSpy(msg);
+      originalAlert.call(popupService, msg, title || 'Alert');
+    };
+
     fixture.detectChanges();
   });
 

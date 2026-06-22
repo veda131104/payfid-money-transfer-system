@@ -9,6 +9,7 @@ import com.company.mts.dto.LoginResponse;
 import com.company.mts.entity.AuthUser;
 import com.company.mts.service.AuthService;
 import com.company.mts.security.JwtTokenProvider;
+import com.company.mts.utils.CryptoUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,7 @@ public class AuthController {
         log.info("[AuthController] POST /signup - Received signup request for name='{}', email='{}'",
                 request.getName(), request.getEmail());
         try {
+            request.setPassword(CryptoUtils.decrypt(request.getPassword()));
             AuthUser user = authService.signup(request);
             AuthResponse resp = new AuthResponse(user.getName());
             resp.setEmail(user.getEmail());
@@ -51,6 +53,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         log.info("[AuthController] POST /login - Received login request for name='{}'", request.getName());
         try {
+            request.setPassword(CryptoUtils.decrypt(request.getPassword()));
             AuthUser user = authService.login(request);
             String token = jwtTokenProvider.generateToken(user);
             LoginResponse resp = new LoginResponse(user.getId(), user.getEmail(), user.getName(), token, user.getRememberToken());
@@ -86,6 +89,9 @@ public class AuthController {
         log.info("[AuthController] GET /credentials/{} - Fetching credentials by remember token", token);
         try {
             CredentialsResponse creds = authService.getCredentialsByToken(token);
+            if (creds != null) {
+                creds.setPassword(CryptoUtils.encrypt(creds.getPassword()));
+            }
             log.info("[AuthController] GET /credentials - Credentials retrieved successfully");
             return ResponseEntity.ok(creds);
         } catch (Exception e) {
@@ -128,6 +134,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         log.info("[AuthController] POST /reset-password - Processing password reset");
         try {
+            request.setNewPassword(CryptoUtils.decrypt(request.getNewPassword()));
             AuthUser user = authService.resetPassword(request);
             String token = jwtTokenProvider.generateToken(user);
             LoginResponse resp = new LoginResponse(user.getId(), user.getEmail(), user.getName(), token, null);

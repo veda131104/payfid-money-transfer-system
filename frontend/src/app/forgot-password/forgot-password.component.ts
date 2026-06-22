@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { PopupService } from '../services/popup.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -26,6 +27,7 @@ import { MatInputModule } from '@angular/material/input';
 export class ForgotPasswordComponent {
   form: FormGroup;
   isSending = false;
+  private readonly popupService = inject(PopupService);
 
   constructor(
     private readonly fb: FormBuilder,
@@ -48,17 +50,12 @@ export class ForgotPasswordComponent {
     this.authService.forgotPassword(name).subscribe({
       next: (resp) => {
         this.isSending = false;
-        if (typeof window !== 'undefined') {
-          alert(resp?.message || 'If an account exists, a reset link has been sent.');
-        }
+        this.popupService.alert(resp?.message || 'If an account exists, a reset link has been sent.', 'Password Reset Link');
         this.router.navigate(['/']);
       },
       error: (err) => {
-        console.error('Forgot password failed:', err);
         this.isSending = false;
-        if (typeof window !== 'undefined') {
-          alert('Failed to send reset email. Please try again later.');
-        }
+        this.popupService.alert('Failed to send reset email. Please try again later.', 'Error');
       }
     });
   }

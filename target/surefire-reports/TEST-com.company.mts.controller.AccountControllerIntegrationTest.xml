@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.company.mts.controller.AccountControllerIntegrationTest" time="3.806" tests="13" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.company.mts.controller.AccountControllerIntegrationTest" time="2.983" tests="13" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -18,7 +18,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="IN"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-17\bin"/>
-    <property name="sun.java.command" value="C:\Users\user\AppData\Local\Temp\surefire8176278657769247451\surefirebooter-20260623013403927_3.jar C:\Users\user\AppData\Local\Temp\surefire8176278657769247451 2026-06-23T01-34-03_833-jvmRun1 surefire-20260623013403927_1tmp surefire_0-20260623013403927_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\user\AppData\Local\Temp\surefire16341792577419836725\surefirebooter-20260623022114431_3.jar C:\Users\user\AppData\Local\Temp\surefire16341792577419836725 2026-06-23T02-21-14_312-jvmRun1 surefire-20260623022114431_1tmp surefire_0-20260623022114431_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="C:\Users\user\Documents\GitHub\payfid-money-transfer-system\target\test-classes;C:\Users\user\Documents\GitHub\payfid-money-transfer-system\target\classes;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-web\3.3.11\spring-boot-starter-web-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter\3.3.11\spring-boot-starter-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot\3.3.11\spring-boot-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\3.3.11\spring-boot-autoconfigure-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-logging\3.3.11\spring-boot-starter-logging-3.3.11.jar;C:\Users\user\.m2\repository\ch\qos\logback\logback-classic\1.5.18\logback-classic-1.5.18.jar;C:\Users\user\.m2\repository\ch\qos\logback\logback-core\1.5.18\logback-core-1.5.18.jar;C:\Users\user\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.23.1\log4j-to-slf4j-2.23.1.jar;C:\Users\user\.m2\repository\org\apache\logging\log4j\log4j-api\2.23.1\log4j-api-2.23.1.jar;C:\Users\user\.m2\repository\org\slf4j\jul-to-slf4j\2.0.17\jul-to-slf4j-2.0.17.jar;C:\Users\user\.m2\repository\jakarta\annotation\jakarta.annotation-api\2.1.1\jakarta.annotation-api-2.1.1.jar;C:\Users\user\.m2\repository\org\yaml\snakeyaml\2.2\snakeyaml-2.2.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-json\3.3.11\spring-boot-starter-json-3.3.11.jar;C:\Users\user\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jdk8\2.17.3\jackson-datatype-jdk8-2.17.3.jar;C:\Users\user\.m2\repository\com\fasterxml\jackson\datatype\jackson-datatype-jsr310\2.17.3\jackson-datatype-jsr310-2.17.3.jar;C:\Users\user\.m2\repository\com\fasterxml\jackson\module\jackson-module-parameter-names\2.17.3\jackson-module-parameter-names-2.17.3.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\3.3.11\spring-boot-starter-tomcat-3.3.11.jar;C:\Users\user\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\10.1.40\tomcat-embed-core-10.1.40.jar;C:\Users\user\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\10.1.40\tomcat-embed-websocket-10.1.40.jar;C:\Users\user\.m2\repository\org\springframework\spring-web\6.1.19\spring-web-6.1.19.jar;C:\Users\user\.m2\repository\org\springframework\spring-beans\6.1.19\spring-beans-6.1.19.jar;C:\Users\user\.m2\repository\io\micrometer\micrometer-observation\1.13.13\micrometer-observation-1.13.13.jar;C:\Users\user\.m2\repository\io\micrometer\micrometer-commons\1.13.13\micrometer-commons-1.13.13.jar;C:\Users\user\.m2\repository\org\springframework\spring-webmvc\6.1.19\spring-webmvc-6.1.19.jar;C:\Users\user\.m2\repository\org\springframework\spring-context\6.1.19\spring-context-6.1.19.jar;C:\Users\user\.m2\repository\org\springframework\spring-expression\6.1.19\spring-expression-6.1.19.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\3.3.11\spring-boot-starter-data-jpa-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\3.3.11\spring-boot-starter-jdbc-3.3.11.jar;C:\Users\user\.m2\repository\com\zaxxer\HikariCP\5.1.0\HikariCP-5.1.0.jar;C:\Users\user\.m2\repository\org\springframework\spring-jdbc\6.1.19\spring-jdbc-6.1.19.jar;C:\Users\user\.m2\repository\org\hibernate\orm\hibernate-core\6.5.3.Final\hibernate-core-6.5.3.Final.jar;C:\Users\user\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.1.0\jakarta.persistence-api-3.1.0.jar;C:\Users\user\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\user\.m2\repository\org\jboss\logging\jboss-logging\3.5.3.Final\jboss-logging-3.5.3.Final.jar;C:\Users\user\.m2\repository\org\hibernate\common\hibernate-commons-annotations\6.0.6.Final\hibernate-commons-annotations-6.0.6.Final.jar;C:\Users\user\.m2\repository\io\smallrye\jandex\3.1.2\jandex-3.1.2.jar;C:\Users\user\.m2\repository\com\fasterxml\classmate\1.7.0\classmate-1.7.0.jar;C:\Users\user\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.5\jaxb-runtime-4.0.5.jar;C:\Users\user\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.5\jaxb-core-4.0.5.jar;C:\Users\user\.m2\repository\org\glassfish\jaxb\txw2\4.0.5\txw2-4.0.5.jar;C:\Users\user\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\user\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\user\.m2\repository\org\antlr\antlr4-runtime\4.13.0\antlr4-runtime-4.13.0.jar;C:\Users\user\.m2\repository\org\springframework\data\spring-data-jpa\3.3.11\spring-data-jpa-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\data\spring-data-commons\3.3.11\spring-data-commons-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\spring-orm\6.1.19\spring-orm-6.1.19.jar;C:\Users\user\.m2\repository\org\springframework\spring-tx\6.1.19\spring-tx-6.1.19.jar;C:\Users\user\.m2\repository\org\slf4j\slf4j-api\2.0.17\slf4j-api-2.0.17.jar;C:\Users\user\.m2\repository\org\springframework\spring-aspects\6.1.19\spring-aspects-6.1.19.jar;C:\Users\user\.m2\repository\com\h2database\h2\2.2.224\h2-2.2.224.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-validation\3.3.11\spring-boot-starter-validation-3.3.11.jar;C:\Users\user\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\10.1.40\tomcat-embed-el-10.1.40.jar;C:\Users\user\.m2\repository\org\hibernate\validator\hibernate-validator\8.0.2.Final\hibernate-validator-8.0.2.Final.jar;C:\Users\user\.m2\repository\jakarta\validation\jakarta.validation-api\3.0.2\jakarta.validation-api-3.0.2.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-aop\3.3.11\spring-boot-starter-aop-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\spring-aop\6.1.19\spring-aop-6.1.19.jar;C:\Users\user\.m2\repository\org\aspectj\aspectjweaver\1.9.24\aspectjweaver-1.9.24.jar;C:\Users\user\.m2\repository\org\projectlombok\lombok\1.18.38\lombok-1.18.38.jar;C:\Users\user\.m2\repository\com\mysql\mysql-connector-j\8.3.0\mysql-connector-j-8.3.0.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-security\3.3.11\spring-boot-starter-security-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\security\spring-security-config\6.3.9\spring-security-config-6.3.9.jar;C:\Users\user\.m2\repository\org\springframework\security\spring-security-web\6.3.9\spring-security-web-6.3.9.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-test\3.3.11\spring-boot-starter-test-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-test\3.3.11\spring-boot-test-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\3.3.11\spring-boot-test-autoconfigure-3.3.11.jar;C:\Users\user\.m2\repository\com\jayway\jsonpath\json-path\2.9.0\json-path-2.9.0.jar;C:\Users\user\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.2\jakarta.xml.bind-api-4.0.2.jar;C:\Users\user\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.3\jakarta.activation-api-2.1.3.jar;C:\Users\user\.m2\repository\net\minidev\json-smart\2.5.2\json-smart-2.5.2.jar;C:\Users\user\.m2\repository\net\minidev\accessors-smart\2.5.2\accessors-smart-2.5.2.jar;C:\Users\user\.m2\repository\org\ow2\asm\asm\9.7.1\asm-9.7.1.jar;C:\Users\user\.m2\repository\org\assertj\assertj-core\3.25.3\assertj-core-3.25.3.jar;C:\Users\user\.m2\repository\org\awaitility\awaitility\4.2.2\awaitility-4.2.2.jar;C:\Users\user\.m2\repository\org\hamcrest\hamcrest\2.2\hamcrest-2.2.jar;C:\Users\user\.m2\repository\org\junit\jupiter\junit-jupiter\5.10.5\junit-jupiter-5.10.5.jar;C:\Users\user\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.5\junit-jupiter-api-5.10.5.jar;C:\Users\user\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\user\.m2\repository\org\junit\platform\junit-platform-commons\1.10.5\junit-platform-commons-1.10.5.jar;C:\Users\user\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\user\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.10.5\junit-jupiter-params-5.10.5.jar;C:\Users\user\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.5\junit-jupiter-engine-5.10.5.jar;C:\Users\user\.m2\repository\org\junit\platform\junit-platform-engine\1.10.5\junit-platform-engine-1.10.5.jar;C:\Users\user\.m2\repository\org\mockito\mockito-core\5.11.0\mockito-core-5.11.0.jar;C:\Users\user\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\user\.m2\repository\org\mockito\mockito-junit-jupiter\5.11.0\mockito-junit-jupiter-5.11.0.jar;C:\Users\user\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\user\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\user\.m2\repository\org\springframework\spring-core\6.1.19\spring-core-6.1.19.jar;C:\Users\user\.m2\repository\org\springframework\spring-jcl\6.1.19\spring-jcl-6.1.19.jar;C:\Users\user\.m2\repository\org\springframework\spring-test\6.1.19\spring-test-6.1.19.jar;C:\Users\user\.m2\repository\org\xmlunit\xmlunit-core\2.9.1\xmlunit-core-2.9.1.jar;C:\Users\user\.m2\repository\io\jsonwebtoken\jjwt-api\0.12.3\jjwt-api-0.12.3.jar;C:\Users\user\.m2\repository\io\jsonwebtoken\jjwt-impl\0.12.3\jjwt-impl-0.12.3.jar;C:\Users\user\.m2\repository\io\jsonwebtoken\jjwt-jackson\0.12.3\jjwt-jackson-0.12.3.jar;C:\Users\user\.m2\repository\com\fasterxml\jackson\core\jackson-databind\2.17.3\jackson-databind-2.17.3.jar;C:\Users\user\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.17.3\jackson-annotations-2.17.3.jar;C:\Users\user\.m2\repository\com\fasterxml\jackson\core\jackson-core\2.17.3\jackson-core-2.17.3.jar;C:\Users\user\.m2\repository\org\springframework\boot\spring-boot-starter-mail\3.3.11\spring-boot-starter-mail-3.3.11.jar;C:\Users\user\.m2\repository\org\springframework\spring-context-support\6.1.19\spring-context-support-6.1.19.jar;C:\Users\user\.m2\repository\org\eclipse\angus\jakarta.mail\2.0.3\jakarta.mail-2.0.3.jar;C:\Users\user\.m2\repository\org\eclipse\angus\angus-activation\2.0.2\angus-activation-2.0.2.jar;C:\Users\user\.m2\repository\org\springframework\security\spring-security-test\6.3.9\spring-security-test-6.3.9.jar;C:\Users\user\.m2\repository\org\springframework\security\spring-security-core\6.3.9\spring-security-core-6.3.9.jar;C:\Users\user\.m2\repository\org\springframework\security\spring-security-crypto\6.3.9\spring-security-crypto-6.3.9.jar;C:\Users\user\.m2\repository\net\snowflake\snowflake-jdbc\3.16.0\snowflake-jdbc-3.16.0.jar;C:\Users\user\.m2\repository\net\bytebuddy\byte-buddy\1.14.17\byte-buddy-1.14.17.jar;C:\Users\user\.m2\repository\net\bytebuddy\byte-buddy-agent\1.14.17\byte-buddy-agent-1.14.17.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -35,7 +35,7 @@
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="FILE_LOG_CHARSET" value="windows-1252"/>
     <property name="java.awt.headless" value="true"/>
-    <property name="surefire.real.class.path" value="C:\Users\user\AppData\Local\Temp\surefire8176278657769247451\surefirebooter-20260623013403927_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\user\AppData\Local\Temp\surefire16341792577419836725\surefirebooter-20260623022114431_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.12+8-LTS-286"/>
@@ -54,7 +54,7 @@
     <property name="user.dir" value="C:\Users\user\Documents\GitHub\payfid-money-transfer-system"/>
     <property name="os.arch" value="amd64"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="PID" value="15912"/>
+    <property name="PID" value="13784"/>
     <property name="sun.os.patch.level" value=""/>
     <property name="CONSOLE_LOG_CHARSET" value="windows-1252"/>
     <property name="native.encoding" value="Cp1252"/>
@@ -65,9 +65,9 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="transferByAccountNumber_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.374">
-    <system-out><![CDATA[2026-06-23T01:34:14.794+05:30  INFO 15912 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.company.mts.controller.AccountControllerIntegrationTest]: AccountControllerIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-06-23T01:34:14.856+05:30  INFO 15912 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.company.mts.Main for test class com.company.mts.controller.AccountControllerIntegrationTest
+  <testcase name="transferByAccountNumber_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.32">
+    <system-out><![CDATA[2026-06-23T02:21:26.309+05:30  INFO 13784 --- [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.company.mts.controller.AccountControllerIntegrationTest]: AccountControllerIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-06-23T02:21:26.343+05:30  INFO 13784 --- [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.company.mts.Main for test class com.company.mts.controller.AccountControllerIntegrationTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -78,105 +78,105 @@
 
  :: Spring Boot ::               (v3.3.11)
 
-2026-06-23T01:34:14.916+05:30  INFO 15912 --- [           main] c.c.m.c.AccountControllerIntegrationTest : Starting AccountControllerIntegrationTest using Java 17.0.12 with PID 15912 (started by user in C:\Users\user\Documents\GitHub\payfid-money-transfer-system)
-2026-06-23T01:34:14.916+05:30 DEBUG 15912 --- [           main] c.c.m.c.AccountControllerIntegrationTest : Running with Spring Boot v3.3.11, Spring v6.1.19
-2026-06-23T01:34:14.916+05:30  INFO 15912 --- [           main] c.c.m.c.AccountControllerIntegrationTest : No active profile set, falling back to 1 default profile: "default"
-2026-06-23T01:34:15.207+05:30  INFO 15912 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-06-23T01:34:15.227+05:30  INFO 15912 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 19 ms. Found 6 JPA repository interfaces.
-2026-06-23T01:34:15.972+05:30  INFO 15912 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-06-23T01:34:15.978+05:30  INFO 15912 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-06-23T01:34:15.994+05:30  INFO 15912 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-06-23T01:34:15.997+05:30  INFO 15912 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
-2026-06-23T01:34:16.015+05:30  INFO 15912 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection conn5: url=jdbc:h2:mem:testdb user=SA
-2026-06-23T01:34:16.015+05:30  INFO 15912 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
-2026-06-23T01:34:16.016+05:30  WARN 15912 --- [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.2.224 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
-2026-06-23T01:34:16.018+05:30  WARN 15912 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2026-06-23T01:34:16.289+05:30  INFO 15912 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-06-23T01:34:16.289+05:30  INFO 15912 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-06-23T01:34:16.730+05:30  INFO 15912 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Initialized with JwtTokenProvider and UserDetailsService
-2026-06-23T01:34:16.787+05:30  INFO 15912 --- [           main] c.c.mts.service.BankDetailsService       : [BankDetailsService] Initialized with BankDetailsRepository
-2026-06-23T01:34:16.944+05:30  INFO 15912 --- [           main] c.c.m.controller.AccountSetupController  : [AccountSetupController] Initialized with BankDetailsService, EmailService, AccountRepository, AuthUserRepository
-2026-06-23T01:34:16.952+05:30  INFO 15912 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Creating BCryptPasswordEncoder bean
-2026-06-23T01:34:16.954+05:30  INFO 15912 --- [           main] com.company.mts.service.AuthService      : [AuthService] Initialized with all dependencies
-2026-06-23T01:34:16.955+05:30  INFO 15912 --- [           main] c.company.mts.controller.AuthController  : [AuthController] Initialized with AuthService and JwtTokenProvider
-2026-06-23T01:34:17.172+05:30  WARN 15912 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-06-23T01:34:17.202+05:30  INFO 15912 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
-2026-06-23T01:34:17.464+05:30  INFO 15912 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Configuring SecurityFilterChain...
-2026-06-23T01:34:17.464+05:30  INFO 15912 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Public endpoints: /api/v1/auth/signup, /api/v1/auth/login, /api/v1/auth/login-with-token
-2026-06-23T01:34:17.464+05:30  INFO 15912 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Public endpoints: /api/v1/auth/forgot-password, /api/v1/auth/reset-password/**
-2026-06-23T01:34:17.464+05:30  INFO 15912 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Public endpoints: /api/v1/account-setup/send-otp, /api/v1/account-setup/verify-otp
-2026-06-23T01:34:17.464+05:30  INFO 15912 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Public endpoints: POST /api/v1/account-setup, /api/v1/rewards/**
-2026-06-23T01:34:17.467+05:30  INFO 15912 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Creating JwtAuthenticationFilter bean
-2026-06-23T01:34:17.473+05:30  INFO 15912 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] SecurityFilterChain configured successfully
-2026-06-23T01:34:17.508+05:30  INFO 15912 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Creating AuthenticationManager bean
-2026-06-23T01:34:17.785+05:30 DEBUG 15912 --- [           main] c.c.m.security.JwtAuthenticationFilter   : Filter 'jwtAuthenticationFilter' configured for use
-2026-06-23T01:34:17.787+05:30  INFO 15912 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-23T01:34:17.787+05:30  INFO 15912 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-23T01:34:17.788+05:30  INFO 15912 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
-2026-06-23T01:34:17.797+05:30  INFO 15912 --- [           main] c.c.m.c.AccountControllerIntegrationTest : Started AccountControllerIntegrationTest in 2.938 seconds (process running for 13.765)
-2026-06-23T01:34:17.798+05:30  INFO 15912 --- [   scheduling-1] com.company.mts.aspect.LoggingAspect     : ==> SERVICE CALL: SnowflakeSyncService.syncToSnowflake() with arguments: []
-2026-06-23T01:34:17.798+05:30  INFO 15912 --- [   scheduling-1] c.c.mts.service.SnowflakeSyncService     : Starting H2 to Snowflake synchronization...
-2026-06-23T01:34:17.802+05:30 ERROR 15912 --- [           main] c.c.mts.config.DatabaseSchemaFixer       : [DatabaseSchemaFixer] Error checking/updating table 'accounts': StatementCallback; bad SQL grammar [SHOW COLUMNS FROM accounts LIKE 'created_on']
-2026-06-23T01:34:17.803+05:30 ERROR 15912 --- [           main] c.c.mts.config.DatabaseSchemaFixer       : [DatabaseSchemaFixer] Error checking/updating table 'bank_details': StatementCallback; bad SQL grammar [SHOW COLUMNS FROM bank_details LIKE 'created_on']
-2026-06-23T01:34:17.804+05:30 ERROR 15912 --- [           main] c.c.mts.config.DatabaseSchemaFixer       : [DatabaseSchemaFixer] Error checking/updating table 'auth_users': StatementCallback; bad SQL grammar [SHOW COLUMNS FROM auth_users LIKE 'created_on']
-2026-06-23T01:34:18.055+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.transferByAccountNumber()
-2026-06-23T01:34:18.064+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.transferByAccountNumber() completed in 9ms
+2026-06-23T02:21:26.395+05:30  INFO 13784 --- [           main] c.c.m.c.AccountControllerIntegrationTest : Starting AccountControllerIntegrationTest using Java 17.0.12 with PID 13784 (started by user in C:\Users\user\Documents\GitHub\payfid-money-transfer-system)
+2026-06-23T02:21:26.395+05:30 DEBUG 13784 --- [           main] c.c.m.c.AccountControllerIntegrationTest : Running with Spring Boot v3.3.11, Spring v6.1.19
+2026-06-23T02:21:26.396+05:30  INFO 13784 --- [           main] c.c.m.c.AccountControllerIntegrationTest : No active profile set, falling back to 1 default profile: "default"
+2026-06-23T02:21:26.732+05:30  INFO 13784 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-23T02:21:26.747+05:30  INFO 13784 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14 ms. Found 6 JPA repository interfaces.
+2026-06-23T02:21:27.154+05:30  INFO 13784 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-23T02:21:27.163+05:30  INFO 13784 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-06-23T02:21:27.185+05:30  INFO 13784 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-23T02:21:27.187+05:30  INFO 13784 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-06-23T02:21:27.188+05:30  INFO 13784 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection conn5: url=jdbc:h2:mem:testdb user=SA
+2026-06-23T02:21:27.188+05:30  INFO 13784 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-06-23T02:21:27.190+05:30  WARN 13784 --- [           main] org.hibernate.dialect.Dialect            : HHH000511: The 2.2.224 version for [org.hibernate.dialect.MySQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 8.0.0. Check the community dialects project for available legacy versions.
+2026-06-23T02:21:27.191+05:30  WARN 13784 --- [           main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-06-23T02:21:27.411+05:30  INFO 13784 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-23T02:21:27.412+05:30  INFO 13784 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-23T02:21:27.712+05:30  INFO 13784 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Initialized with JwtTokenProvider and UserDetailsService
+2026-06-23T02:21:27.768+05:30  INFO 13784 --- [           main] c.c.mts.service.BankDetailsService       : [BankDetailsService] Initialized with BankDetailsRepository
+2026-06-23T02:21:27.905+05:30  INFO 13784 --- [           main] c.c.m.controller.AccountSetupController  : [AccountSetupController] Initialized with BankDetailsService, EmailService, AccountRepository, AuthUserRepository
+2026-06-23T02:21:27.924+05:30  INFO 13784 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Creating BCryptPasswordEncoder bean
+2026-06-23T02:21:27.926+05:30  INFO 13784 --- [           main] com.company.mts.service.AuthService      : [AuthService] Initialized with all dependencies
+2026-06-23T02:21:27.928+05:30  INFO 13784 --- [           main] c.company.mts.controller.AuthController  : [AuthController] Initialized with AuthService and JwtTokenProvider
+2026-06-23T02:21:28.125+05:30  WARN 13784 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-23T02:21:28.148+05:30  INFO 13784 --- [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-06-23T02:21:28.371+05:30  INFO 13784 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Configuring SecurityFilterChain...
+2026-06-23T02:21:28.371+05:30  INFO 13784 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Public endpoints: /api/v1/auth/signup, /api/v1/auth/login, /api/v1/auth/login-with-token
+2026-06-23T02:21:28.371+05:30  INFO 13784 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Public endpoints: /api/v1/auth/forgot-password, /api/v1/auth/reset-password/**
+2026-06-23T02:21:28.371+05:30  INFO 13784 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Public endpoints: /api/v1/account-setup/send-otp, /api/v1/account-setup/verify-otp
+2026-06-23T02:21:28.371+05:30  INFO 13784 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Public endpoints: POST /api/v1/account-setup, /api/v1/rewards/**
+2026-06-23T02:21:28.374+05:30  INFO 13784 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Creating JwtAuthenticationFilter bean
+2026-06-23T02:21:28.379+05:30  INFO 13784 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] SecurityFilterChain configured successfully
+2026-06-23T02:21:28.407+05:30  INFO 13784 --- [           main] com.company.mts.config.SecurityConfig    : [SecurityConfig] Creating AuthenticationManager bean
+2026-06-23T02:21:28.713+05:30 DEBUG 13784 --- [           main] c.c.m.security.JwtAuthenticationFilter   : Filter 'jwtAuthenticationFilter' configured for use
+2026-06-23T02:21:28.714+05:30  INFO 13784 --- [           main] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-23T02:21:28.714+05:30  INFO 13784 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-23T02:21:28.716+05:30  INFO 13784 --- [           main] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2026-06-23T02:21:28.727+05:30  INFO 13784 --- [           main] c.c.m.c.AccountControllerIntegrationTest : Started AccountControllerIntegrationTest in 2.375 seconds (process running for 14.196)
+2026-06-23T02:21:28.727+05:30  INFO 13784 --- [   scheduling-1] com.company.mts.aspect.LoggingAspect     : ==> SERVICE CALL: SnowflakeSyncService.syncToSnowflake() with arguments: []
+2026-06-23T02:21:28.728+05:30  INFO 13784 --- [   scheduling-1] c.c.mts.service.SnowflakeSyncService     : Starting H2 to Snowflake synchronization...
+2026-06-23T02:21:28.729+05:30 ERROR 13784 --- [           main] c.c.mts.config.DatabaseSchemaFixer       : [DatabaseSchemaFixer] Error checking/updating table 'accounts': StatementCallback; bad SQL grammar [SHOW COLUMNS FROM accounts LIKE 'created_on']
+2026-06-23T02:21:28.730+05:30 ERROR 13784 --- [           main] c.c.mts.config.DatabaseSchemaFixer       : [DatabaseSchemaFixer] Error checking/updating table 'bank_details': StatementCallback; bad SQL grammar [SHOW COLUMNS FROM bank_details LIKE 'created_on']
+2026-06-23T02:21:28.731+05:30 ERROR 13784 --- [           main] c.c.mts.config.DatabaseSchemaFixer       : [DatabaseSchemaFixer] Error checking/updating table 'auth_users': StatementCallback; bad SQL grammar [SHOW COLUMNS FROM auth_users LIKE 'created_on']
+2026-06-23T02:21:28.969+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.transferByAccountNumber()
+2026-06-23T02:21:28.974+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.transferByAccountNumber() completed in 5ms
 ]]></system-out>
   </testcase>
   <testcase name="getAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.033">
-    <system-out><![CDATA[2026-06-23T01:34:18.195+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.getAccount()
-2026-06-23T01:34:18.195+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.getAccount() completed in 0ms
+    <system-out><![CDATA[2026-06-23T02:21:29.073+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.getAccount()
+2026-06-23T02:21:29.074+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.getAccount() completed in 1ms
 ]]></system-out>
   </testcase>
-  <testcase name="debitAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.013">
-    <system-out><![CDATA[2026-06-23T01:34:18.232+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.debitAccount()
-2026-06-23T01:34:18.233+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.debitAccount() completed in 1ms
+  <testcase name="debitAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.02">
+    <system-out><![CDATA[2026-06-23T02:21:29.110+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.debitAccount()
+2026-06-23T02:21:29.111+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.debitAccount() completed in 1ms
 ]]></system-out>
   </testcase>
-  <testcase name="createAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.017">
-    <system-out><![CDATA[2026-06-23T01:34:18.249+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.createAccount()
-2026-06-23T01:34:18.249+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.createAccount() completed in 0ms
+  <testcase name="createAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.012">
+    <system-out><![CDATA[2026-06-23T02:21:29.126+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.createAccount()
+2026-06-23T02:21:29.128+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.createAccount() completed in 2ms
 ]]></system-out>
   </testcase>
-  <testcase name="creditAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.015">
-    <system-out><![CDATA[2026-06-23T01:34:18.268+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.creditAccount()
-2026-06-23T01:34:18.269+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.creditAccount() completed in 1ms
+  <testcase name="creditAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.032">
+    <system-out><![CDATA[2026-06-23T02:21:29.158+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.creditAccount()
+2026-06-23T02:21:29.161+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.creditAccount() completed in 3ms
 ]]></system-out>
   </testcase>
-  <testcase name="getAccountByNumber_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.018">
-    <system-out><![CDATA[2026-06-23T01:34:18.294+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.getAccountByNumber()
-2026-06-23T01:34:18.295+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.getAccountByNumber() completed in 1ms
+  <testcase name="getAccountByNumber_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.019">
+    <system-out><![CDATA[2026-06-23T02:21:29.185+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.getAccountByNumber()
+2026-06-23T02:21:29.185+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.getAccountByNumber() completed in 0ms
 ]]></system-out>
   </testcase>
-  <testcase name="lockAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.014">
-    <system-out><![CDATA[2026-06-23T01:34:18.308+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.lockAccount()
-2026-06-23T01:34:18.309+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.lockAccount() completed in 1ms
+  <testcase name="lockAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.009">
+    <system-out><![CDATA[2026-06-23T02:21:29.196+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.lockAccount()
+2026-06-23T02:21:29.197+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.lockAccount() completed in 1ms
 ]]></system-out>
   </testcase>
-  <testcase name="transfer_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.015">
-    <system-out><![CDATA[2026-06-23T01:34:18.326+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.transfer()
-2026-06-23T01:34:18.327+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.transfer() completed in 1ms
+  <testcase name="transfer_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.024">
+    <system-out><![CDATA[2026-06-23T02:21:29.219+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.transfer()
+2026-06-23T02:21:29.220+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.transfer() completed in 1ms
 ]]></system-out>
   </testcase>
-  <testcase name="unlockAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.081">
-    <system-out><![CDATA[2026-06-23T01:34:18.371+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.unlockAccount()
-2026-06-23T01:34:18.372+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.unlockAccount() completed in 1ms
+  <testcase name="unlockAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.01">
+    <system-out><![CDATA[2026-06-23T02:21:29.234+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.unlockAccount()
+2026-06-23T02:21:29.234+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.unlockAccount() completed in 0ms
 ]]></system-out>
   </testcase>
-  <testcase name="closeAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.094">
-    <system-out><![CDATA[2026-06-23T01:34:18.433+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.closeAccount()
-2026-06-23T01:34:18.434+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.closeAccount() completed in 1ms
+  <testcase name="closeAccount_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.01">
+    <system-out><![CDATA[2026-06-23T02:21:29.245+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.closeAccount()
+2026-06-23T02:21:29.246+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.closeAccount() completed in 1ms
 ]]></system-out>
   </testcase>
-  <testcase name="getAccountByHolderName_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.048">
-    <system-out><![CDATA[2026-06-23T01:34:18.566+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.getAccountByHolderName()
-2026-06-23T01:34:18.567+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.getAccountByHolderName() completed in 1ms
+  <testcase name="getAccountByHolderName_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.012">
+    <system-out><![CDATA[2026-06-23T02:21:29.260+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.getAccountByHolderName()
+2026-06-23T02:21:29.261+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.getAccountByHolderName() completed in 1ms
 ]]></system-out>
   </testcase>
-  <testcase name="transferResponse_GettersSetters" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.005"/>
-  <testcase name="getAccountBalance_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.015">
-    <system-out><![CDATA[2026-06-23T01:34:18.584+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.getAccountBalance()
-2026-06-23T01:34:18.585+05:30  INFO 15912 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.getAccountBalance() completed in 1ms
+  <testcase name="transferResponse_GettersSetters" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.006"/>
+  <testcase name="getAccountBalance_Success" classname="com.company.mts.controller.AccountControllerIntegrationTest" time="0.013">
+    <system-out><![CDATA[2026-06-23T02:21:29.280+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : >>> CONTROLLER REQUEST: AccountController.getAccountBalance()
+2026-06-23T02:21:29.281+05:30  INFO 13784 --- [           main] com.company.mts.aspect.LoggingAspect     : <<< CONTROLLER RESPONSE: AccountController.getAccountBalance() completed in 1ms
 ]]></system-out>
   </testcase>
 </testsuite>

@@ -6,6 +6,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TransactionService, Transaction } from '../services/transaction.service';
 import { AuthService } from '../services/auth.service';
 import { AccountSetupService } from '../services/account-setup.service';
+import { PopupService } from '../services/popup.service';
 
 @Component({
   selector: 'app-transfer',
@@ -16,6 +17,7 @@ import { AccountSetupService } from '../services/account-setup.service';
 })
 export class TransferComponent {
   private cdr = inject(ChangeDetectorRef);
+  private popupService = inject(PopupService);
   accountNumber: string = '';
   amount: string = '';
   description: string = '';
@@ -103,35 +105,35 @@ export class TransferComponent {
   onSendMoney(): void {
     // Validation
     if (!this.accountNumber.trim()) {
-      alert('Please enter the recipient\'s account number or UPI ID.');
+      this.popupService.alert('Please enter the recipient\'s account number or UPI ID.', 'Validation Error');
       return;
     }
 
     if (!this.accountNumber.includes('@')) {
       if (this.accountNumber.length < 9 || this.accountNumber.length > 18) {
-        alert('Account number must be between 9 and 18 digits.');
+        this.popupService.alert('Account number must be between 9 and 18 digits.', 'Validation Error');
         return;
       }
     }
 
     if (this.accountNumber === this.myAccountNumber || (this.myUpiId && this.accountNumber === this.myUpiId)) {
-      alert('self transfer is not allowed');
+      this.popupService.alert('self transfer is not allowed', 'Validation Error');
       return;
     }
 
     if (!this.amount.trim()) {
-      alert('Please enter the amount to transfer.');
+      this.popupService.alert('Please enter the amount to transfer.', 'Validation Error');
       return;
     }
 
     const amountValue = parseFloat(this.amount);
     if (amountValue <= 0) {
-      alert('Amount must be greater than zero.');
+      this.popupService.alert('Amount must be greater than zero.', 'Validation Error');
       return;
     }
 
     if (!this.userPin) {
-      alert('Transaction Security: No PIN detected. Please go to your Profile and set a 4-digit PIN before making transfers.');
+      this.popupService.alert('Transaction Security: No PIN detected. Please go to your Profile and set a 4-digit PIN before making transfers.', 'Security Warning');
       return;
     }
 

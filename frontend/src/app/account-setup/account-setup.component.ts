@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, FormsModule, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AccountSetupService } from '../services/account-setup.service';
 import { AuthService } from '../services/auth.service';
+import { PopupService } from '../services/popup.service';
 
 export function futureDateValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -53,9 +54,10 @@ export class AccountSetupComponent implements OnInit {
   showPinSetup = false;
   showEditDetails = false;
   accountData: any = null;
+  currentBalance: number = 0;
   pinForm!: FormGroup;
-  currentBalance = 0;
   editDetailsForm!: FormGroup;
+  private readonly popupService = inject(PopupService);
 
   constructor(
     private readonly fb: FormBuilder,
@@ -93,23 +95,17 @@ export class AccountSetupComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('[AccountSetup] ngOnInit: Checking user session...');
     const user = this.authService.getCurrentUser();
-    console.log('[AccountSetup] ngOnInit: Current user:', user);
     if (user?.name) {
-      console.log('[AccountSetup] ngOnInit: Querying bank details for user:', user.name);
       this.svc.getAccountByUser(user.name).subscribe({
         next: (res) => {
-          console.log('[AccountSetup] ngOnInit: Bank details found for user! Redirecting to dashboard. Details:', res);
-          alert('Your account is already set up! Redirecting to dashboard.');
+          this.popupService.alert('Your account is already set up! Redirecting to dashboard.', 'Account Already Set Up');
           this.router.navigate(['/dashboard']);
         },
         error: (err) => {
-          console.log('[AccountSetup] ngOnInit: No existing bank details found. Staying on page. Error details:', err);
+          // Stay on page
         }
       });
-    } else {
-      console.log('[AccountSetup] ngOnInit: No user session found. Remaining on page (needs login to submit).');
     }
   }
 
@@ -215,38 +211,28 @@ export class AccountSetupComponent implements OnInit {
 
 
   submit(): void {
-    console.log('[AccountSetup] submit: Starting account setup form submission...');
-    console.log('[AccountSetup] submit: Form valid status:', this.form.valid);
-    console.log('[AccountSetup] submit: Form value:', this.form.value);
-
     if (this.form.invalid) {
-      console.warn('[AccountSetup] submit: Submission aborted. Form is invalid. Fields errors:', this.form.errors);
       const accNoControl = this.form.get('accountNumber');
       if (accNoControl && accNoControl.invalid && (accNoControl.hasError('pattern') || accNoControl.hasError('minlength') || accNoControl.hasError('maxlength'))) {
-        alert('Validation Error: Account Number must be between 9 and 18 digits (numbers only).');
+        this.popupService.alert('Validation Error: Account Number must be between 9 and 18 digits (numbers only).', 'Validation Error');
         accNoControl.markAsTouched();
         return;
       }
-      alert('Please fill in all mandatory fields correctly before proceeding.');
+      this.popupService.alert('Please fill in all mandatory fields correctly before proceeding.', 'Validation Error');
       this.form.markAllAsTouched();
       return;
     }
 
     const accNo = this.form.get('accountNumber')?.value || '';
-    console.log('[AccountSetup] submit: Validating account number format:', accNo);
     if (!/^\d{9,18}$/.test(accNo)) {
-      console.warn('[AccountSetup] submit: Submission aborted. Account Number regex mismatch.');
-      alert('Validation Error: Account Number must be between 9 and 18 digits (numbers only).');
+      this.popupService.alert('Validation Error: Account Number must be between 9 and 18 digits (numbers only).', 'Validation Error');
       this.form.get('accountNumber')?.markAsTouched();
       return;
     }
 
-
     const user = this.authService.getCurrentUser();
-    console.log('[AccountSetup] submit: Fetching current session user:', user);
     if (!user?.name) {
-      console.warn('[AccountSetup] submit: Submission aborted. No user name in session.');
-      alert('You are not logged in. Please log in again and retry.');
+      this.popupService.alert('You are not logged in. Please log in again and retry.', 'Session Expired');
       this.router.navigate(['/login']);
       return;
     }
@@ -255,19 +241,15 @@ export class AccountSetupComponent implements OnInit {
       ...this.form.getRawValue(),
       userName: user.name
     };
-    console.log('[AccountSetup] submit: Sending account setup payload to backend:', payload);
 
     this.svc.create(payload).subscribe({
       next: (response) => {
-        console.log('[AccountSetup] submit: Account setup SUCCESS. Response from backend:', response);
-        alert('Account setup completed successfully!');
+        this.popupService.alert('Account setup completed successfully!', 'Success');
         this.router.navigate(['/dashboard']);
       },
       error: (e) => {
-        console.error('[AccountSetup] submit: Account setup FAILED. Backend error object:', e);
         const msg = e?.error?.message || e?.message || 'An unexpected error occurred during account setup.';
-        console.error('[AccountSetup] submit: Extracted error message to show user:', msg);
-        alert('Error saving: ' + msg);
+        this.popupService.alert('Error saving: ' + msg, 'Error');
       }
     });
   }
@@ -285,7 +267,7 @@ export class AccountSetupComponent implements OnInit {
 
   setPin(): void {
     if (this.pinForm.invalid) {
-      alert('Please enter a valid PIN (4-6 digits)');
+      this.popupService.alert('Please enter a valid PIN (4-6 digits)', 'Validation Error');
       return;
     }
 
@@ -293,28 +275,27 @@ export class AccountSetupComponent implements OnInit {
     const confirmPin = this.pinForm.get('confirmPin')?.value;
 
     if (pin !== confirmPin) {
-      alert('PINs do not match');
+      this.popupService.alert('PINs do not match', 'Validation Error');
       return;
     }
 
     const user = this.authService.getCurrentUser();
     const userName = user?.name || '';
     if (!userName) {
-      alert('User not found. Please log in again.');
+      this.popupService.alert('User not found. Please log in again.', 'Error');
       return;
     }
     this.svc.setPin(userName, pin).subscribe({
       next: () => {
-        alert('PIN set successfully!');
+        this.popupService.alert('PIN set successfully!', 'Success');
         this.showPinSetup = false;
         this.pinForm.reset();
       },
-      error: (err) => alert('Error setting PIN: ' + err?.message)
+      error: (err) => this.popupService.alert('Error setting PIN: ' + err?.message, 'Error')
     });
   }
 
   openEditDetails(): void {
-    // Auto-fill edit form with current data
     if (this.accountData) {
       this.editDetailsForm.patchValue({
         email: this.accountData.email,
@@ -330,14 +311,14 @@ export class AccountSetupComponent implements OnInit {
 
   saveEditDetails(): void {
     if (this.editDetailsForm.invalid) {
-      alert('Please fill in all fields correctly');
+      this.popupService.alert('Please fill in all fields correctly', 'Validation Error');
       return;
     }
 
     const user = this.authService.getCurrentUser();
     const userName = user?.name || '';
     if (!userName) {
-      alert('User not found. Please log in again.');
+      this.popupService.alert('User not found. Please log in again.', 'Error');
       return;
     }
     const updatePayload = {
@@ -349,9 +330,9 @@ export class AccountSetupComponent implements OnInit {
       next: (updated) => {
         this.accountData = updated;
         this.showEditDetails = false;
-        alert('Details updated successfully!');
+        this.popupService.alert('Details updated successfully!', 'Success');
       },
-      error: (err) => alert('Error updating details: ' + err?.message)
+      error: (err) => this.popupService.alert('Error updating details: ' + err?.message, 'Error')
     });
   }
 

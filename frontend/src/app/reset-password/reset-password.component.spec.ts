@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { of, throwError } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { PopupService } from '../services/popup.service';
 
 describe('ResetPasswordComponent', () => {
   let component: ResetPasswordComponent;
@@ -17,7 +18,6 @@ describe('ResetPasswordComponent', () => {
   beforeEach(async () => {
     authServiceSpy = jasmine.createSpyObj('AuthService', ['resetPassword']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    alertSpy = spyOn(window, 'alert');
     queryParamMapGetSpy = jasmine.createSpy('get').and.returnValue('valid-token');
 
     const activatedRouteMock = {
@@ -40,6 +40,14 @@ describe('ResetPasswordComponent', () => {
         { provide: ActivatedRoute, useValue: activatedRouteMock }
       ]
     }).compileComponents();
+
+    const popupService = TestBed.inject(PopupService);
+    const originalAlert = popupService.alert;
+    alertSpy = jasmine.createSpy('alert');
+    popupService.alert = (msg: string, title?: string) => {
+      alertSpy(msg);
+      originalAlert.call(popupService, msg, title || 'Alert');
+    };
   });
 
   it('should create and extract token on init', () => {

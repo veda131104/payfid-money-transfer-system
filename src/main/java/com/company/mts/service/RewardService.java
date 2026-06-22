@@ -209,4 +209,38 @@ public class RewardService {
         dto.setUpdatedAt(ra.getUpdatedAt());
         return dto;
     }
+
+    @Transactional
+    public RewardLedgerDTO redeemRewards(Long accountId, int pointsToRedeem, String description) {
+        RewardAccount rewardAccount = rewardAccountRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("No reward account found for account ID: " + accountId));
+
+        if (rewardAccount.getTotalPoints() < pointsToRedeem) {
+            throw new IllegalArgumentException("Insufficient reward points. Available: " + rewardAccount.getTotalPoints() + ", Required: " + pointsToRedeem);
+        }
+
+        // Deduct points
+        rewardAccount.setTotalPoints(rewardAccount.getTotalPoints() - pointsToRedeem);
+        rewardAccountRepository.save(rewardAccount);
+
+        // Generate a unique dummy transaction ID using a negative nanoTime
+        long dummyTransactionId = -System.nanoTime();
+
+        // Persist ledger entry
+        RewardLedger ledger = RewardLedger.builder()
+                .accountId(accountId)
+                .transactionId(dummyTransactionId)
+                .transactionAmount(BigDecimal.ZERO)
+                .pointsAwarded(-pointsToRedeem)
+                .description(description)
+                .grantedAt(LocalDateTime.now())
+                .build();
+
+        RewardLedger saved = rewardLedgerRepository.save(ledger);
+
+        logger.info("Reward points redeemed — Account {} now has {} total points. Redeemed: {} points.",
+                accountId, rewardAccount.getTotalPoints(), pointsToRedeem);
+
+        return toDTO(saved);
+    }
 }

@@ -87,4 +87,20 @@ public class RewardController {
                 "version", "1.0.0"
         ));
     }
+
+    /**
+     * POST /api/v1/rewards/{accountId}/redeem
+     * Redeems reward points for coupons or items.
+     */
+    @PostMapping("/{accountId}/redeem")
+    public ResponseEntity<?> redeemRewards(@PathVariable Long accountId, @RequestBody Map<String, Object> payload) {
+        try {
+            int points = ((Number) payload.get("points")).intValue();
+            String description = (String) payload.get("description");
+            RewardLedgerDTO result = rewardService.redeemRewards(accountId, points, description);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+    }
 }

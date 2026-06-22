@@ -8,6 +8,7 @@ import com.company.mts.repository.AccountRepository;
 import com.company.mts.repository.AuthUserRepository;
 import com.company.mts.service.BankDetailsService;
 import com.company.mts.service.EmailService;
+import com.company.mts.utils.CryptoUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -284,7 +285,7 @@ class AccountSetupControllerIntegrationTest {
         when(bankDetailsService.updatePin("johndoe", "1234")).thenReturn(testDetails);
 
         Map<String, String> body = new HashMap<>();
-        body.put("pin", "1234");
+        body.put("pin", CryptoUtils.encrypt("1234"));
 
         mockMvc.perform(post("/api/v1/account-setup/user/johndoe/pin")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -295,7 +296,7 @@ class AccountSetupControllerIntegrationTest {
     @Test
     void setPin_InvalidPin_ThrowsException() throws Exception {
         Map<String, String> body = new HashMap<>();
-        body.put("pin", "12"); // invalid length
+        body.put("pin", CryptoUtils.encrypt("12")); // invalid length
 
         mockMvc.perform(post("/api/v1/account-setup/user/johndoe/pin")
                 .contentType(MediaType.APPLICATION_JSON)

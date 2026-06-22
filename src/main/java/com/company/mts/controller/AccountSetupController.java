@@ -9,6 +9,7 @@ import com.company.mts.repository.AccountRepository;
 import com.company.mts.repository.AuthUserRepository;
 import com.company.mts.service.BankDetailsService;
 import com.company.mts.service.EmailService;
+import com.company.mts.utils.CryptoUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +51,9 @@ public class AccountSetupController {
         log.info("[AccountSetupController] POST / - Received account setup request for userName='{}', accountNumber='{}', bankName='{}'",
                 request.getUserName(), request.getAccountNumber(), request.getBankName());
         try {
+            request.setCreditCardNumber(CryptoUtils.decrypt(request.getCreditCardNumber()));
+            request.setCvv(CryptoUtils.decrypt(request.getCvv()));
+            request.setExpiryDate(CryptoUtils.decrypt(request.getExpiryDate()));
             // Ensure userName is present: prefer request value, otherwise try to infer from the security context (JWT)
             if (request.getUserName() == null || request.getUserName().isBlank()) {
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -190,7 +194,7 @@ public class AccountSetupController {
                 });
         log.info("[AccountSetupController] GET /{} - Bank details FOUND. id={}, userName='{}'",
                 accountNumber, details.getId(), details.getUserName());
-        return ResponseEntity.ok(details);
+        return ResponseEntity.ok(encryptSensitiveFields(details));
     }
 
     @PostMapping("/{id}/upi")
@@ -213,12 +217,15 @@ public class AccountSetupController {
                 });
         log.info("[AccountSetupController] GET /user/{} - Bank details FOUND. id={}, accountNumber='{}'",
                 userName, details.getId(), details.getAccountNumber());
-        return ResponseEntity.ok(details);
+        return ResponseEntity.ok(encryptSensitiveFields(details));
     }
 
     @PutMapping("/user/{userName}")
     public ResponseEntity<BankDetails> update(@PathVariable String userName, @RequestBody AccountSetupRequest request) {
         log.info("[AccountSetupController] PUT /user/{} - Updating bank details", userName);
+        request.setCreditCardNumber(CryptoUtils.decrypt(request.getCreditCardNumber()));
+        request.setCvv(CryptoUtils.decrypt(request.getCvv()));
+        request.setExpiryDate(CryptoUtils.decrypt(request.getExpiryDate()));
         BankDetails existing = service.findByUserName(userName)
                 .orElseThrow(() -> {
                     log.warn("[AccountSetupController] PUT /user/{} - Bank details NOT FOUND", userName);
@@ -237,12 +244,12 @@ public class AccountSetupController {
 
         BankDetails saved = service.save(existing);
         log.info("[AccountSetupController] PUT /user/{} - Bank details UPDATED. id={}", userName, saved.getId());
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(encryptSensitiveFields(saved));
     }
 
     @PostMapping("/user/{userName}/pin")
     public ResponseEntity<BankDetails> setPin(@PathVariable String userName, @RequestBody Map<String, String> body) {
-        String pin = body.get("pin");
+        String pin = CryptoUtils.decrypt(body.get("pin"));
         log.info("[AccountSetupController] POST /user/{}/pin - Setting PIN (length={})", userName, pin != null ? pin.length() : 0);
         if (pin == null || pin.length() != 4) {
             log.warn("[AccountSetupController] POST /user/{}/pin - REJECTED: Invalid PIN length", userName);
@@ -250,7 +257,7 @@ public class AccountSetupController {
         }
         BankDetails updated = service.updatePin(userName, pin);
         log.info("[AccountSetupController] POST /user/{}/pin - PIN set SUCCESS", userName);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(encryptSensitiveFields(updated));
     }
 
     @PostMapping("/send-otp")
@@ -308,5 +315,27 @@ public class AccountSetupController {
                     contact, otpStore.get(contact), otp);
         }
         return ResponseEntity.ok(resp);
+    }
+
+    private BankDetails encryptSensitiveFields(BankDetails details) {
+        if (details == null) return null;
+        return BankDetails.builder()
+                .id(details.getId())
+                .accountNumber(details.getAccountNumber())
+                .bankName(details.getBankName())
+                .ifscCode(details.getIfscCode())
+                .branchName(details.getBranchName())
+                .address(details.getAddress())
+                .email(details.getEmail())
+                .phoneNumber(details.getPhoneNumber())
+                .userName(details.getUserName())
+                .creditCardNumber(CryptoUtils.encrypt(details.getCreditCardNumber()))
+                .cvv(CryptoUtils.encrypt(details.getCvv()))
+                .expiryDate(CryptoUtils.encrypt(details.getExpiryDate()))
+                .upiId(details.getUpiId())
+                .pin(CryptoUtils.encrypt(details.getPin()))
+                .createdAt(details.getCreatedAt())
+                .lastUpdated(details.getLastUpdated())
+                .build();
     }
 }

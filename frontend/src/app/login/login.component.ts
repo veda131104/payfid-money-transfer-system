@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../services/auth.service';
+import { PopupService } from '../services/popup.service';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +29,8 @@ export class LoginComponent {
   constructor(
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly popupService: PopupService
   ) {
     this.form = this.fb.nonNullable.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
@@ -40,7 +42,7 @@ export class LoginComponent {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      alert('Please enter your username and password.');
+      this.popupService.alert('Please enter your username and password.', 'Validation Warning');
       return;
     }
 
@@ -60,7 +62,7 @@ export class LoginComponent {
         }
       },
       error: (err) => {
-        alert('Invalid username or password.');
+        this.popupService.alert('Invalid username or password.', 'Login Failed');
         this.form.reset();
       }
     });

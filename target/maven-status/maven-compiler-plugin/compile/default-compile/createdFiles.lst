@@ -14,6 +14,7 @@ com\company\mts\exception\GlobalExceptionHandler.class
 com\company\mts\dto\TokenRequest.class
 com\company\mts\service\AnalyticsService.class
 com\company\mts\dto\ForgotPasswordResponse.class
+com\company\mts\utils\CryptoUtils.class
 com\company\mts\aspect\LoggingAspect.class
 com\company\mts\dto\LoginRequest.class
 com\company\mts\dto\TransactionDTO$Builder.class

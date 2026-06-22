@@ -51,33 +51,91 @@
       <!-- Highlight Rewards Info -->
       <mat-card class="card highlights">
         <h1>Your Rewards Wallet</h1>
-        <p>Earn reward points automatically on transfer volumes greater than ₹100.</p>
+        <p>Earn reward points automatically on eligible transfers and redeem them for premium brand coupons.</p>
         
         <div class="rewards-banner">
           <div class="points-badge">
             <span class="points-number">{{ points }}</span>
-            <span class="points-label">Total Points</span>
+            <span class="points-label">Available Points</span>
           </div>
           <div class="tier-badge" [style.border-color]="getTierColor(tier)">
             <span class="tier-label">Status Tier</span>
             <span class="tier-value" [style.color]="getTierColor(tier)">{{ tier }}</span>
           </div>
         </div>
+
+        <!-- Discrete Earning Rules Toggle -->
+        <div class="rules-collapsible">
+          <button class="rules-toggle-btn" (click)="showRules = !showRules">
+            <span>ℹ️ How do I earn points?</span>
+            <span class="chevron" [class.rotated]="showRules">▼</span>
+          </button>
+          <div class="rules-content" [class.expanded]="showRules">
+            <div class="rules-inner">
+              <ul class="rules-list">
+                <li>✓ Eligible only for <strong>SUCCESS</strong> status transactions.</li>
+                <li>✓ Transaction amount must exceed <strong>₹100</strong>.</li>
+                <li>✓ Transferred between different accounts (non-self transfers).</li>
+                <li>✓ Earn <strong>1 Point</strong> per every <strong>₹100</strong>.</li>
+                <li>✓ Points are rounded down (e.g. ₹250 = 2 points).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </mat-card>
 
-      <!-- Rules and Info Card -->
-      <mat-card class="card magic-card">
-        <div class="card-glass">
-          <div class="rules-header">
-            <h3>Reward Rules</h3>
+      <!-- GPay Coupon Redemption System -->
+      <mat-card class="card full-width-card coupons-section">
+        <div class="section-header">
+          <h2>Redeem Rewards Coupons</h2>
+          <p class="section-tag">Claim exclusive vouchers using your earned points. Vouchers can be scratched to reveal your unique promo code!</p>
+        </div>
+
+        <div class="coupons-grid">
+          @for (coupon of coupons; track coupon.id) {
+          <div class="coupon-card" [style.border-top-color]="coupon.themeColor" [class.disabled]="points < coupon.cost">
+            <div class="coupon-icon-wrapper" [style.background-color]="coupon.themeColor + '15'">
+              <span class="coupon-icon">{{ coupon.icon }}</span>
+            </div>
+            <div class="coupon-details">
+              <span class="coupon-provider">{{ coupon.provider }}</span>
+              <h3 class="coupon-value">{{ coupon.rewardVal }}</h3>
+              <p class="coupon-cost">{{ coupon.cost }} Points Required</p>
+            </div>
+            <button class="redeem-btn" 
+                    [style.background]="points >= coupon.cost ? coupon.themeColor : '#516069'"
+                    [disabled]="points < coupon.cost"
+                    (click)="redeemCoupon(coupon)">
+              {{ points >= coupon.cost ? 'Redeem Voucher' : 'Locked' }}
+            </button>
           </div>
-          <ul class="rules-list">
-            <li>✓ Eligible only for <strong>SUCCESS</strong> status transactions.</li>
-            <li>✓ Transaction amount must exceed <strong>₹100</strong>.</li>
-            <li>✓ Transferred between different accounts (non-self transfers).</li>
-            <li>✓ Earn <strong>1 Point</strong> per every <strong>₹100</strong>.</li>
-            <li>✓ Points are rounded down (e.g. ₹250 = 2 points).</li>
-          </ul>
+          }
+        </div>
+      </mat-card>
+
+      <!-- Status Tier guide explaining benefits -->
+      <mat-card class="card full-width-card tiers-section">
+        <div class="section-header">
+          <h2>Status Tier Perks</h2>
+          <p class="section-tag">Unlock higher reward multipliers and premium banking perks as you level up your status tier.</p>
+        </div>
+
+        <div class="tiers-grid">
+          @for (t of tiersList; track t.name) {
+          <div class="tier-card" [class.active-tier]="tier === t.name" [style.border-color]="t.color">
+            <div class="tier-header-badge" [style.background-color]="t.color">
+              <span class="tier-name">{{ t.name }}</span>
+            </div>
+            <div class="tier-info">
+              <p class="tier-points-range"><strong>Requirement:</strong> {{ t.points }}</p>
+              <h4 class="tier-multiplier">{{ t.multiplier }} Multiplier</h4>
+              <p class="tier-perk">{{ t.perk }}</p>
+            </div>
+            <div class="tier-status-indicator" *ngIf="tier === t.name">
+              <span>Your Active Status</span>
+            </div>
+          </div>
+          }
         </div>
       </mat-card>
 
@@ -89,22 +147,62 @@
         <div class="activity-list">
           @for (item of history; track item.id) {
           <div class="activity-item">
-            <div class="activity-icon credit">★</div>
+            <div class="activity-icon" [class.credit]="item.pointsAwarded > 0" [class.debit]="item.pointsAwarded < 0">
+              {{ item.pointsAwarded > 0 ? '★' : '🎟️' }}
+            </div>
             <div class="activity-details">
               <p class="activity-title">{{ item.description }}</p>
-              <p class="activity-meta">Granted at: {{ item.grantedAt | date:'MMM d, yyyy h:mm a' }} • Tx ID: #{{ item.transactionId }}</p>
+              <p class="activity-meta">
+                Date: {{ item.grantedAt | date:'MMM d, yyyy h:mm a' }} 
+                <span *ngIf="item.transactionId > 0">• Tx ID: #{{ item.transactionId }}</span>
+                <span *ngIf="item.transactionId <= 0">• Voucher Claimed</span>
+              </p>
             </div>
-            <div class="activity-amount credit">
-              +{{ item.pointsAwarded }} pts
+            <div class="activity-amount" [class.credit]="item.pointsAwarded > 0" [class.debit]="item.pointsAwarded < 0">
+              {{ item.pointsAwarded > 0 ? '+' : '' }}{{ item.pointsAwarded }} pts
             </div>
           </div>
           } @empty {
-          <p class="no-activity">No rewards points earned yet. Make an eligible transfer to get rewarded!</p>
+          <p class="no-activity">No rewards activity recorded yet. Make an eligible transfer to get rewarded!</p>
           }
         </div>
       </mat-card>
     </ng-container>
   </main>
+
+  <!-- Scratch Card Overlay Modal (GPay Style) -->
+  <div class="scratch-modal-overlay" *ngIf="showScratchModal">
+    <div class="scratch-card-container">
+      <button class="close-scratch-btn" (click)="closeScratchModal()">×</button>
+      
+      <!-- Scratchable state -->
+      <div class="scratch-unrevealed" *ngIf="!scratchRevealed" (click)="scratchRevealed = true">
+        <div class="scratch-face">
+          <div class="gpay-logo">PF Rewards</div>
+          <span class="gift-box-icon">🎁</span>
+          <h3>You won a voucher!</h3>
+          <p>Tap to scratch and claim your reward</p>
+        </div>
+        <div class="scratch-overlay-paint"></div>
+      </div>
+
+      <!-- Revealed state -->
+      <div class="scratch-revealed-card" *ngIf="scratchRevealed" [style.border-top-color]="scratchSelectedCoupon?.themeColor">
+        <span class="revealed-icon">{{ scratchSelectedCoupon?.icon }}</span>
+        <h2>Congratulations!</h2>
+        <p class="reward-title">You unlocked a {{ scratchSelectedCoupon?.provider }} {{ scratchSelectedCoupon?.rewardVal }}</p>
+        
+        <div class="promo-code-container">
+          <span class="promo-label">Your Unique Code</span>
+          <span class="promo-code">{{ scratchRedeemedCode }}</span>
+          <button class="copy-code-btn" (click)="copyPromoCode()">Copy Code</button>
+        </div>
+        
+        <p class="scratch-footer">Copy this code and redeem it on the partner website.</p>
+        <button class="claim-done-btn" [style.background]="scratchSelectedCoupon?.themeColor" (click)="closeScratchModal()">Done</button>
+      </div>
+    </div>
+  </div>
 
   <nav class="bottom-nav">
     <button type="button" class="nav-item" mat-button routerLink="/dashboard" routerLinkActive="active"

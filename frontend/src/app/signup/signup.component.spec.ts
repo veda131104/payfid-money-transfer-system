@@ -7,6 +7,7 @@ import { AccountSetupService } from '../services/account-setup.service';
 import { of, throwError } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import { PopupService } from '../services/popup.service';
 
 describe('SignupComponent', () => {
   let component: SignupComponent;
@@ -20,7 +21,6 @@ describe('SignupComponent', () => {
     authServiceSpy = jasmine.createSpyObj('AuthService', ['signup', 'login']);
     accountSetupServiceSpy = jasmine.createSpyObj('AccountSetupService', ['sendOtp']);
     accountSetupServiceSpy.sendOtp.and.returnValue(of({}));
-    alertSpy = spyOn(window, 'alert');
 
     await TestBed.configureTestingModule({
       imports: [
@@ -39,6 +39,15 @@ describe('SignupComponent', () => {
     component = fixture.componentInstance;
     router = TestBed.inject(Router);
     spyOn(router, 'navigate');
+
+    const popupService = TestBed.inject(PopupService);
+    const originalAlert = popupService.alert;
+    alertSpy = jasmine.createSpy('alert');
+    popupService.alert = (msg: string, title?: string) => {
+      alertSpy(msg);
+      originalAlert.call(popupService, msg, title || 'Alert');
+    };
+
     fixture.detectChanges();
   });
 

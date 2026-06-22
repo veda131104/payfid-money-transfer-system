@@ -7,3 +7,11 @@
     <p class="session-expired-footer">You will be redirected to the home page shortly.</p>
   </div>
 </div>
+
+<div class="custom-alert-overlay" *ngIf="popupService.isOpen()">
+  <div class="custom-alert-dialog">
+    <h2>{{ popupService.title() }}</h2>
+    <p>{{ popupService.message() }}</p>
+    <button class="custom-alert-button" (click)="popupService.close()">OK</button>
+  </div>
+</div>

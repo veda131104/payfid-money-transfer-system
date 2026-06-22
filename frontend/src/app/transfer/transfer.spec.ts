@@ -9,6 +9,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { PopupService } from '../services/popup.service';
 
 describe('TransferComponent', () => {
   let component: TransferComponent;
@@ -31,7 +32,6 @@ describe('TransferComponent', () => {
       };
     })();
     Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-    alertSpy = spyOn(window, 'alert');
 
     // Mock Canvas for charts
     const dummyCtx = {
@@ -82,6 +82,14 @@ describe('TransferComponent', () => {
     authService = TestBed.inject(AuthService);
     router = TestBed.inject(Router);
     spyOn(router, 'navigate');
+    
+    const popupService = TestBed.inject(PopupService);
+    const originalAlert = popupService.alert;
+    alertSpy = jasmine.createSpy('alert');
+    popupService.alert = (msg: string, title?: string) => {
+      alertSpy(msg);
+      originalAlert.call(popupService, msg, title || 'Alert');
+    };
   });
 
   it('should create', () => {

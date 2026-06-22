@@ -4,6 +4,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '../services/auth.service';
 import { AccountSetupService } from '../services/account-setup.service';
+import { PopupService } from '../services/popup.service';
 import { of, throwError } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -32,7 +33,6 @@ describe('ProfileComponent', () => {
             };
         })();
         Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-        alertSpy = spyOn(window, 'alert');
 
         await TestBed.configureTestingModule({
             imports: [
@@ -52,6 +52,14 @@ describe('ProfileComponent', () => {
         accountSetupService = TestBed.inject(AccountSetupService);
         router = TestBed.inject(Router);
         spyOn(router, 'navigate');
+
+        const popupService = TestBed.inject(PopupService);
+        const originalAlert = popupService.alert;
+        alertSpy = jasmine.createSpy('alert');
+        popupService.alert = (msg: string, title?: string) => {
+          alertSpy(msg);
+          originalAlert.call(popupService, msg, title || 'Alert');
+        };
 
         // Add default mocks to prevent subscription errors
         getCurrentUserSpy = spyOn(authService, 'getCurrentUser').and.returnValue({ name: 'testuser', email: 'testuser@company.com' });

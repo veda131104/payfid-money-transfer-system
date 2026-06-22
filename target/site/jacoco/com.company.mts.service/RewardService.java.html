@@ -209,5 +209,39 @@ public class RewardService {
 <span class="fc" id="L209">        dto.setUpdatedAt(ra.getUpdatedAt());</span>
 <span class="fc" id="L210">        return dto;</span>
     }
+
+    @Transactional
+    public RewardLedgerDTO redeemRewards(Long accountId, int pointsToRedeem, String description) {
+<span class="nc" id="L215">        RewardAccount rewardAccount = rewardAccountRepository.findByAccountId(accountId)</span>
+<span class="nc" id="L216">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;No reward account found for account ID: &quot; + accountId));</span>
+
+<span class="nc bnc" id="L218" title="All 2 branches missed.">        if (rewardAccount.getTotalPoints() &lt; pointsToRedeem) {</span>
+<span class="nc" id="L219">            throw new IllegalArgumentException(&quot;Insufficient reward points. Available: &quot; + rewardAccount.getTotalPoints() + &quot;, Required: &quot; + pointsToRedeem);</span>
+        }
+
+        // Deduct points
+<span class="nc" id="L223">        rewardAccount.setTotalPoints(rewardAccount.getTotalPoints() - pointsToRedeem);</span>
+<span class="nc" id="L224">        rewardAccountRepository.save(rewardAccount);</span>
+
+        // Generate a unique dummy transaction ID using a negative nanoTime
+<span class="nc" id="L227">        long dummyTransactionId = -System.nanoTime();</span>
+
+        // Persist ledger entry
+<span class="nc" id="L230">        RewardLedger ledger = RewardLedger.builder()</span>
+<span class="nc" id="L231">                .accountId(accountId)</span>
+<span class="nc" id="L232">                .transactionId(dummyTransactionId)</span>
+<span class="nc" id="L233">                .transactionAmount(BigDecimal.ZERO)</span>
+<span class="nc" id="L234">                .pointsAwarded(-pointsToRedeem)</span>
+<span class="nc" id="L235">                .description(description)</span>
+<span class="nc" id="L236">                .grantedAt(LocalDateTime.now())</span>
+<span class="nc" id="L237">                .build();</span>
+
+<span class="nc" id="L239">        RewardLedger saved = rewardLedgerRepository.save(ledger);</span>
+
+<span class="nc" id="L241">        logger.info(&quot;Reward points redeemed — Account {} now has {} total points. Redeemed: {} points.&quot;,</span>
+<span class="nc" id="L242">                accountId, rewardAccount.getTotalPoints(), pointsToRedeem);</span>
+
+<span class="nc" id="L244">        return toDTO(saved);</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

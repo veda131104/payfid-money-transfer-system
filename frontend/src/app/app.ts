@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { PopupService } from './services/popup.service';
 
 const TAB_SESSION_KEY = 'app_tab_session_id';
 const ACTIVE_SESSION_KEY = 'app_active_session_id';
@@ -24,6 +25,7 @@ export class App implements OnInit, OnDestroy {
   protected readonly sessionMessage = signal(
     'This session has been opened in another tab or window. This session is no longer active and will be closed. Please continue in the latest session.'
   );
+  protected readonly popupService = inject(PopupService);
 
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);

@@ -8,6 +8,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule, FormControl } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
 import { AccountSetupService } from '../services/account-setup.service';
+import { PopupService } from '../services/popup.service';
 
 @Component({
   selector: 'app-profile',
@@ -28,6 +29,7 @@ import { AccountSetupService } from '../services/account-setup.service';
 })
 export class ProfileComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
+  private popupService = inject(PopupService);
   routerLinkActiveOptions = { exact: true };
   isNewUser = true; // Initialize to true for safety
   isEditing = false;
@@ -160,9 +162,9 @@ export class ProfileComponent implements OnInit {
           }) : 'N/A'
         };
         this.isEditing = false;
-        alert('Profile updated successfully!');
+        this.popupService.alert('Profile updated successfully!', 'Profile Update');
       },
-      error: (e) => alert('Update failed: ' + e?.message)
+      error: (e) => this.popupService.alert('Update failed: ' + e?.message, 'Update Error')
     });
   }
 
@@ -181,7 +183,6 @@ export class ProfileComponent implements OnInit {
   }
 
   onOpenPinModal(): void {
-    console.log('🔓 [Profile] Opening PIN Modal');
     this.isPinModalOpen = true;
     this.pinForm.reset({ pin: '' });
     this.pinError = '';
@@ -189,18 +190,15 @@ export class ProfileComponent implements OnInit {
   }
 
   onClosePinModal(): void {
-    console.log('🔒 [Profile] Closing PIN Modal');
     this.isPinModalOpen = false;
     this.cdr.detectChanges();
   }
 
   onSavePin(): void {
     const pin = this.pinForm.get('pin')?.value;
-    console.log('🔘 [Profile] Save PIN clicked. Status:', this.pinForm.status, 'Value:', pin);
 
     if (this.pinForm.invalid) {
       const control = this.pinForm.get('pin');
-      console.warn('⚠️ [Profile] PIN Form is INVALID. Errors:', control?.errors);
 
       if (control?.hasError('required')) {
         this.pinError = 'PIN is required';
@@ -209,34 +207,31 @@ export class ProfileComponent implements OnInit {
       } else {
         this.pinError = 'Invalid PIN format';
       }
-      alert('Validation Error: ' + this.pinError);
+      this.popupService.alert('Validation Error: ' + this.pinError, 'Validation Error');
       this.cdr.detectChanges();
       return;
     }
 
     const user = this.authService.getCurrentUser();
     if (!user) {
-      alert('User session not found. Please log in again.');
+      this.popupService.alert('User session not found. Please log in again.', 'Error');
       return;
     }
 
-    console.log('📡 [Profile] Sending PIN update for user:', user.name);
     this.accountSetupService.setPin(user.name, pin).subscribe({
       next: (resp) => {
-        console.log('✅ [Profile] PIN update response:', resp);
         this.profileData.hasPin = true;
-        alert('Success! Your PIN has been set.');
+        this.popupService.alert('Success! Your PIN has been set.', 'Success');
         this.onClosePinModal();
       },
       error: (e) => {
-        console.error('❌ [Profile] Set PIN error:', e);
         const errorMessage = e?.error?.message || e?.message || 'Unknown error';
         if (errorMessage.includes('Bank details not found')) {
           this.pinError = 'Bank details not found. Please complete Account Setup first.';
-          alert('Error: Bank details not found. Please complete Account Setup first.');
+          this.popupService.alert('Error: Bank details not found. Please complete Account Setup first.', 'Error');
         } else {
           this.pinError = 'Failed to set PIN: ' + errorMessage;
-          alert('Error: ' + this.pinError);
+          this.popupService.alert('Error: ' + this.pinError, 'Error');
         }
         this.cdr.detectChanges();
       }

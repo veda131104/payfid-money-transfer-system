@@ -1,7 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
+import { encrypt, decrypt } from '../utils/crypto';
 
 export interface SignupPayload {
   name: string;
@@ -67,14 +68,16 @@ export class AuthService {
   }
 
   signup(payload: SignupPayload): Observable<AuthResponse> {
+    const encryptedPayload = { ...payload, password: encrypt(payload.password) };
     return this.http
-      .post<AuthResponse>(`${this.baseUrl}/signup`, payload)
+      .post<AuthResponse>(`${this.baseUrl}/signup`, encryptedPayload)
       .pipe(tap(response => this.saveSession(response)));
   }
 
   login(payload: LoginPayload): Observable<LoginResponse> {
+    const encryptedPayload = { ...payload, password: encrypt(payload.password) };
     return this.http
-      .post<LoginResponse>(`${this.baseUrl}/login`, payload)
+      .post<LoginResponse>(`${this.baseUrl}/login`, encryptedPayload)
       .pipe(tap(response => {
         this.saveToken(response.token);
         this.saveSession(response);
@@ -151,6 +154,13 @@ export class AuthService {
   getCredentialsByToken(token: string): Observable<CredentialsResponse> {
     return this.http.get<CredentialsResponse>(
       `${this.baseUrl}/credentials/${token}`
+    ).pipe(
+      map(creds => {
+        if (creds && creds.password) {
+          return { ...creds, password: decrypt(creds.password) };
+        }
+        return creds;
+      })
     );
   }
 
@@ -162,9 +172,10 @@ export class AuthService {
   }
 
   resetPassword(request: ResetPasswordRequest): Observable<any> {
+    const encryptedRequest = { ...request, newPassword: encrypt(request.newPassword) };
     return this.http.post<any>(
       `${this.baseUrl}/reset-password`,
-      request
+      encryptedRequest
     );
   }
 }

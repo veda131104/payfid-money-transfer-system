@@ -6,6 +6,7 @@ import { AccountSetupService } from '../services/account-setup.service';
 import { AuthService } from '../services/auth.service';
 import { of, throwError } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { PopupService } from '../services/popup.service';
 
 describe('AccountSetupComponent', () => {
   let component: AccountSetupComponent;
@@ -27,8 +28,6 @@ describe('AccountSetupComponent', () => {
     ]);
     authServiceSpy = jasmine.createSpyObj('AuthService', ['getCurrentUser']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    alertSpy = spyOn(window, 'alert');
-
     // Default return value to prevent ngOnInit crashes
     authServiceSpy.getCurrentUser.and.returnValue({ name: 'Alice', email: 'alice@company.com' });
     svcSpy.getAccountByUser.and.returnValue(throwError(() => new Error('Not found')));
@@ -45,6 +44,14 @@ describe('AccountSetupComponent', () => {
         { provide: Router, useValue: routerSpy }
       ]
     }).compileComponents();
+
+    const popupService = TestBed.inject(PopupService);
+    const originalAlert = popupService.alert;
+    alertSpy = jasmine.createSpy('alert');
+    popupService.alert = (msg: string, title?: string) => {
+      alertSpy(msg);
+      originalAlert.call(popupService, msg, title || 'Alert');
+    };
   });
 
   beforeEach(() => {

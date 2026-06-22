@@ -87,5 +87,21 @@ public class RewardController {
                 &quot;version&quot;, &quot;1.0.0&quot;
         ));
     }
+
+    /**
+     * POST /api/v1/rewards/{accountId}/redeem
+     * Redeems reward points for coupons or items.
+     */
+    @PostMapping(&quot;/{accountId}/redeem&quot;)
+    public ResponseEntity&lt;?&gt; redeemRewards(@PathVariable Long accountId, @RequestBody Map&lt;String, Object&gt; payload) {
+        try {
+<span class="nc" id="L98">            int points = ((Number) payload.get(&quot;points&quot;)).intValue();</span>
+<span class="nc" id="L99">            String description = (String) payload.get(&quot;description&quot;);</span>
+<span class="nc" id="L100">            RewardLedgerDTO result = rewardService.redeemRewards(accountId, points, description);</span>
+<span class="nc" id="L101">            return ResponseEntity.ok(result);</span>
+<span class="nc" id="L102">        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L103">            return ResponseEntity.badRequest().body(Map.of(&quot;message&quot;, e.getMessage()));</span>
+        }
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

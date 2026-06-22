@@ -39,4 +39,8 @@ export class RewardService {
   initializeRewardAccount(accountId: number): Observable<RewardSummary> {
     return this.http.post<RewardSummary>(`${this.baseUrl}/${accountId}/initialize`, {});
   }
+
+  redeemRewards(accountId: number, points: number, description: string): Observable<RewardLedger> {
+    return this.http.post<RewardLedger>(`${this.baseUrl}/${accountId}/redeem`, { points, description });
+  }
 }

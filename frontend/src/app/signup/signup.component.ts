@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../services/auth.service';
 import { AccountSetupService } from '../services/account-setup.service';
+import { PopupService } from '../services/popup.service';
 
 @Component({
   selector: 'app-signup',
@@ -54,7 +55,8 @@ export class SignupComponent implements OnDestroy {
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
     private readonly accountSetupService: AccountSetupService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly popupService: PopupService
   ) {
     this.form = this.fb.nonNullable.group(
       {
@@ -243,14 +245,14 @@ export class SignupComponent implements OnDestroy {
           },
           error: () => {
             this.loading = false;
-            alert('Signup succeeded but automatic login failed. Please sign in.');
+            this.popupService.alert('Signup succeeded but automatic login failed. Please sign in.', 'Login Alert');
             this.router.navigate(['/']);
           }
         });
       },
       error: error => {
         this.loading = false;
-        alert(error.error?.message || 'Signup failed. Please try again.');
+        this.popupService.alert(error.error?.message || 'Signup failed. Please try again.', 'Registration Failed');
       }
     });
   }

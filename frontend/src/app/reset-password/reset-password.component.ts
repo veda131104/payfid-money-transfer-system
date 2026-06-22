@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { PopupService } from '../services/popup.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -25,6 +26,7 @@ export class ResetPasswordComponent implements OnInit {
     form!: FormGroup;
     token: string | null = null;
     isSending = false;
+    private readonly popupService = inject(PopupService);
 
     constructor(
         private readonly fb: FormBuilder,
@@ -41,9 +43,7 @@ export class ResetPasswordComponent implements OnInit {
     ngOnInit(): void {
         this.token = this.route.snapshot.queryParamMap.get('token');
         if (!this.token) {
-            if (typeof window !== 'undefined') {
-                alert('Invalid reset link. Token is missing.');
-            }
+            this.popupService.alert('Invalid reset link. Token is missing.', 'Reset Error');
             this.router.navigate(['/']);
         }
     }
@@ -65,17 +65,12 @@ export class ResetPasswordComponent implements OnInit {
 
         this.authService.resetPassword({ token: this.token, newPassword: password }).subscribe({
             next: () => {
-                if (typeof window !== 'undefined') {
-                    alert('Password has been reset successfully! Redirecting to sign-in...');
-                }
+                this.popupService.alert('Password has been reset successfully! Redirecting to sign-in...', 'Success');
                 this.router.navigate(['/']);
             },
             error: (err: any) => {
-                console.error('Reset failed:', err);
                 this.isSending = false;
-                if (typeof window !== 'undefined') {
-                    alert('Failed to reset password. Link may be expired.');
-                }
+                this.popupService.alert('Failed to reset password. Link may be expired.', 'Error');
             }
         });
     }
