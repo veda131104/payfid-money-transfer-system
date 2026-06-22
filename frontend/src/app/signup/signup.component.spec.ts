@@ -11,12 +11,11 @@ describe('SignupComponent', () => {
   let component: SignupComponent;
   let fixture: ComponentFixture<SignupComponent>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let router: Router;
   let alertSpy: jasmine.Spy;
 
   beforeEach(async () => {
-    authServiceSpy = jasmine.createSpyObj('AuthService', ['signup']);
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    authServiceSpy = jasmine.createSpyObj('AuthService', ['signup', 'login']);
     alertSpy = spyOn(window, 'alert');
 
     await TestBed.configureTestingModule({
@@ -27,13 +26,14 @@ describe('SignupComponent', () => {
         RouterTestingModule
       ],
       providers: [
-        { provide: AuthService, useValue: authServiceSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: AuthService, useValue: authServiceSpy }
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SignupComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
     fixture.detectChanges();
   });
 
@@ -101,6 +101,7 @@ describe('SignupComponent', () => {
 
   it('should submit successfully and navigate to home', () => {
     authServiceSpy.signup.and.returnValue(of({ name: 'validUser', email: 'test@example.com' }));
+    authServiceSpy.login.and.returnValue(throwError(() => new Error('Login error')));
     component.form.patchValue({
       username: 'validUser',
       email: 'test@example.com',
@@ -114,7 +115,48 @@ describe('SignupComponent', () => {
       password: 'password123'
     });
     expect(alertSpy).toHaveBeenCalledWith('Signup successful! Please log in to complete your account setup.');
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    expect(router.navigate).toHaveBeenCalledWith(['/']);
+  });
+
+  it('should submit and login successfully (first login -> account setup)', () => {
+    authServiceSpy.signup.and.returnValue(of({ name: 'validUser', email: 'test@example.com' }));
+    authServiceSpy.login.and.returnValue(of({
+      userId: 1,
+      name: 'validUser',
+      email: 'test@example.com',
+      token: 'jwt',
+      tokenType: 'Bearer',
+      firstLogin: true,
+      rememberToken: 'token123'
+    }));
+    component.form.patchValue({
+      username: 'validUser',
+      email: 'test@example.com',
+      password: 'password123',
+      confirmPassword: 'password123'
+    });
+    component.submit();
+    expect(router.navigate).toHaveBeenCalledWith(['/account-setup']);
+  });
+
+  it('should submit and login successfully (not first login -> dashboard)', () => {
+    authServiceSpy.signup.and.returnValue(of({ name: 'validUser', email: 'test@example.com' }));
+    authServiceSpy.login.and.returnValue(of({
+      userId: 1,
+      name: 'validUser',
+      email: 'test@example.com',
+      token: 'jwt',
+      tokenType: 'Bearer',
+      firstLogin: false
+    }));
+    component.form.patchValue({
+      username: 'validUser',
+      email: 'test@example.com',
+      password: 'password123',
+      confirmPassword: 'password123'
+    });
+    component.submit();
+    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
   });
 
   it('should handle signup error with status 409', () => {
@@ -190,3 +232,4 @@ describe('SignupComponent', () => {
     expect(alertSpy).toHaveBeenCalledWith('Signup failed. Please try again.');
   });
 });
+

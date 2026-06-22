@@ -154,6 +154,12 @@ export class AccountSetupComponent implements OnInit {
 
     if (this.form.invalid) {
       console.warn('[AccountSetup] submit: Submission aborted. Form is invalid. Fields errors:', this.form.errors);
+      const accNoControl = this.form.get('accountNumber');
+      if (accNoControl && accNoControl.invalid && (accNoControl.hasError('pattern') || accNoControl.hasError('minlength') || accNoControl.hasError('maxlength'))) {
+        alert('Validation Error: Account Number must be between 9 and 18 digits (numbers only).');
+        accNoControl.markAsTouched();
+        return;
+      }
       alert('Please fill in all mandatory fields correctly before proceeding.');
       this.form.markAllAsTouched();
       return;
