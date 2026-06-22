@@ -14,21 +14,19 @@ describe('RewardsComponent', () => {
   let authServiceSpy: jasmine.SpyObj<AuthService>;
   let accountSetupServiceSpy: jasmine.SpyObj<AccountSetupService>;
   let rewardServiceSpy: jasmine.SpyObj<RewardService>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let router: Router;
 
   beforeEach(async () => {
     authServiceSpy = jasmine.createSpyObj('AuthService', ['getCurrentUser', 'clearSession']);
     accountSetupServiceSpy = jasmine.createSpyObj('AccountSetupService', ['getAccountByUser', 'getAccountByNumber']);
     rewardServiceSpy = jasmine.createSpyObj('RewardService', ['initializeRewardAccount', 'getRewardHistory']);
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
       imports: [RewardsComponent, RouterTestingModule],
       providers: [
         { provide: AuthService, useValue: authServiceSpy },
         { provide: AccountSetupService, useValue: accountSetupServiceSpy },
-        { provide: RewardService, useValue: rewardServiceSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: RewardService, useValue: rewardServiceSpy }
       ]
     }).compileComponents();
   });
@@ -36,6 +34,8 @@ describe('RewardsComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RewardsComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
   });
 
   it('should create', () => {
@@ -168,6 +168,6 @@ describe('RewardsComponent', () => {
   it('should logout successfully', () => {
     component.onLogout();
     expect(authServiceSpy.clearSession).toHaveBeenCalled();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/']);
+    expect(router.navigate).toHaveBeenCalledWith(['/']);
   });
 });

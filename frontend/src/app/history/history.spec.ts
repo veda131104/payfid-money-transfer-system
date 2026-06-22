@@ -2,11 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HistoryComponent } from './history.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { TransactionService } from '../services/transaction.service';
+import { TransactionService, Transaction } from '../services/transaction.service';
 import { AuthService } from '../services/auth.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { AccountSetupService } from '../services/account-setup.service';
+import { Router, NavigationEnd } from '@angular/router';
 
 describe('HistoryComponent', () => {
   let component: HistoryComponent;
@@ -14,6 +15,7 @@ describe('HistoryComponent', () => {
   let transactionService: TransactionService;
   let authService: AuthService;
   let accountSetupService: AccountSetupService;
+  let router: Router;
   let getCurrentUserSpy: jasmine.Spy;
   let getAccountByUserSpy: jasmine.Spy;
   let getAccountByNumberSpy: jasmine.Spy;
@@ -127,20 +129,184 @@ describe('HistoryComponent', () => {
     transactionService = TestBed.inject(TransactionService);
     authService = TestBed.inject(AuthService);
     accountSetupService = TestBed.inject(AccountSetupService);
+    router = TestBed.inject(Router);
+    spyOn(router, 'navigate');
 
     getCurrentUserSpy = spyOn(authService, 'getCurrentUser').and.returnValue({ name: 'testuser', email: 'testuser@company.com' });
     getAccountByUserSpy = spyOn(accountSetupService, 'getAccountByUser').and.returnValue(of({ accountNumber: '123456789012' }));
     getAccountByNumberSpy = spyOn(accountSetupService, 'getAccountByNumber').and.returnValue(of({ balance: 1000, id: 1 }));
     getAccountHistorySpy = spyOn(transactionService, 'getAccountHistory').and.returnValue(of([]));
-
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should load history on init', () => {
+    fixture.detectChanges();
     expect(transactionService.getAccountHistory).toHaveBeenCalled();
+  });
+
+  it('should handle navigation events to refresh data', () => {
+    fixture.detectChanges();
+    spyOn(transactionService, 'getTransactions').and.returnValue([]);
+    
+    // Simulate Router NavigationEnd event
+    const navEnd = new NavigationEnd(1, '/history', '/history');
+    (router.events as any).next(navEnd);
+
+    expect(component.currentUserAccountNumber).toBe('123456789012');
+  });
+
+  it('should load more transactions and manage hasMoreTransactions flag', () => {
+    fixture.detectChanges();
+    const mockTxns: Transaction[] = Array.from({ length: 12 }, (_, i) => ({
+      id: i.toString(),
+      accountNumber: '999999999999',
+      amount: '100',
+      date: new Date(),
+      type: 'debit',
+      status: 'completed',
+      referenceId: `REF${i}`,
+      description: 'Test'
+    }));
+    component.rawTransactions = mockTxns;
+    
+    // First page
+    component.currentPage = 0;
+    component.displayedTransactions = [];
+    component.loadMore();
+
+    expect(component.displayedTransactions.length).toBe(5);
+    expect(component.hasMoreTransactions).toBeTrue();
+
+    // Second page
+    component.loadMore();
+    expect(component.displayedTransactions.length).toBe(10);
+    expect(component.hasMoreTransactions).toBeTrue();
+
+    // Third page (last 2)
+    component.loadMore();
+    expect(component.displayedTransactions.length).toBe(12);
+    expect(component.hasMoreTransactions).toBeFalse();
+  });
+
+  it('should filter transactions by today, month, and year correctly', () => {
+    fixture.detectChanges();
+    const now = new Date();
+    const pastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 10);
+    const pastYear = new Date(now.getFullYear() - 1, now.getMonth(), 10);
+
+    component.rawTransactions = [
+      { id: '1', accountNumber: '111', amount: '10', date: now, type: 'credit', status: 'completed', referenceId: '1', description: 'today' },
+      { id: '2', accountNumber: '222', amount: '20', date: pastMonth, type: 'debit', status: 'completed', referenceId: '2', description: 'past month' },
+      { id: '3', accountNumber: '333', amount: '30', date: pastYear, type: 'credit', status: 'completed', referenceId: '3', description: 'past year' }
+    ];
+
+    // Filter 'today'
+    component.setFilter('today');
+    expect(component.displayedTransactions.length).toBe(1);
+    expect(component.displayedTransactions[0].description).toBe('today');
+
+    // Filter 'month' -> since now is current month, only 'today' is in current month.
+    // Wait, the pastMonth txn date has month = now.getMonth() - 1, so it won't match.
+    // The pastYear txn has year = now.getFullYear() - 1, so it won't match.
+    component.setFilter('month');
+    expect(component.displayedTransactions.length).toBe(1);
+    expect(component.displayedTransactions[0].description).toBe('today');
+
+    // Filter 'year' -> today and pastMonth are in current year, pastYear is not.
+    component.setFilter('year');
+    expect(component.displayedTransactions.length).toBe(2);
+  });
+
+  it('should open and close transaction detail view', () => {
+    fixture.detectChanges();
+    const txn: Transaction = { id: '1', accountNumber: '111', amount: '10', date: new Date(), type: 'credit', status: 'completed', referenceId: '1', description: 'test' };
+    component.openTransactionDetail(txn, 0);
+    expect(component.selectedTransaction).toBe(txn);
+
+    component.closeTransactionDetail();
+    expect(component.selectedTransaction).toBeNull();
+  });
+
+  it('should add transaction and reset pagination', () => {
+    fixture.detectChanges();
+    const txn: Transaction = { id: '1', accountNumber: '111', amount: '10', date: new Date(), type: 'credit', status: 'completed', referenceId: '1', description: 'test' };
+    component.addTransaction(txn);
+    expect(component.allTransactions[0]).toBe(txn);
+    expect(component.currentPage).toBe(1); // loadMore was run once
+  });
+
+  it('should format transaction sign based on sender/receiver perspective', () => {
+    fixture.detectChanges();
+    component.currentUserAccountNumber = '123456789012';
+
+    // Received money (toAccountNumber = me) -> +
+    const rxTxn: Transaction = {
+      id: '1',
+      accountNumber: '999999999999',
+      fromAccountNumber: '999999999999',
+      toAccountNumber: '123456789012',
+      amount: '100',
+      date: new Date(),
+      type: 'transfer',
+      status: 'completed',
+      referenceId: '1',
+      description: 'rx'
+    };
+    expect(component.getTransactionSign(rxTxn)).toBe('+');
+    expect(component.getDisplayType(rxTxn)).toBe('credit');
+
+    // Sent money (fromAccountNumber = me) -> -
+    const txTxn: Transaction = {
+      id: '2',
+      accountNumber: '999999999999',
+      fromAccountNumber: '123456789012',
+      toAccountNumber: '999999999999',
+      amount: '100',
+      date: new Date(),
+      type: 'transfer',
+      status: 'completed',
+      referenceId: '2',
+      description: 'tx'
+    };
+    expect(component.getTransactionSign(txTxn)).toBe('-');
+    expect(component.getDisplayType(txTxn)).toBe('debit');
+
+    // Fallback: type 'credit' -> +
+    const creditTxn: Transaction = {
+      id: '3',
+      accountNumber: '999999999999',
+      amount: '100',
+      date: new Date(),
+      type: 'credit',
+      status: 'completed',
+      referenceId: '3',
+      description: 'credit'
+    };
+    expect(component.getTransactionSign(creditTxn)).toBe('+');
+
+    // Fallback: type 'debit' -> -
+    const debitTxn: Transaction = {
+      id: '4',
+      accountNumber: '999999999999',
+      amount: '100',
+      date: new Date(),
+      type: 'debit',
+      status: 'completed',
+      referenceId: '4',
+      description: 'debit'
+    };
+    expect(component.getTransactionSign(debitTxn)).toBe('-');
+  });
+
+  it('should logout and clear session successfully', () => {
+    fixture.detectChanges();
+    spyOn(authService, 'clearSession');
+    component.onLogout();
+    expect(authService.clearSession).toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/']);
   });
 });
