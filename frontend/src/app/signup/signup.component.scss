@@ -277,3 +277,31 @@
 .otp-error-message {
   margin: 0;
 }
+
+.actions-row {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 0.8rem;
+}
+
+.otp-panel {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.otp-controls {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.otp-error-message {
+  color: #a94442;
+  background: #f9eaea;
+  padding: 0.6rem;
+  border-radius: 8px;
+  font-weight: 600;
+}

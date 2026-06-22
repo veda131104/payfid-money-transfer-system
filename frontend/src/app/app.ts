@@ -45,7 +45,9 @@ export class App implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('storage', this.storageListener);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('storage', this.storageListener);
+    }
     if (this.broadcastChannel) {
       this.broadcastChannel.close();
       this.broadcastChannel = null;

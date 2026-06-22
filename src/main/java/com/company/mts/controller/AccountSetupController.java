@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +46,6 @@ public class AccountSetupController {
     }
 
     @PostMapping
-    @Transactional
     public ResponseEntity<?> create(@RequestBody AccountSetupRequest request) {
         log.info("[AccountSetupController] POST / - Received account setup request for userName='{}', accountNumber='{}', bankName='{}'",
                 request.getUserName(), request.getAccountNumber(), request.getBankName());
