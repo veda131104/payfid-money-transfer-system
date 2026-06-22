@@ -176,6 +176,14 @@ export class AccountSetupComponent implements OnInit {
       return;
     }
 
+    const enteredOtp = this.form.get('otp')?.value || '';
+    if (!enteredOtp) {
+      console.warn('[AccountSetup] submit: Submission aborted. OTP missing.');
+      alert('Please enter the OTP from your email before completing setup.');
+      this.form.get('otp')?.markAsTouched();
+      return;
+    }
+
     const user = this.authService.getCurrentUser();
     console.log('[AccountSetup] submit: Fetching current session user:', user);
     if (!user?.name) {

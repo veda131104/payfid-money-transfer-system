@@ -112,8 +112,15 @@
       </mat-form-field>
 
       <div class="actions">
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Complete Setup</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || !isEmailVerified">
+          Complete Setup
+        </button>
       </div>
+      @if (!isEmailVerified) {
+      <div class="otp-warning">
+        Please verify your email with OTP before completing account setup.
+      </div>
+      }
     </form>
   </mat-card>
 

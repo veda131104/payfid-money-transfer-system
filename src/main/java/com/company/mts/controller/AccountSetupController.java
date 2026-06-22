@@ -19,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -33,6 +35,7 @@ public class AccountSetupController {
     private final AuthUserRepository authUserRepository;
     // Simple in-memory OTP store for demo purposes
     private final Map<String, String> otpStore = new HashMap<>();
+    private final Set<String> verifiedContacts = ConcurrentHashMap.newKeySet();
 
     public AccountSetupController(BankDetailsService service, EmailService emailService,
             AccountRepository accountRepository, AuthUserRepository authUserRepository) {
@@ -65,6 +68,15 @@ public class AccountSetupController {
                 error.put("message", "User not logged in or session expired. Please log in and try again.");
                 return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
             }
+
+            String userEmail = normalizeContact(request.getEmail());
+            if (userEmail == null || !verifiedContacts.contains(userEmail)) {
+                log.warn("[AccountSetupController] POST / - REJECTED: Email '{}' has not been verified via OTP", request.getEmail());
+                Map<String, String> error = new HashMap<>();
+                error.put("message", "Email verification required. Please verify the OTP sent to your email before completing setup.");
+                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+            }
+            verifiedContacts.remove(userEmail);
 
             // Generate UPI ID from userName (always unique) instead of email prefix
             String generatedUpiId = generateUpiId(request.getUserName(), request.getBankName());
@@ -179,6 +191,13 @@ public class AccountSetupController {
         return upiId;
     }
 
+    private String normalizeContact(String contact) {
+        if (contact == null || contact.isBlank()) {
+            return null;
+        }
+        return contact.trim().toLowerCase();
+    }
+
     @GetMapping("/{accountNumber}")
     public ResponseEntity<BankDetails> getByAccountNumber(@PathVariable String accountNumber) {
         log.info("[AccountSetupController] GET /{} - Looking up bank details by account number", accountNumber);
@@ -254,15 +273,22 @@ public class AccountSetupController {
 
     @PostMapping("/send-otp")
     public ResponseEntity<Map<String, Object>> sendOtp(@RequestBody Map<String, String> body) {
-        String contact = body.get("contact");
+        String contact = normalizeContact(body.get("contact"));
         log.info("[AccountSetupController] POST /send-otp - Sending OTP to contact='{}'", contact);
+        if (contact == null || contact.isBlank()) {
+            Map<String, Object> bad = new HashMap<>();
+            bad.put("sent", false);
+            bad.put("message", "Contact is required to send OTP.");
+            return new ResponseEntity<>(bad, HttpStatus.BAD_REQUEST);
+        }
+        verifiedContacts.remove(contact);
         // generate simple 6-digit OTP
         String otp = String.valueOf((int) ((Math.random() * 900000) + 100000));
         otpStore.put(contact, otp);
         log.debug("[AccountSetupController] POST /send-otp - Generated OTP for contact='{}' (stored in memory)", contact);
 
         // Send real email if contact looks like an email address
-        if (contact != null && contact.contains("@")) {
+        if (contact.contains("@")) {
             log.info("[AccountSetupController] POST /send-otp - Contact is an email, sending OTP email to '{}'", contact);
             try {
                 emailService.sendOtpEmail(contact, otp);
@@ -285,14 +311,15 @@ public class AccountSetupController {
 
     @PostMapping("/verify-otp")
     public ResponseEntity<Map<String, Object>> verifyOtp(@RequestBody Map<String, String> body) {
-        String contact = body.get("contact");
+        String contact = normalizeContact(body.get("contact"));
         String otp = body.get("otp");
         log.info("[AccountSetupController] POST /verify-otp - Verifying OTP for contact='{}', otp='{}'", contact, otp);
-        boolean ok = otp != null && otp.equals(otpStore.get(contact));
+        boolean ok = contact != null && otp != null && otp.equals(otpStore.get(contact));
         Map<String, Object> resp = new HashMap<>();
         resp.put("verified", ok);
         if (ok) {
             otpStore.remove(contact);
+            verifiedContacts.add(contact);
             log.info("[AccountSetupController] POST /verify-otp - OTP verification SUCCESS for contact='{}'", contact);
         } else {
             log.warn("[AccountSetupController] POST /verify-otp - OTP verification FAILED for contact='{}'. Expected='{}', Got='{}'",

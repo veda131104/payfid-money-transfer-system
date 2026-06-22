@@ -13,6 +13,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../services/auth.service';
+import { AccountSetupService } from '../services/account-setup.service';
 
 @Component({
   selector: 'app-signup',
@@ -31,10 +32,14 @@ import { AuthService } from '../services/auth.service';
 export class SignupComponent {
   form!: FormGroup;
   loading = false;
+  otpSending = false;
+  otpToastMessage: string | null = null;
+  otpSendError: string | null = null;
 
   constructor(
     private readonly fb: FormBuilder,
     private readonly authService: AuthService,
+    private readonly accountSetupService: AccountSetupService,
     private readonly router: Router
   ) {
     this.form = this.fb.nonNullable.group(
@@ -46,6 +51,39 @@ export class SignupComponent {
       },
       { validators: [passwordsMatch] }
     );
+  }
+
+  private handleOtpSend(email: string): void {
+    this.otpSending = true;
+    this.otpSendError = null;
+    this.accountSetupService.sendOtp({ contact: email }).subscribe({
+      next: () => {
+        this.otpSending = false;
+        this.otpToastMessage = `Verification OTP sent to ${email}`;
+        // show a short toast then navigate to account setup
+        setTimeout(() => {
+          this.otpToastMessage = null;
+          this.router.navigate(['/account-setup']);
+        }, 900);
+      },
+      error: (err) => {
+        this.otpSending = false;
+        console.warn('[Signup] Failed to send signup OTP', err);
+        this.otpSendError = err?.error?.message || 'Failed to send verification OTP';
+      }
+    });
+  }
+
+  retrySendOtp(email: string | null | undefined): void {
+    if (!email) {
+      this.otpSendError = 'No email available to resend OTP.';
+      return;
+    }
+    this.handleOtpSend(email);
+  }
+
+  proceedToAccountSetup(): void {
+    this.router.navigate(['/account-setup']);
   }
 
   submit(): void {
@@ -86,18 +124,19 @@ export class SignupComponent {
       next: () => {
         this.authService.login({ name: username, password, rememberMe: false }).subscribe({
           next: (loginRes) => {
-            this.loading = false;
-            if (loginRes.rememberToken) {
-              localStorage.setItem('remember_token', loginRes.rememberToken);
-            } else {
-              localStorage.removeItem('remember_token');
-            }
-            if (loginRes.firstLogin) {
-              this.router.navigate(['/account-setup']);
-            } else {
-              this.router.navigate(['/dashboard']);
-            }
-          },
+              this.loading = false;
+              if (loginRes.rememberToken) {
+                localStorage.setItem('remember_token', loginRes.rememberToken);
+              } else {
+                localStorage.removeItem('remember_token');
+              }
+              if (loginRes.firstLogin) {
+                // Send OTP to the user's email to start verification flow
+                this.handleOtpSend(email);
+              } else {
+                this.router.navigate(['/dashboard']);
+              }
+            },
           error: () => {
             this.loading = false;
             alert('Signup successful! Please log in to complete your account setup.');

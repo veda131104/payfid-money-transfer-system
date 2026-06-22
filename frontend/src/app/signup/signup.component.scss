@@ -246,3 +246,34 @@
     transform: rotate(360deg);
   }
 }
+
+.otp-toast {
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  background: #e6fff9;
+  color: #064c45;
+  font-weight: 600;
+  align-self: stretch;
+  text-align: center;
+}
+
+.otp-error {
+  padding: 0.8rem;
+  border-radius: 10px;
+  background: #fff6f6;
+  border: 1px solid rgba(220, 38, 38, 0.12);
+  color: #7a1717;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.otp-actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.otp-error-message {
+  margin: 0;
+}

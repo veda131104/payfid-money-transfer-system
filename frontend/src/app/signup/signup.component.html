@@ -17,6 +17,10 @@
           </div>
         </header>
 
+        @if (otpToastMessage) {
+        <div class="otp-toast success">{{otpToastMessage}}</div>
+        }
+
         <form class="form" [formGroup]="form" (ngSubmit)="submit()">
           <mat-form-field appearance="outline" class="field">
             <mat-label>Username</mat-label>
@@ -76,6 +80,18 @@
             {{loading ? 'Creating account...' : 'Create account'}}
           </button>
         </form>
+
+        @if (otpSendError) {
+        <div class="otp-error">
+          <p class="otp-error-message">{{otpSendError}}</p>
+          <div class="otp-actions">
+            <button mat-stroked-button (click)="retrySendOtp(form.get('email')?.value)" [disabled]="otpSending">
+              {{ otpSending ? 'Sending...' : 'Retry sending OTP' }}
+            </button>
+            <button mat-button (click)="proceedToAccountSetup()">Proceed to Account Setup</button>
+          </div>
+        </div>
+        }
 
         <p class="footnote">
           Already have an account?
