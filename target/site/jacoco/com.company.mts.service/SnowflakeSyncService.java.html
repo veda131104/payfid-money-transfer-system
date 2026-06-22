@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SnowflakeSyncService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mts</a> &gt; <a href="index.source.html" class="el_package">com.company.mts.service</a> &gt; <span class="el_source">SnowflakeSyncService.java</span></div><h1>SnowflakeSyncService.java</h1><pre class="source lang-java linenums">package com.company.mts.service;
+
+import com.company.mts.entity.TransactionLog;
+import com.company.mts.repository.AccountRepository;
+import com.company.mts.repository.TransactionLogRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Properties;
+
+@Service
+<span class="fc" id="L22">@Slf4j</span>
+public class SnowflakeSyncService {
+
+    private final TransactionLogRepository transactionLogRepository;
+    private final AccountRepository accountRepository;
+
+    @Value(&quot;${snowflake.url}&quot;)
+    private String snowflakeUrl;
+
+    @Value(&quot;${snowflake.user}&quot;)
+    private String snowflakeUser;
+
+    @Value(&quot;${snowflake.password}&quot;)
+    private String snowflakePassword;
+
+    @Value(&quot;${snowflake.role}&quot;)
+    private String snowflakeRole;
+
+    @Value(&quot;${snowflake.warehouse}&quot;)
+    private String snowflakeWarehouse;
+
+    @Value(&quot;${snowflake.database}&quot;)
+    private String snowflakeDatabase;
+
+    @Value(&quot;${snowflake.schema}&quot;)
+    private String snowflakeSchema;
+
+<span class="fc" id="L49">    private Long lastSyncedId = 0L;</span>
+
+    public SnowflakeSyncService(TransactionLogRepository transactionLogRepository,
+<span class="fc" id="L52">            AccountRepository accountRepository) {</span>
+<span class="fc" id="L53">        this.transactionLogRepository = transactionLogRepository;</span>
+<span class="fc" id="L54">        this.accountRepository = accountRepository;</span>
+<span class="fc" id="L55">    }</span>
+
+    /**
+     * Sync data from H2 to Snowflake every 5 minutes.
+     * For demo purposes, we'll log the connection attempt and simulated sync if no
+     * credentials.
+     */
+    @Scheduled(fixedRate = 300000) // 5 minutes
+    public void syncToSnowflake() {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (!isSnowflakeConfigured()) {</span>
+<span class="fc" id="L65">            log.warn(&quot;Snowflake credentials not configured. Skipping sync.&quot;);</span>
+<span class="fc" id="L66">            return;</span>
+        }
+
+<span class="fc" id="L69">        log.info(&quot;Starting H2 to Snowflake synchronization...&quot;);</span>
+
+<span class="fc" id="L71">        try (Connection conn = connect()) {</span>
+            // Initialize lastSyncedId from Snowflake if it's 0 (meaning we just started)
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">            if (lastSyncedId == 0L) {</span>
+<span class="fc" id="L74">                try (Statement stmt = conn.createStatement();</span>
+<span class="fc" id="L75">                        ResultSet rs = stmt.executeQuery(&quot;SELECT MAX(id) FROM STG_TRANSACTIONS&quot;)) {</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">                    if (rs.next()) {</span>
+<span class="fc" id="L77">                        lastSyncedId = rs.getLong(1);</span>
+<span class="fc" id="L78">                        log.info(&quot;Initialized lastSyncedId from Snowflake: {}&quot;, lastSyncedId);</span>
+                    }
+<span class="fc" id="L80">                } catch (SQLException e) {</span>
+<span class="fc" id="L81">                    log.warn(&quot;Could not fetch max ID from Snowflake (table might be empty): {}&quot;, e.getMessage());</span>
+<span class="fc" id="L82">                }</span>
+            }
+
+<span class="fc" id="L85">            List&lt;TransactionLog&gt; pendingTransactions = transactionLogRepository.findAll().stream()</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">                    .filter(tx -&gt; tx.getId() &gt; lastSyncedId)</span>
+<span class="fc" id="L87">                    .toList();</span>
+
+<span class="fc bfc" id="L89" title="All 2 branches covered.">            if (pendingTransactions.isEmpty()) {</span>
+<span class="fc" id="L90">                log.info(&quot;No new transactions to sync.&quot;);</span>
+<span class="fc" id="L91">                return;</span>
+            }
+
+<span class="fc" id="L94">            log.info(&quot;Found {} pending transactions for Snowflake sync.&quot;, pendingTransactions.size());</span>
+<span class="fc" id="L95">            syncTransactions(conn, pendingTransactions);</span>
+<span class="fc" id="L96">            lastSyncedId = pendingTransactions.get(pendingTransactions.size() - 1).getId();</span>
+<span class="fc" id="L97">            log.info(&quot;Successfully synced {} transactions to Snowflake. Last Synced ID: {}&quot;,</span>
+<span class="fc" id="L98">                    pendingTransactions.size(), lastSyncedId);</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">        } catch (SQLException e) {</span>
+<span class="fc" id="L100">            log.error(&quot;Failed to sync data to Snowflake: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L101">        }</span>
+<span class="fc" id="L102">    }</span>
+
+    private boolean isSnowflakeConfigured() {
+<span class="pc bpc" id="L105" title="1 of 4 branches missed.">        return snowflakeUser != null &amp;&amp; !snowflakeUser.contains(&quot;&lt;your-username&gt;&quot;);</span>
+    }
+
+    protected Connection connect() throws SQLException {
+<span class="fc" id="L109">        Properties properties = new Properties();</span>
+<span class="fc" id="L110">        properties.put(&quot;user&quot;, snowflakeUser);</span>
+<span class="fc" id="L111">        properties.put(&quot;password&quot;, snowflakePassword);</span>
+<span class="fc" id="L112">        properties.put(&quot;role&quot;, snowflakeRole);</span>
+<span class="fc" id="L113">        properties.put(&quot;warehouse&quot;, snowflakeWarehouse);</span>
+<span class="fc" id="L114">        properties.put(&quot;db&quot;, snowflakeDatabase);</span>
+<span class="fc" id="L115">        properties.put(&quot;schema&quot;, snowflakeSchema);</span>
+
+<span class="nc" id="L117">        return DriverManager.getConnection(snowflakeUrl, properties);</span>
+    }
+
+    private void syncTransactions(Connection conn, List&lt;TransactionLog&gt; transactions) throws SQLException {
+        // Ensure column exists (one-time check/alter)
+<span class="fc" id="L122">        try (Statement stmt = conn.createStatement()) {</span>
+<span class="fc" id="L123">            stmt.execute(&quot;ALTER TABLE STG_TRANSACTIONS ADD COLUMN IF NOT EXISTS sender_name STRING&quot;);</span>
+<span class="fc" id="L124">            stmt.execute(&quot;ALTER TABLE STG_TRANSACTIONS ADD COLUMN IF NOT EXISTS receiver_name STRING&quot;);</span>
+<span class="fc" id="L125">        } catch (SQLException e) {</span>
+<span class="fc" id="L126">            log.warn(&quot;Could not alter table: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L127">        }</span>
+
+<span class="fc" id="L129">        String sql = &quot;INSERT INTO STG_TRANSACTIONS (id, from_account_id, to_account_id, amount, type, status, transaction_date, sender_name, receiver_name) &quot;</span>
+                +
+                &quot;VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)&quot;;
+
+<span class="fc" id="L133">        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">            for (TransactionLog tx : transactions) {</span>
+<span class="fc" id="L135">                String senderName = &quot;System&quot;;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">                if (tx.getFromAccountId() != null) {</span>
+<span class="fc" id="L137">                    senderName = accountRepository.findById(tx.getFromAccountId())</span>
+<span class="fc" id="L138">                            .map(acc -&gt; acc.getHolderName())</span>
+<span class="fc" id="L139">                            .orElse(&quot;Deleted User&quot;);</span>
+                }
+
+<span class="fc" id="L142">                String receiverName = &quot;External Entity&quot;;</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">                if (tx.getToAccountId() != null) {</span>
+                    // Check if it's an internal transfer
+<span class="pc bpc" id="L145" title="1 of 4 branches missed.">                    if (tx.getToAccountId().equals(tx.getFromAccountId()) &amp;&amp; tx.getDescription() != null) {</span>
+                        // Extract recipient from description if possible (e.g. &quot;Transfer to
+                        // 123456789012&quot;)
+<span class="fc bfc" id="L148" title="All 2 branches covered.">                        if (tx.getDescription().contains(&quot;to &quot;)) {</span>
+<span class="fc" id="L149">                            receiverName = tx.getDescription().substring(tx.getDescription().lastIndexOf(&quot;to &quot;) + 3);</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">                        } else if (tx.getDescription().contains(&quot;Withdrawal&quot;)) {</span>
+<span class="fc" id="L151">                            receiverName = &quot;ATM/Cash&quot;;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                        } else if (tx.getDescription().contains(&quot;Deposit&quot;)) {</span>
+<span class="fc" id="L153">                            receiverName = senderName; // Self</span>
+<span class="fc" id="L154">                            senderName = &quot;Cash Deposit&quot;;</span>
+                        }
+                    } else {
+<span class="fc" id="L157">                        receiverName = accountRepository.findById(tx.getToAccountId())</span>
+<span class="fc" id="L158">                                .map(acc -&gt; acc.getHolderName())</span>
+<span class="fc" id="L159">                                .orElse(&quot;Deleted User&quot;);</span>
+                    }
+                }
+
+<span class="fc" id="L163">                pstmt.setLong(1, tx.getId());</span>
+<span class="fc" id="L164">                pstmt.setObject(2, tx.getFromAccountId());</span>
+<span class="fc" id="L165">                pstmt.setObject(3, tx.getToAccountId());</span>
+<span class="fc" id="L166">                pstmt.setBigDecimal(4, tx.getAmount());</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">                pstmt.setString(5, tx.getType() != null ? tx.getType().name() : null);</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">                pstmt.setString(6, tx.getStatus() != null ? tx.getStatus().name() : null);</span>
+<span class="fc" id="L169">                pstmt.setTimestamp(7,</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">                        tx.getTransactionDate() != null ? Timestamp.valueOf(tx.getTransactionDate()) : null);</span>
+<span class="fc" id="L171">                pstmt.setString(8, senderName);</span>
+<span class="fc" id="L172">                pstmt.setString(9, receiverName);</span>
+<span class="fc" id="L173">                pstmt.addBatch();</span>
+<span class="fc" id="L174">            }</span>
+<span class="fc" id="L175">            pstmt.executeBatch();</span>
+        }
+<span class="fc" id="L177">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

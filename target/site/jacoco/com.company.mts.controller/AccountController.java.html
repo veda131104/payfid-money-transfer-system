@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccountController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mts</a> &gt; <a href="index.source.html" class="el_package">com.company.mts.controller</a> &gt; <span class="el_source">AccountController.java</span></div><h1>AccountController.java</h1><pre class="source lang-java linenums">package com.company.mts.controller;
+
+import com.company.mts.dto.AccountBalanceDTO;
+import com.company.mts.dto.TransferByAccountNumberRequest;
+import com.company.mts.entity.Account;
+import com.company.mts.service.AccountService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(&quot;/api/v1/accounts&quot;)
+public class AccountController {
+
+    private final AccountService accountService;
+
+<span class="fc" id="L17">    public AccountController(AccountService accountService) {</span>
+<span class="fc" id="L18">        this.accountService = accountService;</span>
+<span class="fc" id="L19">    }</span>
+
+    // ===============================
+    // Create Account
+    // ===============================
+    @PostMapping
+    public ResponseEntity&lt;Account&gt; createAccount(@RequestBody CreateAccountRequest request) {
+<span class="fc" id="L26">        Account account = accountService.createAccount(</span>
+<span class="fc" id="L27">                request.getHolderName(),</span>
+<span class="fc" id="L28">                request.getInitialBalance());</span>
+<span class="fc" id="L29">        return new ResponseEntity&lt;&gt;(account, HttpStatus.CREATED);</span>
+    }
+
+    // ===============================
+    // Get Account by ID
+    // ===============================
+    @GetMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Account&gt; getAccount(@PathVariable Long id) {
+<span class="fc" id="L37">        Account account = accountService.getAccount(id);</span>
+<span class="fc" id="L38">        return ResponseEntity.ok(account);</span>
+    }
+
+    // ===============================
+    // Get Account Balance Only
+    // ===============================
+    @GetMapping(&quot;/{id}/balance&quot;)
+    public ResponseEntity&lt;AccountBalanceDTO&gt; getAccountBalance(@PathVariable Long id) {
+<span class="fc" id="L46">        Account account = accountService.getAccount(id);</span>
+
+<span class="fc" id="L48">        AccountBalanceDTO balanceDTO = new AccountBalanceDTO(</span>
+<span class="fc" id="L49">                account.getId(),</span>
+<span class="fc" id="L50">                account.getAccountNumber(),</span>
+<span class="fc" id="L51">                account.getHolderName(),</span>
+<span class="fc" id="L52">                account.getBalance(),</span>
+<span class="fc" id="L53">                account.getStatus().toString());</span>
+
+<span class="fc" id="L55">        return ResponseEntity.ok(balanceDTO);</span>
+    }
+
+    // ===============================
+    // Get Account by Account Number
+    // ===============================
+    @GetMapping(&quot;/number/{accountNumber}&quot;)
+    public ResponseEntity&lt;Account&gt; getAccountByNumber(@PathVariable String accountNumber) {
+<span class="fc" id="L63">        Account account = accountService.getAccountByAccountNumber(accountNumber);</span>
+<span class="fc" id="L64">        return ResponseEntity.ok(account);</span>
+    }
+
+    // ===============================
+    // Get Account by Holder Name
+    // ===============================
+    @GetMapping(&quot;/holder/{holderName}&quot;)
+    public ResponseEntity&lt;Account&gt; getAccountByHolderName(@PathVariable String holderName) {
+<span class="fc" id="L72">        Account account = accountService.getAccountByHolderName(holderName);</span>
+<span class="fc" id="L73">        return ResponseEntity.ok(account);</span>
+    }
+
+    // ===============================
+    // Credit Account (Deposit)
+    // ===============================
+    @PostMapping(&quot;/{id}/credit&quot;)
+    public ResponseEntity&lt;Account&gt; creditAccount(
+            @PathVariable Long id,
+            @RequestBody AmountRequest request) {
+
+<span class="fc" id="L84">        Account account = accountService.credit(id, request.getAmount());</span>
+<span class="fc" id="L85">        return ResponseEntity.ok(account);</span>
+    }
+
+    // ===============================
+    // Debit Account (Withdraw)
+    // ===============================
+    @PostMapping(&quot;/{id}/debit&quot;)
+    public ResponseEntity&lt;Account&gt; debitAccount(
+            @PathVariable Long id,
+            @RequestBody AmountRequest request) {
+
+<span class="fc" id="L96">        Account account = accountService.debit(id, request.getAmount());</span>
+<span class="fc" id="L97">        return ResponseEntity.ok(account);</span>
+    }
+
+    // ===============================
+    // Transfer Between Accounts (by ID) - Legacy endpoint
+    // ===============================
+    @PostMapping(&quot;/transfer&quot;)
+    public ResponseEntity&lt;TransferResponse&gt; transfer(@RequestBody TransferRequest request) {
+<span class="fc" id="L105">        accountService.transfer(</span>
+<span class="fc" id="L106">                request.getFromAccountId(),</span>
+<span class="fc" id="L107">                request.getToAccountId(),</span>
+<span class="fc" id="L108">                request.getAmount());</span>
+
+<span class="fc" id="L110">        TransferResponse response = new TransferResponse(</span>
+                &quot;Transfer successful&quot;,
+<span class="fc" id="L112">                request.getAmount(),</span>
+                true);
+<span class="fc" id="L114">        return ResponseEntity.ok(response);</span>
+    }
+
+    // ===============================
+    // Transfer Between Accounts (by Account Number) - Legacy endpoint
+    // ===============================
+    @PostMapping(&quot;/transfer/by-number&quot;)
+    public ResponseEntity&lt;TransferResponse&gt; transferByAccountNumber(
+            @RequestBody TransferByAccountNumberRequest request) {
+
+<span class="fc" id="L124">        accountService.transferByAccountNumber(</span>
+<span class="fc" id="L125">                request.getFromAccountNumber(),</span>
+<span class="fc" id="L126">                request.getToAccountNumber(),</span>
+<span class="fc" id="L127">                request.getAmount());</span>
+
+<span class="fc" id="L129">        TransferResponse response = new TransferResponse(</span>
+                &quot;Transfer successful&quot;,
+<span class="fc" id="L131">                request.getAmount(),</span>
+                true);
+<span class="fc" id="L133">        return ResponseEntity.ok(response);</span>
+    }
+
+    // ===============================
+    // Lock Account
+    // ===============================
+    @PostMapping(&quot;/{id}/lock&quot;)
+    public ResponseEntity&lt;Account&gt; lockAccount(@PathVariable Long id) {
+<span class="fc" id="L141">        Account account = accountService.lockAccount(id);</span>
+<span class="fc" id="L142">        return ResponseEntity.ok(account);</span>
+    }
+
+    // ===============================
+    // Unlock Account
+    // ===============================
+    @PostMapping(&quot;/{id}/unlock&quot;)
+    public ResponseEntity&lt;Account&gt; unlockAccount(@PathVariable Long id) {
+<span class="fc" id="L150">        Account account = accountService.unlockAccount(id);</span>
+<span class="fc" id="L151">        return ResponseEntity.ok(account);</span>
+    }
+
+    // ===============================
+    // Close Account
+    // ===============================
+    @PostMapping(&quot;/{id}/close&quot;)
+    public ResponseEntity&lt;Account&gt; closeAccount(@PathVariable Long id) {
+<span class="fc" id="L159">        Account account = accountService.closeAccount(id);</span>
+<span class="fc" id="L160">        return ResponseEntity.ok(account);</span>
+    }
+
+    // Inner class for transfer response
+    public static class TransferResponse {
+        private String message;
+        private java.math.BigDecimal amount;
+        private boolean success;
+
+<span class="fc" id="L169">        public TransferResponse(String message, java.math.BigDecimal amount, boolean success) {</span>
+<span class="fc" id="L170">            this.message = message;</span>
+<span class="fc" id="L171">            this.amount = amount;</span>
+<span class="fc" id="L172">            this.success = success;</span>
+<span class="fc" id="L173">        }</span>
+
+        public String getMessage() {
+<span class="fc" id="L176">            return message;</span>
+        }
+
+        public void setMessage(String message) {
+<span class="fc" id="L180">            this.message = message;</span>
+<span class="fc" id="L181">        }</span>
+
+        public java.math.BigDecimal getAmount() {
+<span class="fc" id="L184">            return amount;</span>
+        }
+
+        public void setAmount(java.math.BigDecimal amount) {
+<span class="fc" id="L188">            this.amount = amount;</span>
+<span class="fc" id="L189">        }</span>
+
+        public boolean isSuccess() {
+<span class="fc" id="L192">            return success;</span>
+        }
+
+        public void setSuccess(boolean success) {
+<span class="fc" id="L196">            this.success = success;</span>
+<span class="fc" id="L197">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

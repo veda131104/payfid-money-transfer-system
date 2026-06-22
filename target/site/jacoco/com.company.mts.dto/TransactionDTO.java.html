@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mts</a> &gt; <a href="index.source.html" class="el_package">com.company.mts.dto</a> &gt; <span class="el_source">TransactionDTO.java</span></div><h1>TransactionDTO.java</h1><pre class="source lang-java linenums">package com.company.mts.dto;
+
+import com.company.mts.entity.TransactionStatus;
+import com.company.mts.entity.TransactionType;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Setter
+@Getter
+public class TransactionDTO {
+
+    // Getters and Setters
+    private Long id;
+    private Long fromAccountId;
+    private String fromAccountNumber;
+    private String fromAccountHolderName;
+    private Long toAccountId;
+    private String toAccountNumber;
+    private String toAccountHolderName;
+    private BigDecimal amount;
+    private TransactionType type;
+    private TransactionStatus status;
+    private LocalDateTime transactionDate;
+    private String description;
+    private BigDecimal fromAccountBalanceBefore;
+    private BigDecimal fromAccountBalanceAfter;
+    private BigDecimal toAccountBalanceBefore;
+    private BigDecimal toAccountBalanceAfter;
+    private String failureReason;
+    private String idempotencyKey;
+
+
+    // Constructors
+<span class="fc" id="L37">    public TransactionDTO() {</span>
+<span class="fc" id="L38">    }</span>
+
+    // Builder pattern
+    public static Builder builder() {
+<span class="fc" id="L42">        return new Builder();</span>
+    }
+
+<span class="fc" id="L45">    public static class Builder {</span>
+        private Long id;
+        private Long fromAccountId;
+        private String fromAccountNumber;
+        private String fromAccountHolderName;
+        private Long toAccountId;
+        private String toAccountNumber;
+        private String toAccountHolderName;
+        private BigDecimal amount;
+        private TransactionType type;
+        private TransactionStatus status;
+        private LocalDateTime transactionDate;
+        private String description;
+        private BigDecimal fromAccountBalanceBefore;
+        private BigDecimal fromAccountBalanceAfter;
+        private BigDecimal toAccountBalanceBefore;
+        private BigDecimal toAccountBalanceAfter;
+        private String failureReason;
+
+        public Builder id(Long id) {
+<span class="fc" id="L65">            this.id = id;</span>
+<span class="fc" id="L66">            return this;</span>
+        }
+
+        public Builder fromAccountId(Long fromAccountId) {
+<span class="fc" id="L70">            this.fromAccountId = fromAccountId;</span>
+<span class="fc" id="L71">            return this;</span>
+        }
+
+        public Builder fromAccountNumber(String fromAccountNumber) {
+<span class="fc" id="L75">            this.fromAccountNumber = fromAccountNumber;</span>
+<span class="fc" id="L76">            return this;</span>
+        }
+
+        public Builder fromAccountHolderName(String fromAccountHolderName) {
+<span class="fc" id="L80">            this.fromAccountHolderName = fromAccountHolderName;</span>
+<span class="fc" id="L81">            return this;</span>
+        }
+
+        public Builder toAccountId(Long toAccountId) {
+<span class="fc" id="L85">            this.toAccountId = toAccountId;</span>
+<span class="fc" id="L86">            return this;</span>
+        }
+
+        public Builder toAccountNumber(String toAccountNumber) {
+<span class="fc" id="L90">            this.toAccountNumber = toAccountNumber;</span>
+<span class="fc" id="L91">            return this;</span>
+        }
+
+        public Builder toAccountHolderName(String toAccountHolderName) {
+<span class="fc" id="L95">            this.toAccountHolderName = toAccountHolderName;</span>
+<span class="fc" id="L96">            return this;</span>
+        }
+
+        public Builder amount(BigDecimal amount) {
+<span class="fc" id="L100">            this.amount = amount;</span>
+<span class="fc" id="L101">            return this;</span>
+        }
+
+        public Builder type(TransactionType type) {
+<span class="fc" id="L105">            this.type = type;</span>
+<span class="fc" id="L106">            return this;</span>
+        }
+
+        public Builder status(TransactionStatus status) {
+<span class="fc" id="L110">            this.status = status;</span>
+<span class="fc" id="L111">            return this;</span>
+        }
+
+        public Builder transactionDate(LocalDateTime transactionDate) {
+<span class="fc" id="L115">            this.transactionDate = transactionDate;</span>
+<span class="fc" id="L116">            return this;</span>
+        }
+
+        public Builder description(String description) {
+<span class="fc" id="L120">            this.description = description;</span>
+<span class="fc" id="L121">            return this;</span>
+        }
+
+        public Builder fromAccountBalanceBefore(BigDecimal fromAccountBalanceBefore) {
+<span class="fc" id="L125">            this.fromAccountBalanceBefore = fromAccountBalanceBefore;</span>
+<span class="fc" id="L126">            return this;</span>
+        }
+
+        public Builder fromAccountBalanceAfter(BigDecimal fromAccountBalanceAfter) {
+<span class="fc" id="L130">            this.fromAccountBalanceAfter = fromAccountBalanceAfter;</span>
+<span class="fc" id="L131">            return this;</span>
+        }
+
+        public Builder toAccountBalanceBefore(BigDecimal toAccountBalanceBefore) {
+<span class="fc" id="L135">            this.toAccountBalanceBefore = toAccountBalanceBefore;</span>
+<span class="fc" id="L136">            return this;</span>
+        }
+
+        public Builder toAccountBalanceAfter(BigDecimal toAccountBalanceAfter) {
+<span class="fc" id="L140">            this.toAccountBalanceAfter = toAccountBalanceAfter;</span>
+<span class="fc" id="L141">            return this;</span>
+        }
+
+        public Builder failureReason(String failureReason) {
+<span class="fc" id="L145">            this.failureReason = failureReason;</span>
+<span class="fc" id="L146">            return this;</span>
+        }
+
+        public TransactionDTO build() {
+<span class="fc" id="L150">            TransactionDTO dto = new TransactionDTO();</span>
+<span class="fc" id="L151">            dto.id = this.id;</span>
+<span class="fc" id="L152">            dto.fromAccountId = this.fromAccountId;</span>
+<span class="fc" id="L153">            dto.fromAccountNumber = this.fromAccountNumber;</span>
+<span class="fc" id="L154">            dto.fromAccountHolderName = this.fromAccountHolderName;</span>
+<span class="fc" id="L155">            dto.toAccountId = this.toAccountId;</span>
+<span class="fc" id="L156">            dto.toAccountNumber = this.toAccountNumber;</span>
+<span class="fc" id="L157">            dto.toAccountHolderName = this.toAccountHolderName;</span>
+<span class="fc" id="L158">            dto.amount = this.amount;</span>
+<span class="fc" id="L159">            dto.type = this.type;</span>
+<span class="fc" id="L160">            dto.status = this.status;</span>
+<span class="fc" id="L161">            dto.transactionDate = this.transactionDate;</span>
+<span class="fc" id="L162">            dto.description = this.description;</span>
+<span class="fc" id="L163">            dto.fromAccountBalanceBefore = this.fromAccountBalanceBefore;</span>
+<span class="fc" id="L164">            dto.fromAccountBalanceAfter = this.fromAccountBalanceAfter;</span>
+<span class="fc" id="L165">            dto.toAccountBalanceBefore = this.toAccountBalanceBefore;</span>
+<span class="fc" id="L166">            dto.toAccountBalanceAfter = this.toAccountBalanceAfter;</span>
+<span class="fc" id="L167">            dto.failureReason = this.failureReason;</span>
+<span class="fc" id="L168">            return dto;</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

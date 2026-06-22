@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtTokenProvider.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mts</a> &gt; <a href="index.source.html" class="el_package">com.company.mts.security</a> &gt; <span class="el_source">JwtTokenProvider.java</span></div><h1>JwtTokenProvider.java</h1><pre class="source lang-java linenums">package com.company.mts.security;
+
+import com.company.mts.entity.AuthUser;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.crypto.SecretKey;
+import java.util.Date;
+
+@Component
+<span class="fc" id="L14">@Slf4j</span>
+<span class="fc" id="L15">public class JwtTokenProvider {</span>
+
+    @Value(&quot;${app.jwt.secret:MySuperSecretKeyForJWTTokenGenerationAndValidationInMoneyTransferSystem2024}&quot;)
+    private String jwtSecret;
+
+    @Value(&quot;${app.jwt.expiration:86400000}&quot;)
+    private int jwtExpirationMs;
+
+    public String generateToken(AuthUser user) {
+<span class="fc" id="L24">        Date now = new Date();</span>
+<span class="fc" id="L25">        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);</span>
+
+<span class="fc" id="L27">        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());</span>
+
+<span class="fc" id="L29">        return Jwts.builder()</span>
+<span class="fc" id="L30">                .subject(user.getName())</span>
+<span class="fc" id="L31">                .claim(&quot;userId&quot;, user.getId())</span>
+<span class="fc" id="L32">                .claim(&quot;email&quot;, user.getEmail())</span>
+<span class="fc" id="L33">                .issuedAt(now)</span>
+<span class="fc" id="L34">                .expiration(expiryDate)</span>
+<span class="fc" id="L35">                .signWith(key, SignatureAlgorithm.HS512)</span>
+<span class="fc" id="L36">                .compact();</span>
+    }
+
+    public String getUsernameFromToken(String token) {
+        try {
+<span class="fc" id="L41">            SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());</span>
+<span class="fc" id="L42">            return Jwts.parser()</span>
+<span class="fc" id="L43">                    .verifyWith(key)</span>
+<span class="fc" id="L44">                    .build()</span>
+<span class="fc" id="L45">                    .parseSignedClaims(token)</span>
+<span class="fc" id="L46">                    .getPayload()</span>
+<span class="fc" id="L47">                    .getSubject();</span>
+<span class="fc" id="L48">        } catch (JwtException | IllegalArgumentException e) {</span>
+<span class="fc" id="L49">            log.error(&quot;Error getting username from token: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L50">            return null;</span>
+        }
+    }
+
+    public Long getUserIdFromToken(String token) {
+        try {
+<span class="fc" id="L56">            SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());</span>
+<span class="fc" id="L57">            return ((Number) Jwts.parser()</span>
+<span class="fc" id="L58">                    .verifyWith(key)</span>
+<span class="fc" id="L59">                    .build()</span>
+<span class="fc" id="L60">                    .parseSignedClaims(token)</span>
+<span class="fc" id="L61">                    .getPayload()</span>
+<span class="fc" id="L62">                    .get(&quot;userId&quot;)).longValue();</span>
+<span class="fc" id="L63">        } catch (JwtException | IllegalArgumentException e) {</span>
+<span class="fc" id="L64">            log.error(&quot;Error getting userId from token: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L65">            return null;</span>
+        }
+    }
+
+    public String getEmailFromToken(String token) {
+        try {
+<span class="fc" id="L71">            SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());</span>
+<span class="fc" id="L72">            return (String) Jwts.parser()</span>
+<span class="fc" id="L73">                    .verifyWith(key)</span>
+<span class="fc" id="L74">                    .build()</span>
+<span class="fc" id="L75">                    .parseSignedClaims(token)</span>
+<span class="fc" id="L76">                    .getPayload()</span>
+<span class="fc" id="L77">                    .get(&quot;email&quot;);</span>
+<span class="fc" id="L78">        } catch (JwtException | IllegalArgumentException e) {</span>
+<span class="fc" id="L79">            log.error(&quot;Error getting email from token: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L80">            return null;</span>
+        }
+    }
+
+    public boolean validateToken(String token) {
+        try {
+<span class="fc" id="L86">            SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());</span>
+<span class="fc" id="L87">            Jwts.parser()</span>
+<span class="fc" id="L88">                    .verifyWith(key)</span>
+<span class="fc" id="L89">                    .build()</span>
+<span class="fc" id="L90">                    .parseSignedClaims(token);</span>
+<span class="fc" id="L91">            return true;</span>
+<span class="fc" id="L92">        } catch (MalformedJwtException e) {</span>
+<span class="fc" id="L93">            log.error(&quot;Invalid JWT token: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L94">        } catch (ExpiredJwtException e) {</span>
+<span class="fc" id="L95">            log.error(&quot;Expired JWT token: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L96">        } catch (UnsupportedJwtException e) {</span>
+<span class="fc" id="L97">            log.error(&quot;Unsupported JWT token: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L98">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L99">            log.error(&quot;JWT claims string is empty: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L100">        }</span>
+<span class="fc" id="L101">        return false;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

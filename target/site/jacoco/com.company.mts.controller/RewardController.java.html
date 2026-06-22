@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RewardController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mts</a> &gt; <a href="index.source.html" class="el_package">com.company.mts.controller</a> &gt; <span class="el_source">RewardController.java</span></div><h1>RewardController.java</h1><pre class="source lang-java linenums">package com.company.mts.controller;
+
+import com.company.mts.dto.RewardLedgerDTO;
+import com.company.mts.dto.RewardSummaryDTO;
+import com.company.mts.service.RewardService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * REST controller exposing reward endpoints under /api/v1/rewards
+ *
+ * Public endpoints (no auth required for demo convenience):
+ *   GET  /api/v1/rewards/{accountId}/summary          - total points for an account
+ *   GET  /api/v1/rewards/{accountId}/history          - full ledger history
+ *   POST /api/v1/rewards/evaluate/{transactionId}     - manually trigger evaluation
+ *   POST /api/v1/rewards/{accountId}/initialize       - create reward wallet
+ */
+@RestController
+@RequestMapping(&quot;/api/v1/rewards&quot;)
+@CrossOrigin(origins = &quot;*&quot;)
+public class RewardController {
+
+    private final RewardService rewardService;
+
+<span class="fc" id="L28">    public RewardController(RewardService rewardService) {</span>
+<span class="fc" id="L29">        this.rewardService = rewardService;</span>
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * GET /api/v1/rewards/{accountId}/summary
+     * Returns total accumulated reward points for the account.
+     */
+    @GetMapping(&quot;/{accountId}/summary&quot;)
+    public ResponseEntity&lt;RewardSummaryDTO&gt; getRewardSummary(@PathVariable Long accountId) {
+<span class="fc" id="L38">        RewardSummaryDTO summary = rewardService.getRewardSummary(accountId);</span>
+<span class="fc" id="L39">        return ResponseEntity.ok(summary);</span>
+    }
+
+    /**
+     * GET /api/v1/rewards/{accountId}/history
+     * Returns the full reward ledger for the account (most recent first).
+     */
+    @GetMapping(&quot;/{accountId}/history&quot;)
+    public ResponseEntity&lt;List&lt;RewardLedgerDTO&gt;&gt; getRewardHistory(@PathVariable Long accountId) {
+<span class="fc" id="L48">        List&lt;RewardLedgerDTO&gt; history = rewardService.getRewardHistory(accountId);</span>
+<span class="fc" id="L49">        return ResponseEntity.ok(history);</span>
+    }
+
+    /**
+     * POST /api/v1/rewards/evaluate/{transactionId}
+     * Manually evaluate reward eligibility for a specific transaction.
+     * Useful for retries or admin overrides.
+     * Returns the reward entry if eligible, or a 204 No Content if not eligible.
+     */
+    @PostMapping(&quot;/evaluate/{transactionId}&quot;)
+    public ResponseEntity&lt;?&gt; evaluateReward(@PathVariable Long transactionId) {
+<span class="fc" id="L60">        RewardLedgerDTO result = rewardService.evaluateAndGrantReward(transactionId);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (result == null) {</span>
+<span class="fc" id="L62">            return ResponseEntity.noContent().build();   // 204 — not eligible</span>
+        }
+<span class="fc" id="L64">        return ResponseEntity.ok(result);</span>
+    }
+
+    /**
+     * POST /api/v1/rewards/{accountId}/initialize
+     * Creates a reward wallet for the account if one doesn't already exist.
+     * Returns the current summary.
+     */
+    @PostMapping(&quot;/{accountId}/initialize&quot;)
+    public ResponseEntity&lt;RewardSummaryDTO&gt; initializeRewardAccount(@PathVariable Long accountId) {
+<span class="fc" id="L74">        RewardSummaryDTO summary = rewardService.getOrCreateRewardAccount(accountId);</span>
+<span class="fc" id="L75">        return ResponseEntity.ok(summary);</span>
+    }
+
+    /**
+     * GET /api/v1/rewards/health
+     * Simple health-check for the reward module.
+     */
+    @GetMapping(&quot;/health&quot;)
+    public ResponseEntity&lt;Map&lt;String, String&gt;&gt; health() {
+<span class="fc" id="L84">        return ResponseEntity.ok(Map.of(</span>
+                &quot;module&quot;, &quot;RewardModule&quot;,
+                &quot;status&quot;, &quot;UP&quot;,
+                &quot;version&quot;, &quot;1.0.0&quot;
+        ));
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

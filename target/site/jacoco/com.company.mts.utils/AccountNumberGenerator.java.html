@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccountNumberGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mts</a> &gt; <a href="index.source.html" class="el_package">com.company.mts.utils</a> &gt; <span class="el_source">AccountNumberGenerator.java</span></div><h1>AccountNumberGenerator.java</h1><pre class="source lang-java linenums">package com.company.mts.utils;
+
+import java.security.SecureRandom;
+
+<span class="fc" id="L5">public class AccountNumberGenerator {</span>
+
+<span class="fc" id="L7">    private static final SecureRandom random = new SecureRandom();</span>
+    // Indian banking standard: account numbers range from 9 to 18 digits
+    private static final int ACCOUNT_NUMBER_LENGTH = 12; // default generated length
+    private static final int MIN_LENGTH = 9;
+    private static final int MAX_LENGTH = 18;
+
+    /**
+     * Generate a random 12-digit account number (default)
+     * Format: XXXXXXXXXXXX (12 digits, no leading zero)
+     */
+    public static String generate() {
+<span class="fc" id="L18">        StringBuilder accountNumber = new StringBuilder(ACCOUNT_NUMBER_LENGTH);</span>
+
+        // First digit should not be 0
+<span class="fc" id="L21">        accountNumber.append(random.nextInt(9) + 1);</span>
+
+        // Remaining digits can be 0-9
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        for (int i = 1; i &lt; ACCOUNT_NUMBER_LENGTH; i++) {</span>
+<span class="fc" id="L25">            accountNumber.append(random.nextInt(10));</span>
+        }
+
+<span class="fc" id="L28">        return accountNumber.toString();</span>
+    }
+
+    /**
+     * Generate account number with specific prefix
+     * Used for testing or special account types
+     */
+    public static String generateWithPrefix(String prefix) {
+<span class="fc bfc" id="L36" title="All 4 branches covered.">        if (prefix == null || prefix.isEmpty()) {</span>
+<span class="fc" id="L37">            return generate();</span>
+        }
+
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (prefix.length() &gt;= ACCOUNT_NUMBER_LENGTH) {</span>
+<span class="fc" id="L41">            throw new IllegalArgumentException(&quot;Prefix too long&quot;);</span>
+        }
+
+<span class="fc" id="L44">        StringBuilder accountNumber = new StringBuilder(prefix);</span>
+<span class="fc" id="L45">        int remainingDigits = ACCOUNT_NUMBER_LENGTH - prefix.length();</span>
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        for (int i = 0; i &lt; remainingDigits; i++) {</span>
+<span class="fc" id="L48">            accountNumber.append(random.nextInt(10));</span>
+        }
+
+<span class="fc" id="L51">        return accountNumber.toString();</span>
+    }
+
+    /**
+     * Validate account number format.
+     * Accepts 9 to 18 digits — the Indian banking standard range.
+     */
+    public static boolean isValid(String accountNumber) {
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (accountNumber == null) {</span>
+<span class="fc" id="L60">            return false;</span>
+        }
+<span class="fc" id="L62">        int len = accountNumber.length();</span>
+<span class="fc bfc" id="L63" title="All 4 branches covered.">        if (len &lt; MIN_LENGTH || len &gt; MAX_LENGTH) {</span>
+<span class="fc" id="L64">            return false;</span>
+        }
+<span class="fc" id="L66">        return accountNumber.matches(&quot;\\d{&quot; + MIN_LENGTH + &quot;,&quot; + MAX_LENGTH + &quot;}&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

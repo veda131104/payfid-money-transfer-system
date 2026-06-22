@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Account.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mts</a> &gt; <a href="index.source.html" class="el_package">com.company.mts.entity</a> &gt; <span class="el_source">Account.java</span></div><h1>Account.java</h1><pre class="source lang-java linenums">package com.company.mts.entity;
+
+import com.company.mts.exception.InactiveAccountException;
+import com.company.mts.exception.InsufficientBalanceException;
+import jakarta.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = &quot;accounts&quot;)
+public class Account {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false, length = 18)
+    private String accountNumber;
+
+    @Column(nullable = false)
+    private String holderName;
+
+    @Column(nullable = false)
+    private BigDecimal balance;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus status;
+
+    @Version
+    private Integer version;
+
+    @Column(name = &quot;created_on&quot;, nullable = false)
+    private LocalDateTime createdAt;
+
+    private LocalDateTime lastUpdated;
+
+    // Constructors
+<span class="fc" id="L39">    public Account() {</span>
+<span class="fc" id="L40">    }</span>
+
+    public Account(Long id, String accountNumber, String holderName, BigDecimal balance,
+<span class="fc" id="L43">            AccountStatus status, Integer version, LocalDateTime createdAt, LocalDateTime lastUpdated) {</span>
+<span class="fc" id="L44">        this.id = id;</span>
+<span class="fc" id="L45">        this.accountNumber = accountNumber;</span>
+<span class="fc" id="L46">        this.holderName = holderName;</span>
+<span class="fc" id="L47">        this.balance = balance;</span>
+<span class="fc" id="L48">        this.status = status;</span>
+<span class="fc" id="L49">        this.version = version;</span>
+<span class="fc" id="L50">        this.createdAt = createdAt;</span>
+<span class="fc" id="L51">        this.lastUpdated = lastUpdated;</span>
+<span class="fc" id="L52">    }</span>
+
+    // Builder pattern
+    public static AccountBuilder builder() {
+<span class="fc" id="L56">        return new AccountBuilder();</span>
+    }
+
+<span class="fc" id="L59">    public static class AccountBuilder {</span>
+        private Long id;
+        private String accountNumber;
+        private String holderName;
+        private BigDecimal balance;
+        private AccountStatus status;
+        private Integer version;
+        private LocalDateTime createdAt;
+        private LocalDateTime lastUpdated;
+
+        public AccountBuilder id(Long id) {
+<span class="fc" id="L70">            this.id = id;</span>
+<span class="fc" id="L71">            return this;</span>
+        }
+
+        public AccountBuilder accountNumber(String accountNumber) {
+<span class="fc" id="L75">            this.accountNumber = accountNumber;</span>
+<span class="fc" id="L76">            return this;</span>
+        }
+
+        public AccountBuilder holderName(String holderName) {
+<span class="fc" id="L80">            this.holderName = holderName;</span>
+<span class="fc" id="L81">            return this;</span>
+        }
+
+        public AccountBuilder balance(BigDecimal balance) {
+<span class="fc" id="L85">            this.balance = balance;</span>
+<span class="fc" id="L86">            return this;</span>
+        }
+
+        public AccountBuilder status(AccountStatus status) {
+<span class="fc" id="L90">            this.status = status;</span>
+<span class="fc" id="L91">            return this;</span>
+        }
+
+        public AccountBuilder version(Integer version) {
+<span class="fc" id="L95">            this.version = version;</span>
+<span class="fc" id="L96">            return this;</span>
+        }
+
+        public AccountBuilder createdAt(LocalDateTime createdAt) {
+<span class="fc" id="L100">            this.createdAt = createdAt;</span>
+<span class="fc" id="L101">            return this;</span>
+        }
+
+        public AccountBuilder lastUpdated(LocalDateTime lastUpdated) {
+<span class="fc" id="L105">            this.lastUpdated = lastUpdated;</span>
+<span class="fc" id="L106">            return this;</span>
+        }
+
+        public Account build() {
+<span class="fc" id="L110">            return new Account(id, accountNumber, holderName, balance, status, version, createdAt, lastUpdated);</span>
+        }
+    }
+
+    @PrePersist
+    public void prePersist() {
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        if (balance == null) {</span>
+<span class="fc" id="L117">            balance = BigDecimal.ZERO;</span>
+        }
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if (createdAt == null) {</span>
+<span class="fc" id="L120">            createdAt = LocalDateTime.now();</span>
+        }
+<span class="fc" id="L122">        lastUpdated = LocalDateTime.now();</span>
+
+        // Validate holder name is not empty
+<span class="fc bfc" id="L125" title="All 4 branches covered.">        if (holderName == null || holderName.trim().isEmpty()) {</span>
+<span class="fc" id="L126">            throw new IllegalArgumentException(&quot;Account holder name cannot be empty&quot;);</span>
+        }
+
+        // Validate initial balance is not negative
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if (balance.compareTo(BigDecimal.ZERO) &lt; 0) {</span>
+<span class="fc" id="L131">            throw new IllegalArgumentException(&quot;Initial balance cannot be negative&quot;);</span>
+        }
+<span class="fc" id="L133">    }</span>
+
+    @PreUpdate
+    public void preUpdate() {
+<span class="fc" id="L137">        lastUpdated = LocalDateTime.now();</span>
+<span class="fc" id="L138">    }</span>
+
+    // =========================
+    // Business Methods
+    // =========================
+
+    /**
+     * Debit (withdraw) money from account
+     * Banking rules:
+     * - Account must be ACTIVE
+     * - Amount must be positive
+     * - Sufficient balance required
+     */
+    public void debit(BigDecimal amount) {
+<span class="fc" id="L152">        validateAmount(amount);</span>
+<span class="fc" id="L153">        validateAccountIsActive();</span>
+<span class="fc" id="L154">        validateSufficientBalance(amount);</span>
+
+<span class="fc" id="L156">        this.balance = this.balance.subtract(amount);</span>
+<span class="fc" id="L157">        this.lastUpdated = LocalDateTime.now();</span>
+<span class="fc" id="L158">    }</span>
+
+    /**
+     * Credit (deposit) money to account
+     * Banking rules:
+     * - Account must be ACTIVE
+     * - Amount must be positive
+     */
+    public void credit(BigDecimal amount) {
+<span class="fc" id="L167">        validateAmount(amount);</span>
+<span class="fc" id="L168">        validateAccountIsActive();</span>
+
+<span class="fc" id="L170">        this.balance = this.balance.add(amount);</span>
+<span class="fc" id="L171">        this.lastUpdated = LocalDateTime.now();</span>
+<span class="fc" id="L172">    }</span>
+
+    /**
+     * Lock the account (prevents all transactions)
+     */
+    public void lock() {
+<span class="fc" id="L178">        this.status = AccountStatus.LOCKED;</span>
+<span class="fc" id="L179">        this.lastUpdated = LocalDateTime.now();</span>
+<span class="fc" id="L180">    }</span>
+
+    /**
+     * Close the account (permanently)
+     */
+    public void close() {
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        if (!this.balance.equals(BigDecimal.ZERO)) {</span>
+<span class="fc" id="L187">            throw new IllegalStateException(</span>
+                    &quot;Cannot close account with non-zero balance. Current balance: &quot; + this.balance);
+        }
+<span class="fc" id="L190">        this.status = AccountStatus.CLOSED;</span>
+<span class="fc" id="L191">        this.lastUpdated = LocalDateTime.now();</span>
+<span class="fc" id="L192">    }</span>
+
+    /**
+     * Activate/Reactivate the account
+     */
+    public void activate() {
+<span class="fc bfc" id="L198" title="All 2 branches covered.">        if (this.status == AccountStatus.CLOSED) {</span>
+<span class="fc" id="L199">            throw new IllegalStateException(&quot;Cannot reactivate a closed account&quot;);</span>
+        }
+<span class="fc" id="L201">        this.status = AccountStatus.ACTIVE;</span>
+<span class="fc" id="L202">        this.lastUpdated = LocalDateTime.now();</span>
+<span class="fc" id="L203">    }</span>
+
+    public boolean isActive() {
+<span class="fc" id="L206">        return AccountStatus.ACTIVE.equals(this.status);</span>
+    }
+
+    public boolean isLocked() {
+<span class="fc" id="L210">        return AccountStatus.LOCKED.equals(this.status);</span>
+    }
+
+    public boolean isClosed() {
+<span class="fc" id="L214">        return AccountStatus.CLOSED.equals(this.status);</span>
+    }
+
+    // =========================
+    // Validation Methods
+    // =========================
+
+    private void validateAmount(BigDecimal amount) {
+<span class="fc bfc" id="L222" title="All 4 branches covered.">        if (amount == null || amount.compareTo(BigDecimal.ZERO) &lt;= 0) {</span>
+<span class="fc" id="L223">            throw new IllegalArgumentException(&quot;Transaction amount must be greater than zero&quot;);</span>
+        }
+
+        // Banking rule: Maximum transaction limit (example: 1 million)
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        if (amount.compareTo(new BigDecimal(&quot;1000000&quot;)) &gt; 0) {</span>
+<span class="fc" id="L228">            throw new IllegalArgumentException(&quot;Transaction amount exceeds maximum limit of 1,000,000&quot;);</span>
+        }
+<span class="fc" id="L230">    }</span>
+
+    private void validateAccountIsActive() {
+<span class="fc bfc" id="L233" title="All 2 branches covered.">        if (this.status == AccountStatus.LOCKED) {</span>
+<span class="fc" id="L234">            throw new InactiveAccountException(&quot;Account is LOCKED. Please contact support to unlock your account.&quot;);</span>
+        }
+<span class="fc bfc" id="L236" title="All 2 branches covered.">        if (this.status == AccountStatus.CLOSED) {</span>
+<span class="fc" id="L237">            throw new InactiveAccountException(&quot;Account is CLOSED. No transactions allowed on closed accounts.&quot;);</span>
+        }
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        if (!isActive()) {</span>
+<span class="fc" id="L240">            throw new InactiveAccountException(&quot;Account is not active. Current status: &quot; + this.status);</span>
+        }
+<span class="fc" id="L242">    }</span>
+
+    private void validateSufficientBalance(BigDecimal amount) {
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        if (this.balance.compareTo(amount) &lt; 0) {</span>
+<span class="fc" id="L246">            throw new InsufficientBalanceException(</span>
+<span class="fc" id="L247">                    String.format(&quot;Insufficient balance. Available: %.2f, Required: %.2f&quot;,</span>
+                            this.balance, amount));
+        }
+<span class="fc" id="L250">    }</span>
+
+    // =========================
+    // Getters and Setters
+    // =========================
+
+    public Long getId() {
+<span class="fc" id="L257">        return id;</span>
+    }
+
+    public void setId(Long id) {
+<span class="fc" id="L261">        this.id = id;</span>
+<span class="fc" id="L262">    }</span>
+
+    public String getAccountNumber() {
+<span class="fc" id="L265">        return accountNumber;</span>
+    }
+
+    public void setAccountNumber(String accountNumber) {
+<span class="fc" id="L269">        this.accountNumber = accountNumber;</span>
+<span class="fc" id="L270">    }</span>
+
+    public String getHolderName() {
+<span class="fc" id="L273">        return holderName;</span>
+    }
+
+    public void setHolderName(String holderName) {
+<span class="fc" id="L277">        this.holderName = holderName;</span>
+<span class="fc" id="L278">    }</span>
+
+    public BigDecimal getBalance() {
+<span class="fc" id="L281">        return balance;</span>
+    }
+
+    public void setBalance(BigDecimal balance) {
+<span class="fc" id="L285">        this.balance = balance;</span>
+<span class="fc" id="L286">    }</span>
+
+    public AccountStatus getStatus() {
+<span class="fc" id="L289">        return status;</span>
+    }
+
+    public void setStatus(AccountStatus status) {
+<span class="fc" id="L293">        this.status = status;</span>
+<span class="fc" id="L294">    }</span>
+
+    public Integer getVersion() {
+<span class="fc" id="L297">        return version;</span>
+    }
+
+    public void setVersion(Integer version) {
+<span class="fc" id="L301">        this.version = version;</span>
+<span class="fc" id="L302">    }</span>
+
+    public LocalDateTime getCreatedAt() {
+<span class="fc" id="L305">        return createdAt;</span>
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+<span class="fc" id="L309">        this.createdAt = createdAt;</span>
+<span class="fc" id="L310">    }</span>
+
+    public LocalDateTime getLastUpdated() {
+<span class="fc" id="L313">        return lastUpdated;</span>
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+<span class="fc" id="L317">        this.lastUpdated = lastUpdated;</span>
+<span class="fc" id="L318">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

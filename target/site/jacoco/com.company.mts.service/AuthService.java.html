@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mts</a> &gt; <a href="index.source.html" class="el_package">com.company.mts.service</a> &gt; <span class="el_source">AuthService.java</span></div><h1>AuthService.java</h1><pre class="source lang-java linenums">package com.company.mts.service;
+
+import com.company.mts.dto.ResetPasswordRequest;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import com.company.mts.dto.LoginRequest;
+import com.company.mts.dto.SignupRequest;
+import com.company.mts.dto.CredentialsResponse;
+import com.company.mts.entity.AuthUser;
+import com.company.mts.exception.DuplicateUserException;
+import com.company.mts.exception.InvalidCredentialsException;
+import com.company.mts.repository.AuthUserRepository;
+import org.springframework.stereotype.Service;
+import com.company.mts.security.JwtTokenProvider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.extern.slf4j.Slf4j;
+
+
+@Service
+<span class="fc" id="L22">@Slf4j</span>
+public class AuthService {
+
+    private final AuthUserRepository authUserRepository;
+    private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider tokenProvider;
+
+    @Autowired
+    public AuthService(AuthUserRepository authUserRepository,
+                       EmailService emailService,
+                       PasswordEncoder passwordEncoder,
+<span class="fc" id="L34">                       JwtTokenProvider tokenProvider) {</span>
+<span class="fc" id="L35">        this.authUserRepository = authUserRepository;</span>
+<span class="fc" id="L36">        this.emailService = emailService;</span>
+<span class="fc" id="L37">        this.passwordEncoder = passwordEncoder;</span>
+<span class="fc" id="L38">        this.tokenProvider = tokenProvider;</span>
+<span class="fc" id="L39">        log.info(&quot;[AuthService] Initialized with all dependencies&quot;);</span>
+<span class="fc" id="L40">    }</span>
+
+    public AuthUser signup(SignupRequest request) {
+<span class="fc" id="L43">        String email = request.getEmail().trim().toLowerCase();</span>
+<span class="fc" id="L44">        String name = request.getName().trim();</span>
+<span class="fc" id="L45">        log.info(&quot;[AuthService] signup: Processing signup for name='{}', email='{}'&quot;, name, email);</span>
+
+<span class="fc" id="L47">        boolean emailExists = authUserRepository.existsByEmailIgnoreCase(email);</span>
+<span class="fc" id="L48">        boolean nameExists = authUserRepository.existsByNameIgnoreCase(name);</span>
+<span class="fc" id="L49">        log.debug(&quot;[AuthService] signup: emailExists={}, nameExists={}&quot;, emailExists, nameExists);</span>
+
+<span class="fc bfc" id="L51" title="All 4 branches covered.">        if (emailExists || nameExists) {</span>
+<span class="fc" id="L52">            log.warn(&quot;[AuthService] signup: DUPLICATE detected. emailExists={}, nameExists={}&quot;, emailExists, nameExists);</span>
+<span class="fc" id="L53">            throw new DuplicateUserException(&quot;Email or username already in use&quot;);</span>
+        }
+
+<span class="fc" id="L56">        AuthUser user = new AuthUser();</span>
+<span class="fc" id="L57">        user.setName(name);</span>
+<span class="fc" id="L58">        user.setEmail(email);</span>
+<span class="fc" id="L59">        user.setPassword(passwordEncoder.encode(request.getPassword().trim()));</span>
+<span class="fc" id="L60">        user.setFirstLogin(true);</span>
+
+<span class="fc" id="L62">        log.info(&quot;[AuthService] signup: Saving new user to database: name='{}', email='{}'&quot;, name, email);</span>
+<span class="fc" id="L63">        AuthUser savedUser = authUserRepository.save(user);</span>
+<span class="fc" id="L64">        log.info(&quot;[AuthService] signup: User SAVED successfully. id={}, name='{}', email='{}'&quot;,</span>
+<span class="fc" id="L65">                savedUser.getId(), savedUser.getName(), savedUser.getEmail());</span>
+<span class="fc" id="L66">        return savedUser;</span>
+    }
+
+    public AuthUser login(LoginRequest request) {
+<span class="fc" id="L70">        String name = request.getName().trim();</span>
+<span class="fc" id="L71">        log.info(&quot;[AuthService] login: Processing login for name='{}'&quot;, name);</span>
+
+<span class="fc" id="L73">        AuthUser user = authUserRepository</span>
+<span class="fc" id="L74">                .findByNameIgnoreCase(name)</span>
+<span class="fc" id="L75">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L76">                    log.warn(&quot;[AuthService] login: User NOT FOUND with name='{}'&quot;, name);</span>
+<span class="fc" id="L77">                    return new InvalidCredentialsException(&quot;Invalid username or password&quot;);</span>
+                });
+
+<span class="fc" id="L80">        log.debug(&quot;[AuthService] login: User found in DB. id={}, name='{}'&quot;, user.getId(), user.getName());</span>
+
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (!passwordEncoder.matches(request.getPassword().trim(), user.getPassword())) {</span>
+<span class="fc" id="L83">            log.warn(&quot;[AuthService] login: Password MISMATCH for name='{}'&quot;, name);</span>
+<span class="fc" id="L84">            throw new InvalidCredentialsException(&quot;Invalid username or password&quot;);</span>
+        }
+
+<span class="fc" id="L87">        log.info(&quot;[AuthService] login: Password verified for name='{}'&quot;, name);</span>
+
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if (request.isRememberMe()) {</span>
+<span class="fc" id="L90">            String token = UUID.randomUUID().toString();</span>
+<span class="fc" id="L91">            user.setRememberToken(token);</span>
+<span class="fc" id="L92">            user.setRememberTokenExpiry(LocalDateTime.now().plusDays(30));</span>
+<span class="fc" id="L93">            authUserRepository.save(user);</span>
+<span class="fc" id="L94">            log.info(&quot;[AuthService] login: Remember-me token generated for name='{}'&quot;, name);</span>
+        }
+
+        // generate and persist JWT token (JwtTokenProvider saves token to DB)
+<span class="fc" id="L98">        tokenProvider.generateToken(user);</span>
+<span class="fc" id="L99">        log.info(&quot;[AuthService] login: JWT token generated for name='{}'. Login SUCCESS&quot;, name);</span>
+
+<span class="fc" id="L101">        return user;</span>
+    }
+
+    public CredentialsResponse getCredentialsByToken(String token) {
+<span class="fc" id="L105">        log.info(&quot;[AuthService] getCredentialsByToken: Looking up user by remember token&quot;);</span>
+<span class="fc" id="L106">        AuthUser user = authUserRepository.findByRememberToken(token)</span>
+<span class="fc" id="L107">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L108">                    log.warn(&quot;[AuthService] getCredentialsByToken: Invalid remember token&quot;);</span>
+<span class="fc" id="L109">                    return new RuntimeException(&quot;Invalid remember token&quot;);</span>
+                });
+
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (user.getRememberTokenExpiry() == null</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">                || user.getRememberTokenExpiry().isBefore(LocalDateTime.now())) {</span>
+<span class="fc" id="L114">            log.warn(&quot;[AuthService] getCredentialsByToken: Remember token EXPIRED for name='{}'&quot;, user.getName());</span>
+<span class="fc" id="L115">            throw new RuntimeException(&quot;Remember token expired&quot;);</span>
+        }
+
+<span class="fc" id="L118">        log.info(&quot;[AuthService] getCredentialsByToken: Credentials retrieved for name='{}'&quot;, user.getName());</span>
+<span class="fc" id="L119">        return new CredentialsResponse(user.getName(), user.getPassword());</span>
+    }
+
+    public void processForgotPassword(String username) {
+<span class="fc" id="L123">        log.info(&quot;[AuthService] processForgotPassword: Processing forgot password request for user: {}&quot;, username);</span>
+<span class="fc" id="L124">        authUserRepository.findByNameIgnoreCase(username.trim()).ifPresent(user -&gt; {</span>
+<span class="pc bpc" id="L125" title="1 of 4 branches missed.">            if (user.getEmail() != null &amp;&amp; !user.getEmail().isBlank()) {</span>
+<span class="fc" id="L126">                String token = UUID.randomUUID().toString();</span>
+<span class="fc" id="L127">                user.setRecoveryToken(token);</span>
+<span class="fc" id="L128">                user.setRecoveryTokenExpiry(LocalDateTime.now().plusMinutes(15));</span>
+<span class="fc" id="L129">                authUserRepository.save(user);</span>
+
+<span class="fc" id="L131">                log.info(&quot;[AuthService] processForgotPassword: Recovery token generated. Sending recovery link to: {}&quot;, user.getEmail());</span>
+                try {
+<span class="fc" id="L133">                    emailService.sendForgotPasswordEmail(user.getEmail(), user.getName(), token);</span>
+<span class="fc" id="L134">                    log.info(&quot;[AuthService] processForgotPassword: Recovery email sent successfully to: {}&quot;, user.getEmail());</span>
+<span class="fc" id="L135">                } catch (Exception e) {</span>
+<span class="fc" id="L136">                    log.error(&quot;[AuthService] processForgotPassword: Failed to send recovery email to '{}': {} - {}&quot;,</span>
+<span class="fc" id="L137">                            user.getEmail(), e.getClass().getSimpleName(), e.getMessage());</span>
+<span class="fc" id="L138">                }</span>
+<span class="fc" id="L139">            } else {</span>
+<span class="fc" id="L140">                log.warn(&quot;[AuthService] processForgotPassword: User {} has no email associated&quot;, username);</span>
+            }
+<span class="fc" id="L142">        });</span>
+<span class="fc" id="L143">    }</span>
+
+    public AuthUser loginWithToken(String token) {
+<span class="fc" id="L146">        log.info(&quot;[AuthService] loginWithToken: Verifying magic link token&quot;);</span>
+<span class="fc" id="L147">        AuthUser user = authUserRepository.findByRecoveryToken(token)</span>
+<span class="fc" id="L148">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L149">                    log.warn(&quot;[AuthService] loginWithToken: Invalid recovery link token&quot;);</span>
+<span class="fc" id="L150">                    return new IllegalArgumentException(&quot;Invalid recovery link&quot;);</span>
+                });
+
+<span class="fc bfc" id="L153" title="All 2 branches covered.">        if (user.getRecoveryTokenExpiry().isBefore(LocalDateTime.now())) {</span>
+<span class="fc" id="L154">            log.warn(&quot;[AuthService] loginWithToken: Recovery link EXPIRED for user '{}'&quot;, user.getName());</span>
+<span class="fc" id="L155">            throw new IllegalArgumentException(&quot;Recovery link has expired&quot;);</span>
+        }
+
+        // Clear token after use for security
+<span class="fc" id="L159">        user.setRecoveryToken(null);</span>
+<span class="fc" id="L160">        user.setRecoveryTokenExpiry(null);</span>
+<span class="fc" id="L161">        authUserRepository.save(user);</span>
+
+<span class="fc" id="L163">        log.info(&quot;[AuthService] loginWithToken: User '{}' logged in successfully via magic link&quot;, user.getName());</span>
+<span class="fc" id="L164">        return user;</span>
+    }
+
+    public AuthUser resetPassword(ResetPasswordRequest request) {
+<span class="fc" id="L168">        log.info(&quot;[AuthService] resetPassword: Resetting password for recovery token&quot;);</span>
+<span class="fc" id="L169">        AuthUser user = authUserRepository.findByRecoveryToken(request.getToken())</span>
+<span class="fc" id="L170">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L171">                    log.warn(&quot;[AuthService] resetPassword: Invalid reset link token&quot;);</span>
+<span class="fc" id="L172">                    return new IllegalArgumentException(&quot;Invalid reset link&quot;);</span>
+                });
+
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        if (user.getRecoveryTokenExpiry().isBefore(LocalDateTime.now())) {</span>
+<span class="fc" id="L176">            log.warn(&quot;[AuthService] resetPassword: Reset link EXPIRED for user '{}'&quot;, user.getName());</span>
+<span class="fc" id="L177">            throw new IllegalArgumentException(&quot;Reset link has expired&quot;);</span>
+        }
+
+<span class="fc" id="L180">        user.setPassword(passwordEncoder.encode(request.getNewPassword()));</span>
+<span class="fc" id="L181">        user.setRecoveryToken(null);</span>
+<span class="fc" id="L182">        user.setRecoveryTokenExpiry(null);</span>
+
+<span class="fc" id="L184">        authUserRepository.save(user);</span>
+<span class="fc" id="L185">        log.info(&quot;[AuthService] resetPassword: Password reset successfully for user: {}&quot;, user.getName());</span>
+<span class="fc" id="L186">        return user;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

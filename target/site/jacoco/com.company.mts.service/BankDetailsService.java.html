@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BankDetailsService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mts</a> &gt; <a href="index.source.html" class="el_package">com.company.mts.service</a> &gt; <span class="el_source">BankDetailsService.java</span></div><h1>BankDetailsService.java</h1><pre class="source lang-java linenums">package com.company.mts.service;
+
+import com.company.mts.entity.BankDetails;
+import com.company.mts.repository.BankDetailsRepository;
+import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L11">@Slf4j</span>
+public class BankDetailsService {
+
+    private final BankDetailsRepository repository;
+
+<span class="fc" id="L16">    public BankDetailsService(BankDetailsRepository repository) {</span>
+<span class="fc" id="L17">        this.repository = repository;</span>
+<span class="fc" id="L18">        log.info(&quot;[BankDetailsService] Initialized with BankDetailsRepository&quot;);</span>
+<span class="fc" id="L19">    }</span>
+
+    public BankDetails save(BankDetails details) {
+<span class="fc" id="L22">        log.info(&quot;[BankDetailsService] save: Saving bank details for userName='{}', accountNumber='{}'&quot;,</span>
+<span class="fc" id="L23">                details.getUserName(), details.getAccountNumber());</span>
+<span class="fc" id="L24">        BankDetails saved = repository.save(details);</span>
+<span class="fc" id="L25">        log.info(&quot;[BankDetailsService] save: Bank details SAVED. id={}&quot;, saved.getId());</span>
+<span class="fc" id="L26">        return saved;</span>
+    }
+
+    public Optional&lt;BankDetails&gt; findByAccountNumber(String accountNumber) {
+<span class="fc" id="L30">        log.debug(&quot;[BankDetailsService] findByAccountNumber: Looking up accountNumber='{}'&quot;, accountNumber);</span>
+<span class="fc" id="L31">        Optional&lt;BankDetails&gt; result = repository.findByAccountNumber(accountNumber);</span>
+<span class="fc" id="L32">        log.debug(&quot;[BankDetailsService] findByAccountNumber: Found={}&quot;, result.isPresent());</span>
+<span class="fc" id="L33">        return result;</span>
+    }
+
+    public Optional&lt;BankDetails&gt; findById(Long id) {
+<span class="fc" id="L37">        log.debug(&quot;[BankDetailsService] findById: Looking up id={}&quot;, id);</span>
+<span class="fc" id="L38">        Optional&lt;BankDetails&gt; result = repository.findById(id);</span>
+<span class="fc" id="L39">        log.debug(&quot;[BankDetailsService] findById: Found={}&quot;, result.isPresent());</span>
+<span class="fc" id="L40">        return result;</span>
+    }
+
+    public Optional&lt;BankDetails&gt; findByUserName(String userName) {
+<span class="fc" id="L44">        log.debug(&quot;[BankDetailsService] findByUserName: Looking up userName='{}'&quot;, userName);</span>
+<span class="fc" id="L45">        Optional&lt;BankDetails&gt; result = repository.findByUserName(userName);</span>
+<span class="fc" id="L46">        log.debug(&quot;[BankDetailsService] findByUserName: Found={}&quot;, result.isPresent());</span>
+<span class="fc" id="L47">        return result;</span>
+    }
+
+    public BankDetails setupUpi(Long id, String upiId) {
+<span class="fc" id="L51">        log.info(&quot;[BankDetailsService] setupUpi: Setting UPI id={}, upiId='{}'&quot;, id, upiId);</span>
+<span class="fc" id="L52">        BankDetails details = repository.findById(id)</span>
+<span class="fc" id="L53">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L54">                    log.warn(&quot;[BankDetailsService] setupUpi: Bank details NOT FOUND for id={}&quot;, id);</span>
+<span class="fc" id="L55">                    return new IllegalArgumentException(&quot;Bank details not found&quot;);</span>
+                });
+<span class="fc" id="L57">        details.setUpiId(upiId);</span>
+<span class="fc" id="L58">        BankDetails saved = repository.save(details);</span>
+<span class="fc" id="L59">        log.info(&quot;[BankDetailsService] setupUpi: UPI set SUCCESS. id={}, upiId='{}'&quot;, id, upiId);</span>
+<span class="fc" id="L60">        return saved;</span>
+    }
+
+    public BankDetails updatePin(String userName, String pin) {
+<span class="fc" id="L64">        log.info(&quot;[BankDetailsService] updatePin: Updating PIN for userName='{}'&quot;, userName);</span>
+<span class="fc" id="L65">        BankDetails details = repository.findByUserName(userName)</span>
+<span class="fc" id="L66">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L67">                    log.warn(&quot;[BankDetailsService] updatePin: Bank details NOT FOUND for userName='{}'&quot;, userName);</span>
+<span class="fc" id="L68">                    return new IllegalArgumentException(&quot;Bank details not found for user: &quot; + userName);</span>
+                });
+<span class="fc" id="L70">        details.setPin(pin);</span>
+<span class="fc" id="L71">        BankDetails saved = repository.save(details);</span>
+<span class="fc" id="L72">        log.info(&quot;[BankDetailsService] updatePin: PIN updated for userName='{}'&quot;, userName);</span>
+<span class="fc" id="L73">        return saved;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

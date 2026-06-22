@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoggingAspect.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mts</a> &gt; <a href="index.source.html" class="el_package">com.company.mts.aspect</a> &gt; <span class="el_source">LoggingAspect.java</span></div><h1>LoggingAspect.java</h1><pre class="source lang-java linenums">package com.company.mts.aspect;
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+
+@Aspect
+@Component
+<span class="fc" id="L14">public class LoggingAspect {</span>
+
+<span class="fc" id="L16">    private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);</span>
+
+    /**
+     * Pointcut for all methods in service layer
+     */
+    @Pointcut(&quot;execution(* com.company.mts.service..*(..))&quot;)
+    public void serviceLayer() {
+<span class="fc" id="L23">    }</span>
+
+    /**
+     * Pointcut for all methods in controller layer
+     */
+    @Pointcut(&quot;execution(* com.company.mts.controller..*(..))&quot;)
+    public void controllerLayer() {
+<span class="fc" id="L30">    }</span>
+
+    /**
+     * Pointcut for all repository methods
+     */
+    @Pointcut(&quot;execution(* com.company.mts.repository..*(..))&quot;)
+    public void repositoryLayer() {
+<span class="fc" id="L37">    }</span>
+
+    /**
+     * Before advice for service methods
+     */
+    @Before(&quot;serviceLayer()&quot;)
+    public void logBeforeServiceMethod(JoinPoint joinPoint) {
+<span class="fc" id="L44">        String methodName = joinPoint.getSignature().getName();</span>
+<span class="fc" id="L45">        String className = joinPoint.getTarget().getClass().getSimpleName();</span>
+<span class="fc" id="L46">        Object[] args = joinPoint.getArgs();</span>
+
+<span class="fc" id="L48">        logger.info(&quot;==&gt; SERVICE CALL: {}.{}() with arguments: {}&quot;,</span>
+<span class="fc" id="L49">                className, methodName, Arrays.toString(args));</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * After returning advice for service methods
+     */
+    @AfterReturning(pointcut = &quot;serviceLayer()&quot;, returning = &quot;result&quot;)
+    public void logAfterServiceMethod(JoinPoint joinPoint, Object result) {
+<span class="fc" id="L57">        String methodName = joinPoint.getSignature().getName();</span>
+<span class="fc" id="L58">        String className = joinPoint.getTarget().getClass().getSimpleName();</span>
+
+<span class="fc" id="L60">        logger.info(&quot;&lt;== SERVICE RETURN: {}.{}() returned: {}&quot;,</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">                className, methodName, result != null ? result.getClass().getSimpleName() : &quot;null&quot;);</span>
+<span class="fc" id="L62">    }</span>
+
+    /**
+     * After throwing advice for service methods
+     */
+    @AfterThrowing(pointcut = &quot;serviceLayer()&quot;, throwing = &quot;exception&quot;)
+    public void logAfterServiceException(JoinPoint joinPoint, Throwable exception) {
+<span class="fc" id="L69">        String methodName = joinPoint.getSignature().getName();</span>
+<span class="fc" id="L70">        String className = joinPoint.getTarget().getClass().getSimpleName();</span>
+
+<span class="fc" id="L72">        logger.error(&quot;&lt;!&gt; SERVICE EXCEPTION in {}.{}(): {} - {}&quot;,</span>
+<span class="fc" id="L73">                className, methodName, exception.getClass().getSimpleName(), exception.getMessage());</span>
+<span class="fc" id="L74">    }</span>
+
+    /**
+     * Around advice for controller methods to measure execution time
+     */
+    @Around(&quot;controllerLayer()&quot;)
+    public Object logAroundControllerMethod(ProceedingJoinPoint joinPoint) throws Throwable {
+<span class="fc" id="L81">        String methodName = joinPoint.getSignature().getName();</span>
+<span class="fc" id="L82">        String className = joinPoint.getTarget().getClass().getSimpleName();</span>
+
+<span class="fc" id="L84">        long startTime = System.currentTimeMillis();</span>
+
+<span class="fc" id="L86">        logger.info(&quot;&gt;&gt;&gt; CONTROLLER REQUEST: {}.{}()&quot;, className, methodName);</span>
+
+        Object result;
+        try {
+<span class="fc" id="L90">            result = joinPoint.proceed();</span>
+<span class="fc" id="L91">            long executionTime = System.currentTimeMillis() - startTime;</span>
+
+<span class="fc" id="L93">            logger.info(&quot;&lt;&lt;&lt; CONTROLLER RESPONSE: {}.{}() completed in {}ms&quot;,</span>
+<span class="fc" id="L94">                    className, methodName, executionTime);</span>
+
+<span class="fc" id="L96">            return result;</span>
+<span class="fc" id="L97">        } catch (Exception e) {</span>
+<span class="fc" id="L98">            long executionTime = System.currentTimeMillis() - startTime;</span>
+
+<span class="fc" id="L100">            logger.error(&quot;&lt;&lt;&lt; CONTROLLER ERROR: {}.{}() failed after {}ms - {}: {}&quot;,</span>
+<span class="fc" id="L101">                    className, methodName, executionTime,</span>
+<span class="fc" id="L102">                    e.getClass().getSimpleName(), e.getMessage());</span>
+
+<span class="fc" id="L104">            throw e;</span>
+        }
+    }
+
+    /**
+     * Before advice for repository methods (only for custom queries)
+     */
+    @Before(&quot;repositoryLayer() &amp;&amp; !execution(* org.springframework.data.repository.CrudRepository+.*(..))&quot;)
+    public void logBeforeRepositoryMethod(JoinPoint joinPoint) {
+<span class="fc" id="L113">        String methodName = joinPoint.getSignature().getName();</span>
+<span class="fc" id="L114">        String className = joinPoint.getTarget().getClass().getSimpleName();</span>
+
+<span class="fc" id="L116">        logger.debug(&quot;--- REPOSITORY QUERY: {}.{}()&quot;, className, methodName);</span>
+<span class="fc" id="L117">    }</span>
+
+    /**
+     * Around advice for transaction methods to track performance
+     */
+    @Around(&quot;execution(* com.company.mts.service.TransactionService.executeIdempotentTransfer(..))&quot;)
+    public Object logTransferExecution(ProceedingJoinPoint joinPoint) throws Throwable {
+<span class="fc" id="L124">        Object[] args = joinPoint.getArgs();</span>
+
+<span class="fc" id="L126">        logger.info(&quot;$$$ TRANSFER INITIATED: From Account={}, To Account={}, Amount={}, IdempotencyKey={}&quot;,</span>
+                args[0], args[1], args[2], args[3]);
+
+<span class="fc" id="L129">        long startTime = System.currentTimeMillis();</span>
+
+        try {
+<span class="fc" id="L132">            Object result = joinPoint.proceed();</span>
+<span class="fc" id="L133">            long executionTime = System.currentTimeMillis() - startTime;</span>
+
+<span class="fc" id="L135">            logger.info(&quot;$$$ TRANSFER SUCCESS: Completed in {}ms, IdempotencyKey={}&quot;,</span>
+<span class="fc" id="L136">                    executionTime, args[3]);</span>
+
+<span class="fc" id="L138">            return result;</span>
+<span class="fc" id="L139">        } catch (Exception e) {</span>
+<span class="fc" id="L140">            long executionTime = System.currentTimeMillis() - startTime;</span>
+
+<span class="fc" id="L142">            logger.error(&quot;$$$ TRANSFER FAILED: After {}ms, IdempotencyKey={}, Error: {}&quot;,</span>
+<span class="fc" id="L143">                    executionTime, args[3], e.getMessage());</span>
+
+<span class="fc" id="L145">            throw e;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
