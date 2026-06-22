@@ -11,8 +11,9 @@ public class AccountNumberGenerator {
     private static final int MAX_LENGTH = 18;
 
     /**
-     * Generate a random 12-digit account number (default)
+     * Generate a random 12-digit account number (default generated length)
      * Format: XXXXXXXXXXXX (12 digits, no leading zero)
+     * Note: Valid account numbers range from 9-18 digits per Indian banking standards
      */
     public static String generate() {
         StringBuilder accountNumber = new StringBuilder(ACCOUNT_NUMBER_LENGTH);
@@ -65,4 +66,4 @@ public class AccountNumberGenerator {
         }
         return accountNumber.matches("\\d{" + MIN_LENGTH + "," + MAX_LENGTH + "}");
     }
-}
+}

@@ -214,10 +214,10 @@ public class TransactionService {
                         return convertToDTO(savedTx, fromAccount, toAccount);
                 } else {
                         // External Debit Case
-                        // 12-Digit Rule Verification
-                        if (toAccountNumber == null || !toAccountNumber.matches("\\d{12}")) {
+                        // Account Number Range Verification (9-18 digits)
+                        if (toAccountNumber == null || !toAccountNumber.matches("\\d{9,18}")) {
                                 throw new IllegalArgumentException(
-                                                "Recipient account number must be 12 digits for external transfers.");
+                                                "Recipient account number must be between 9 and 18 digits for external transfers.");
                         }
 
                         logger.info("Recipient {} not found in system. Processing as external debit.", toAccountNumber);
