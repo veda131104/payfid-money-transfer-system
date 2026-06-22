@@ -9,3 +9,41 @@ body::before {
   z-index: 9999;
   pointer-events: none;
 }
+
+.session-expired-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20000;
+  pointer-events: all;
+}
+
+.session-expired-dialog {
+  background: #ffffff;
+  color: #1f1f1f;
+  max-width: 420px;
+  width: min(90%, 420px);
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.session-expired-dialog h2 {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+}
+
+.session-expired-dialog p {
+  margin: 0 0 12px;
+  line-height: 1.6;
+}
+
+.session-expired-footer {
+  margin-top: 1rem;
+  color: #666;
+  font-size: 0.95rem;
+}
