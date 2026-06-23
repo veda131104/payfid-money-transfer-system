@@ -56,37 +56,74 @@
         <p>Live status of your payout corridors.</p>
       </div>
 
-      <div class="kpi-grid">
-        <div class="kpi-card kpi-primary">
-          <div class="kpi-content">
-            <span class="kpi-label">Current Balance</span>
-            <span class="kpi-value">{{ balance | currency:'INR':'symbol':'1.2-2' }}</span>
-          </div>
-          <div class="kpi-icon-wrapper">
-            <span>💳</span>
-          </div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-content">
-            <span class="kpi-label">Processed Today</span>
-            <span class="kpi-value">{{ processedToday | currency:'INR':'symbol':'1.0-0' }}</span>
-          </div>
-          <div class="kpi-icon-wrapper">
-            <span>📈</span>
-          </div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-content">
-            <span class="kpi-label">Active Transfers</span>
-            <span class="kpi-value">{{ activeTransfers }}</span>
-          </div>
-          <div class="kpi-icon-wrapper">
-            <span>🔄</span>
-          </div>
-        </div>
-      </div>
+<!-- ── KPI STRIP ────────────────────────────────── -->
+<div class="kpi-strip">
 
-      <div class="dashboard-split">
+  <!-- Hero: Current Balance -->
+  <div class="kpi-hero">
+
+    <div class="kpi-hero-header">
+      <span class="kpi-hero-label">Current Balance</span>
+      <div class="kpi-hero-chip">Primary Wallet</div>
+    </div>
+
+    <div class="kpi-hero-amount">
+      {{ balance | currency:'INR':'symbol':'1.2-2' }}
+    </div>
+
+    <div class="kpi-hero-watermark">₹</div>
+
+    <!-- NEW: subtle context line -->
+    <div class="kpi-hero-subtext">
+      Available balance for instant transfers
+    </div>
+
+  </div>
+
+  <!-- Processed Today -->
+  <div class="kpi-stat">
+
+    <div class="kpi-stat-header">
+      <span class="kpi-stat-label">Processed Today</span>
+      <div class="kpi-stat-icon kpi-icon-teal"><span>↗</span></div>
+    </div>
+
+    <div class="kpi-stat-amount kpi-teal">
+      {{ processedToday | currency:'INR':'symbol':'1.0-0' }}
+    </div>
+
+    <div class="kpi-stat-desc">
+      Cumulative transactions processed today
+    </div>
+
+  </div>
+
+  <!-- Active Transfers -->
+  <div class="kpi-stat">
+
+    <div class="kpi-stat-header">
+      <span class="kpi-stat-label">Active Transfers</span>
+      <div class="kpi-stat-icon kpi-icon-blue"><span>🔄</span></div>
+    </div>
+
+    <div class="kpi-stat-amount">
+      {{ activeTransfers }}
+    </div>
+
+    <div class="kpi-stat-desc">
+      Currently active transfer queue
+    </div>
+
+    <div class="kpi-trend kpi-trend--neutral">
+      System idle — no pending transfers
+    </div>
+
+  </div>
+
+</div>
+
+      <!-- ── TOP ROW: Recent Payments + Visa Card ──── -->
+      <div class="db-row">
         <mat-card class="card recent-payments">
           <div class="card-header">
             <h2>Recent Payments</h2>
@@ -134,59 +171,74 @@
           </div>
         </mat-card>
 
-        <div class="sidebar-widgets">
-          <div class="visa-widget">
-            <div class="card-glass">
-              <div class="card-brand">{{ cardDetails.type }}</div>
-              <div class="card-chip"></div>
-              <div class="card-number">{{ cardDetails.number }}</div>
-              <div class="card-info">
-                <div>
-                  <p class="card-label">Card Holder</p>
-                  <p class="card-holder">{{ cardDetails.holder }}</p>
-                </div>
-                <div>
-                  <p class="card-label">Expires</p>
-                  <p class="card-expiry">{{ cardDetails.expiry }}</p>
+        <!-- Compact Visa Card -->
+        <div class="visa-compact">
+          <div class="visa-compact-top">
+            <div class="visa-compact-chip"></div>
+            <span class="visa-compact-brand">VISA</span>
+          </div>
+          <div class="visa-compact-number">{{ cardDetails.number }}</div>
+          <div class="visa-compact-footer">
+            <div>
+              <p class="vc-label">Card Holder</p>
+              <p class="vc-value">{{ cardDetails.holder }}</p>
+            </div>
+            <div class="vc-right">
+              <p class="vc-label">Expires</p>
+              <p class="vc-value">{{ cardDetails.expiry }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── BOTTOM ROW: Activity Feed + Quick Actions ── -->
+      <div class="db-row">
+        <div class="activity-feed-card">
+          <div class="card-header">
+            <h2>Activity Feed</h2>
+            <a class="link" routerLink="/history">View all</a>
+          </div>
+          <div class="timeline-feed">
+            @for (log of activityLogs; track log.id) {
+              <div class="timeline-item">
+                <div class="timeline-dot" [ngClass]="log.type"></div>
+                <div class="timeline-content">
+                  <span class="timeline-title">{{ log.title }}</span>
+                  <span class="timeline-desc">{{ log.desc }}</span>
+                  <span class="timeline-time">{{ log.time }}</span>
                 </div>
               </div>
-            </div>
+            } @empty {
+              <p class="no-activity">No recent feed activities.</p>
+            }
           </div>
+        </div>
 
-          <div class="quick-actions-card">
-            <div class="card-header">
-              <h2>Quick Actions</h2>
-            </div>
-            <div class="quick-actions-grid">
-              <button class="btn-quick-action" type="button" (click)="sendMoney()">
-                <span class="action-icon">💸</span>
-                <span>Send Money</span>
-              </button>
-              <button class="btn-quick-action" type="button" (click)="requestOtp()">
-                <span class="action-icon">🔐</span>
-                <span>Request OTP</span>
-              </button>
-            </div>
+        <div class="quick-actions-card">
+          <div class="card-header">
+            <h2>Quick Actions</h2>
           </div>
-
-          <div class="activity-feed-card">
-            <div class="card-header">
-              <h2>Activity Feed</h2>
-            </div>
-            <div class="timeline-feed">
-              @for (log of activityLogs; track log.id) {
-                <div class="timeline-item">
-                  <div class="timeline-dot" [ngClass]="log.type"></div>
-                  <div class="timeline-content">
-                    <span class="timeline-title">{{ log.title }}</span>
-                    <span class="timeline-desc">{{ log.desc }}</span>
-                    <span class="timeline-time">{{ log.time }}</span>
-                  </div>
-                </div>
-              } @empty {
-                <p class="no-activity">No recent feed activities.</p>
-              }
-            </div>
+          <div class="qa-list">
+            <button class="qa-item" type="button" (click)="sendMoney()">
+              <div class="qa-icon-wrap qa-teal">
+                <span>↗</span>
+              </div>
+              <div class="qa-text">
+                <span class="qa-title">Send Money</span>
+                <span class="qa-desc">Transfer funds to anyone</span>
+              </div>
+              <span class="qa-arrow">›</span>
+            </button>
+            <button class="qa-item" type="button" (click)="requestOtp()">
+              <div class="qa-icon-wrap qa-amber">
+                <span>🔐</span>
+              </div>
+              <div class="qa-text">
+                <span class="qa-title">Request OTP</span>
+                <span class="qa-desc">Get OTP for verification</span>
+              </div>
+              <span class="qa-arrow">›</span>
+            </button>
           </div>
         </div>
       </div>

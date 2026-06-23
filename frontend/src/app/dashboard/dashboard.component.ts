@@ -28,12 +28,7 @@ export class DashboardComponent implements OnInit {
   recentTransactions: Transaction[] = [];
   isFirstLogin = false;
 
-  activityLogs = [
-    { id: 1, type: 'success', title: 'Payout Processed', desc: 'Transfer to Akhil completed successfully', time: '10 mins ago' },
-    { id: 2, type: 'warning', title: 'New Device Login', desc: 'Login detected from Chrome on Windows 11', time: '1 hour ago' },
-    { id: 3, type: 'success', title: 'Profile Updated', desc: 'Daily transfer limit increased to 50,000 INR', time: '3 hours ago' },
-    { id: 4, type: 'danger', title: 'Failed Transfer', desc: 'Transfer failed due to invalid card number', time: '5 hours ago' }
-  ];
+  activityLogs: { id: string; type: string; title: string; desc: string; time: string }[] = [];
 
   cardDetails = {
     number: '**** **** **** ****',
@@ -95,9 +90,75 @@ export class DashboardComponent implements OnInit {
       next: (txns) => {
         this.recentTransactions = txns.slice(0, 5);
         this.calculateMetrics(txns);
+        this.deriveActivityLogs(txns);
         this.cdr.detectChanges();
       }
     });
+  }
+
+  /**
+   * Builds the activity feed from the user's own transactions.
+   * Maps each transaction to a typed log entry — no hardcoded data.
+   */
+  private deriveActivityLogs(txns: Transaction[]): void {
+    this.activityLogs = txns.slice(0, 8).map(txn => {
+      const displayType = this.getDisplayType(txn);
+      const status = (txn.status ?? '').toUpperCase();
+
+      // Determine dot colour
+      let type: string;
+      if (status === 'SUCCESS' || status === 'COMPLETED') {
+        type = 'success';
+      } else if (status === 'FAILED') {
+        type = 'danger';
+      } else {
+        type = 'warning'; // pending
+      }
+
+      // Determine title based on direction + status
+      let title: string;
+      if (status === 'FAILED') {
+        const counterparty = txn.toAccountHolderName || 'Unknown';
+        title = `Transfer to ${counterparty} failed`;
+      } else if (displayType === 'credit') {
+        const sender = txn.fromAccountHolderName || 'Unknown';
+        title = status === 'SUCCESS' || status === 'COMPLETED'
+          ? `Received from ${sender}`
+          : `Incoming from ${sender} (pending)`;
+      } else {
+        const recipient = txn.toAccountHolderName || 'Unknown';
+        title = status === 'SUCCESS' || status === 'COMPLETED'
+          ? `Sent to ${recipient}`
+          : `Transfer to ${recipient} pending`;
+      }
+
+      // Description: amount + reference
+      const formatted = parseFloat(txn.amount).toLocaleString('en-IN', {
+        style: 'currency', currency: 'INR', minimumFractionDigits: 2
+      });
+      const desc = `${formatted} · Ref: ${txn.referenceId}`;
+
+      return { id: txn.id, type, title, desc, time: this.getRelativeTime(txn.date) };
+    });
+  }
+
+  /** Converts a date into a human-readable relative string (e.g. "5 mins ago"). */
+  private getRelativeTime(date: Date | string): string {
+    const now  = new Date();
+    const then = new Date(date);
+    const diffMs   = now.getTime() - then.getTime();
+    const diffMins = Math.floor(diffMs / 60_000);
+
+    if (diffMins < 1)   return 'Just now';
+    if (diffMins < 60)  return `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 7)   return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+
+    return then.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
   private calculateMetrics(txns: Transaction[]): void {
