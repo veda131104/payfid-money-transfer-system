@@ -36,6 +36,7 @@ export class ProfileComponent implements OnInit {
   pinError = '';
   profileForm!: FormGroup;
   currentBalance = 0;
+  accountId: number | null = null;
 
   profileData = {
     name: '',
@@ -109,6 +110,8 @@ export class ProfileComponent implements OnInit {
           this.accountSetupService.getAccountByNumber(data.accountNumber).subscribe({
             next: (account) => {
               this.currentBalance = account.balance || 0;
+              this.accountId = account.id;
+              this.profileData.accountStatus = account.status;
               this.cdr.detectChanges();
             },
             error: (err) => {
@@ -239,6 +242,58 @@ export class ProfileComponent implements OnInit {
           alert('Error: ' + this.pinError);
         }
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onCloseAccount(): void {
+    if (!this.accountId) return;
+    if (confirm('Are you sure you want to PERMANENTLY close your account? This action cannot be undone.')) {
+      this.accountSetupService.closeAccount(this.accountId).subscribe({
+        next: (account) => {
+          this.profileData.accountStatus = account.status;
+          this.cdr.detectChanges();
+          alert('Account has been closed successfully.');
+        },
+        error: (err) => {
+          console.error('Failed to close account:', err);
+          const msg = err?.error?.message || err?.message || 'Unknown error';
+          alert('Error closing account: ' + msg);
+        }
+      });
+    }
+  }
+
+  onLockAccount(): void {
+    if (!this.accountId) return;
+    if (confirm('Are you sure you want to lock your account? This will temporarily suspend all transactions.')) {
+      this.accountSetupService.lockAccount(this.accountId).subscribe({
+        next: (account) => {
+          this.profileData.accountStatus = account.status;
+          this.cdr.detectChanges();
+          alert('Account has been locked successfully.');
+        },
+        error: (err) => {
+          console.error('Failed to lock account:', err);
+          const msg = err?.error?.message || err?.message || 'Unknown error';
+          alert('Error locking account: ' + msg);
+        }
+      });
+    }
+  }
+
+  onUnlockAccount(): void {
+    if (!this.accountId) return;
+    this.accountSetupService.unlockAccount(this.accountId).subscribe({
+      next: (account) => {
+        this.profileData.accountStatus = account.status;
+        this.cdr.detectChanges();
+        alert('Account has been unlocked successfully.');
+      },
+      error: (err) => {
+        console.error('Failed to unlock account:', err);
+        const msg = err?.error?.message || err?.message || 'Unknown error';
+        alert('Error unlocking account: ' + msg);
       }
     });
   }

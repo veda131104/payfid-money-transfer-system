@@ -39,4 +39,17 @@ export class AccountSetupService {
   setPin(userName: string, pin: string): Observable<any> {
     return this.http.post(`${this.base}/user/${userName}/pin`, { pin });
   }
+
+  closeAccount(id: number): Observable<any> {
+    return this.http.post(`http://localhost:8080/api/v1/accounts/${id}/close`, {});
+  }
+
+  lockAccount(id: number): Observable<any> {
+    return this.http.post(`http://localhost:8080/api/v1/accounts/${id}/lock`, {});
+  }
+
+  unlockAccount(id: number): Observable<any> {
+    return this.http.post(`http://localhost:8080/api/v1/accounts/${id}/unlock`, {});
+  }
 }
+

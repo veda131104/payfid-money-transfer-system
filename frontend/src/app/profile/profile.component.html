@@ -58,9 +58,24 @@
           {{ isNewUser ? 'Account Setup' : 'Edit Profile' }}
         </button>
         @if (!isNewUser) {
-        <button class="pin-button" type="button" mat-stroked-button (click)="onOpenPinModal()">
-          {{ profileData.hasPin ? 'Reset PIN' : 'Set PIN' }}
-        </button>
+          <button class="pin-button" type="button" mat-stroked-button (click)="onOpenPinModal()">
+            {{ profileData.hasPin ? 'Reset PIN' : 'Set PIN' }}
+          </button>
+          @if (profileData.accountStatus === 'ACTIVE' || profileData.accountStatus === 'Active') {
+            <button class="lock-button" type="button" mat-stroked-button (click)="onLockAccount()">
+              Lock Account
+            </button>
+          }
+          @if (profileData.accountStatus === 'LOCKED' || profileData.accountStatus === 'Locked') {
+            <button class="unlock-button" type="button" mat-stroked-button (click)="onUnlockAccount()">
+              Unlock Account
+            </button>
+          }
+          @if (profileData.accountStatus !== 'CLOSED' && profileData.accountStatus !== 'Closed') {
+            <button class="close-account-button" type="button" mat-stroked-button (click)="onCloseAccount()">
+              Close Account
+            </button>
+          }
         }
       </div>
       } @else {
@@ -123,7 +138,12 @@
           </div>
           <div class="detail-item">
             <p class="detail-label">Account Status</p>
-            <p class="detail-value status-active">{{ profileData.accountStatus }}</p>
+            <p class="detail-value"
+               [class.status-active]="profileData.accountStatus === 'ACTIVE' || profileData.accountStatus === 'Active'"
+               [class.status-locked]="profileData.accountStatus === 'LOCKED' || profileData.accountStatus === 'Locked'"
+               [class.status-closed]="profileData.accountStatus === 'CLOSED' || profileData.accountStatus === 'Closed'">
+               {{ profileData.accountStatus }}
+            </p>
           </div>
         </div>
       </mat-card>

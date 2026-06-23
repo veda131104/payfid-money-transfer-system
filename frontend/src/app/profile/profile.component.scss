@@ -116,6 +116,63 @@
   }
 }
 
+.lock-button {
+  border-radius: 12px;
+  padding: 0.8rem 2.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  border: 2px solid #e65100;
+  background: transparent;
+  color: #e65100;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #e65100;
+    color: #fefbf6;
+    transform: translateY(-2px);
+  }
+}
+
+.unlock-button {
+  border-radius: 12px;
+  padding: 0.8rem 2.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  border: 2px solid #2e7d32;
+  background: transparent;
+  color: #2e7d32;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #2e7d32;
+    color: #fefbf6;
+    transform: translateY(-2px);
+  }
+}
+
+.close-account-button {
+  border-radius: 12px;
+  padding: 0.8rem 2.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  border: 2px solid #d32f2f;
+  background: transparent;
+  color: #d32f2f;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #d32f2f;
+    color: #fefbf6;
+    transform: translateY(-2px);
+  }
+}
+
 .account-details {
   grid-column: span 6;
 }
@@ -199,6 +256,16 @@
 
   &.status-active {
     color: #2e7d32;
+    font-weight: 600;
+  }
+
+  &.status-locked {
+    color: #e65100;
+    font-weight: 600;
+  }
+
+  &.status-closed {
+    color: #c62828;
     font-weight: 600;
   }
 }

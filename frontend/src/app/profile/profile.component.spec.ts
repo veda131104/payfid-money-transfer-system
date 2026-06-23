@@ -255,5 +255,40 @@ describe('ProfileComponent', () => {
         component.onSavePin();
         expect(alertSpy).toHaveBeenCalledWith('Error: Failed to set PIN: Internal error');
     });
+
+    it('should close account successfully', () => {
+        component.accountId = 123;
+        spyOn(window, 'confirm').and.returnValue(true);
+        const closeAccountSpy = spyOn(accountSetupService, 'closeAccount').and.returnValue(of({ status: 'CLOSED' }));
+
+        component.onCloseAccount();
+
+        expect(closeAccountSpy).toHaveBeenCalledWith(123);
+        expect(component.profileData.accountStatus).toBe('CLOSED');
+        expect(alertSpy).toHaveBeenCalledWith('Account has been closed successfully.');
+    });
+
+    it('should lock account successfully', () => {
+        component.accountId = 123;
+        spyOn(window, 'confirm').and.returnValue(true);
+        const lockAccountSpy = spyOn(accountSetupService, 'lockAccount').and.returnValue(of({ status: 'LOCKED' }));
+
+        component.onLockAccount();
+
+        expect(lockAccountSpy).toHaveBeenCalledWith(123);
+        expect(component.profileData.accountStatus).toBe('LOCKED');
+        expect(alertSpy).toHaveBeenCalledWith('Account has been locked successfully.');
+    });
+
+    it('should unlock account successfully', () => {
+        component.accountId = 123;
+        const unlockAccountSpy = spyOn(accountSetupService, 'unlockAccount').and.returnValue(of({ status: 'ACTIVE' }));
+
+        component.onUnlockAccount();
+
+        expect(unlockAccountSpy).toHaveBeenCalledWith(123);
+        expect(component.profileData.accountStatus).toBe('ACTIVE');
+        expect(alertSpy).toHaveBeenCalledWith('Account has been unlocked successfully.');
+    });
 });
 
