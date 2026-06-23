@@ -4,8 +4,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #f6f1ea;
-  font-family: 'Libre Baskerville', 'Times New Roman', serif;
+  background: #fdfbf7;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
   color: #111a1f;
 }
 
@@ -119,7 +119,7 @@
 .topbar-actions button.primary.active {
   background: #1c5d5e !important;
   color: #fefbf6 !important;
-  box-shadow: 0 12px 28px rgba(173, 0, 173, 0.25) !important;
+  box-shadow: 0 12px 28px rgba(28, 93, 94, 0.25) !important;
 }
 
 .dashboard-grid {
@@ -570,7 +570,7 @@
 .loading-spinner {
   width: 4rem;
   height: 4rem;
-  border: 4px solid rgba(173, 0, 173, 0.2);
+  border: 4px solid rgba(28, 93, 94, 0.2);
   border-top-color: #1c5d5e;
   border-right-color: #1c5d5e;
   border-radius: 50%;

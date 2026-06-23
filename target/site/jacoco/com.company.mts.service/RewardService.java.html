@@ -167,21 +167,28 @@ public class RewardService {
      */
     public boolean isEligible(TransactionLog tx) {
 <span class="fc bfc" id="L169" title="All 2 branches covered.">        if (tx.getStatus() != TransactionStatus.SUCCESS) {</span>
-<span class="fc" id="L170">            return false;</span>
+<span class="fc" id="L170">            logger.info(&quot;Transaction {} is not eligible: status is not SUCCESS (status={})&quot;, tx.getId(), tx.getStatus());</span>
+<span class="fc" id="L171">            return false;</span>
         }
-<span class="fc bfc" id="L172" title="All 4 branches covered.">        if (tx.getAmount() == null || tx.getAmount().compareTo(REWARD_THRESHOLD) &lt;= 0) {</span>
-<span class="fc" id="L173">            return false;</span>
+<span class="fc bfc" id="L173" title="All 4 branches covered.">        if (tx.getAmount() == null || tx.getAmount().compareTo(REWARD_THRESHOLD) &lt;= 0) {</span>
+<span class="fc" id="L174">            logger.info(&quot;Transaction {} is not eligible: amount is null or &lt;= 100 (amount={})&quot;, tx.getId(), tx.getAmount());</span>
+<span class="fc" id="L175">            return false;</span>
         }
-<span class="fc bfc" id="L175" title="All 4 branches covered.">        if (tx.getFromAccountId() == null || tx.getToAccountId() == null) {</span>
-<span class="fc" id="L176">            return false;</span>
+<span class="fc bfc" id="L177" title="All 4 branches covered.">        if (tx.getFromAccountId() == null || tx.getToAccountId() == null) {</span>
+<span class="fc" id="L178">            logger.info(&quot;Transaction {} is not eligible: fromAccountId or toAccountId is null (from={}, to={})&quot;, tx.getId(), tx.getFromAccountId(), tx.getToAccountId());</span>
+<span class="fc" id="L179">            return false;</span>
         }
-<span class="fc bfc" id="L178" title="All 2 branches covered.">        if (tx.getFromAccountId().equals(tx.getToAccountId())) {</span>
-<span class="fc" id="L179">            return false;   // self-transfer</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        if (tx.getFromAccountId().equals(tx.getToAccountId())) {</span>
+<span class="pc bpc" id="L182" title="3 of 4 branches missed.">            if (tx.getDescription() == null || !tx.getDescription().toLowerCase().contains(&quot;external&quot;)) {</span>
+<span class="fc" id="L183">                logger.info(&quot;Transaction {} is not eligible: standard self-transfer (from==to, desc={})&quot;, tx.getId(), tx.getDescription());</span>
+<span class="fc" id="L184">                return false;   // standard self-transfer</span>
+            }
         }
-<span class="fc bfc" id="L181" title="All 2 branches covered.">        if (tx.getType() != TransactionType.TRANSFER) {</span>
-<span class="fc" id="L182">            return false;   // only pure transfers earn points</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        if (tx.getType() != TransactionType.TRANSFER) {</span>
+<span class="fc" id="L188">            logger.info(&quot;Transaction {} is not eligible: type is not TRANSFER (type={})&quot;, tx.getId(), tx.getType());</span>
+<span class="fc" id="L189">            return false;   // only pure transfers earn points</span>
         }
-<span class="fc" id="L184">        return true;</span>
+<span class="fc" id="L191">        return true;</span>
     }
 
     // =========================================================================
@@ -189,59 +196,59 @@ public class RewardService {
     // =========================================================================
 
     private RewardLedgerDTO toDTO(RewardLedger rl) {
-<span class="fc" id="L192">        RewardLedgerDTO dto = new RewardLedgerDTO();</span>
-<span class="fc" id="L193">        dto.setId(rl.getId());</span>
-<span class="fc" id="L194">        dto.setAccountId(rl.getAccountId());</span>
-<span class="fc" id="L195">        dto.setTransactionId(rl.getTransactionId());</span>
-<span class="fc" id="L196">        dto.setTransactionAmount(rl.getTransactionAmount());</span>
-<span class="fc" id="L197">        dto.setPointsAwarded(rl.getPointsAwarded());</span>
-<span class="fc" id="L198">        dto.setDescription(rl.getDescription());</span>
-<span class="fc" id="L199">        dto.setGrantedAt(rl.getGrantedAt());</span>
-<span class="fc" id="L200">        return dto;</span>
+<span class="fc" id="L199">        RewardLedgerDTO dto = new RewardLedgerDTO();</span>
+<span class="fc" id="L200">        dto.setId(rl.getId());</span>
+<span class="fc" id="L201">        dto.setAccountId(rl.getAccountId());</span>
+<span class="fc" id="L202">        dto.setTransactionId(rl.getTransactionId());</span>
+<span class="fc" id="L203">        dto.setTransactionAmount(rl.getTransactionAmount());</span>
+<span class="fc" id="L204">        dto.setPointsAwarded(rl.getPointsAwarded());</span>
+<span class="fc" id="L205">        dto.setDescription(rl.getDescription());</span>
+<span class="fc" id="L206">        dto.setGrantedAt(rl.getGrantedAt());</span>
+<span class="fc" id="L207">        return dto;</span>
     }
 
     private RewardSummaryDTO toSummaryDTO(RewardAccount ra) {
-<span class="fc" id="L204">        RewardSummaryDTO dto = new RewardSummaryDTO();</span>
-<span class="fc" id="L205">        dto.setRewardAccountId(ra.getId());</span>
-<span class="fc" id="L206">        dto.setAccountId(ra.getAccountId());</span>
-<span class="fc" id="L207">        dto.setTotalPoints(ra.getTotalPoints());</span>
-<span class="fc" id="L208">        dto.setCreatedAt(ra.getCreatedAt());</span>
-<span class="fc" id="L209">        dto.setUpdatedAt(ra.getUpdatedAt());</span>
-<span class="fc" id="L210">        return dto;</span>
+<span class="fc" id="L211">        RewardSummaryDTO dto = new RewardSummaryDTO();</span>
+<span class="fc" id="L212">        dto.setRewardAccountId(ra.getId());</span>
+<span class="fc" id="L213">        dto.setAccountId(ra.getAccountId());</span>
+<span class="fc" id="L214">        dto.setTotalPoints(ra.getTotalPoints());</span>
+<span class="fc" id="L215">        dto.setCreatedAt(ra.getCreatedAt());</span>
+<span class="fc" id="L216">        dto.setUpdatedAt(ra.getUpdatedAt());</span>
+<span class="fc" id="L217">        return dto;</span>
     }
 
     @Transactional
     public RewardLedgerDTO redeemRewards(Long accountId, int pointsToRedeem, String description) {
-<span class="nc" id="L215">        RewardAccount rewardAccount = rewardAccountRepository.findByAccountId(accountId)</span>
-<span class="nc" id="L216">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;No reward account found for account ID: &quot; + accountId));</span>
+<span class="nc" id="L222">        RewardAccount rewardAccount = rewardAccountRepository.findByAccountId(accountId)</span>
+<span class="nc" id="L223">                .orElseThrow(() -&gt; new ResourceNotFoundException(&quot;No reward account found for account ID: &quot; + accountId));</span>
 
-<span class="nc bnc" id="L218" title="All 2 branches missed.">        if (rewardAccount.getTotalPoints() &lt; pointsToRedeem) {</span>
-<span class="nc" id="L219">            throw new IllegalArgumentException(&quot;Insufficient reward points. Available: &quot; + rewardAccount.getTotalPoints() + &quot;, Required: &quot; + pointsToRedeem);</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">        if (rewardAccount.getTotalPoints() &lt; pointsToRedeem) {</span>
+<span class="nc" id="L226">            throw new IllegalArgumentException(&quot;Insufficient reward points. Available: &quot; + rewardAccount.getTotalPoints() + &quot;, Required: &quot; + pointsToRedeem);</span>
         }
 
         // Deduct points
-<span class="nc" id="L223">        rewardAccount.setTotalPoints(rewardAccount.getTotalPoints() - pointsToRedeem);</span>
-<span class="nc" id="L224">        rewardAccountRepository.save(rewardAccount);</span>
+<span class="nc" id="L230">        rewardAccount.setTotalPoints(rewardAccount.getTotalPoints() - pointsToRedeem);</span>
+<span class="nc" id="L231">        rewardAccountRepository.save(rewardAccount);</span>
 
         // Generate a unique dummy transaction ID using a negative nanoTime
-<span class="nc" id="L227">        long dummyTransactionId = -System.nanoTime();</span>
+<span class="nc" id="L234">        long dummyTransactionId = -System.nanoTime();</span>
 
         // Persist ledger entry
-<span class="nc" id="L230">        RewardLedger ledger = RewardLedger.builder()</span>
-<span class="nc" id="L231">                .accountId(accountId)</span>
-<span class="nc" id="L232">                .transactionId(dummyTransactionId)</span>
-<span class="nc" id="L233">                .transactionAmount(BigDecimal.ZERO)</span>
-<span class="nc" id="L234">                .pointsAwarded(-pointsToRedeem)</span>
-<span class="nc" id="L235">                .description(description)</span>
-<span class="nc" id="L236">                .grantedAt(LocalDateTime.now())</span>
-<span class="nc" id="L237">                .build();</span>
+<span class="nc" id="L237">        RewardLedger ledger = RewardLedger.builder()</span>
+<span class="nc" id="L238">                .accountId(accountId)</span>
+<span class="nc" id="L239">                .transactionId(dummyTransactionId)</span>
+<span class="nc" id="L240">                .transactionAmount(BigDecimal.ZERO)</span>
+<span class="nc" id="L241">                .pointsAwarded(-pointsToRedeem)</span>
+<span class="nc" id="L242">                .description(description)</span>
+<span class="nc" id="L243">                .grantedAt(LocalDateTime.now())</span>
+<span class="nc" id="L244">                .build();</span>
 
-<span class="nc" id="L239">        RewardLedger saved = rewardLedgerRepository.save(ledger);</span>
+<span class="nc" id="L246">        RewardLedger saved = rewardLedgerRepository.save(ledger);</span>
 
-<span class="nc" id="L241">        logger.info(&quot;Reward points redeemed — Account {} now has {} total points. Redeemed: {} points.&quot;,</span>
-<span class="nc" id="L242">                accountId, rewardAccount.getTotalPoints(), pointsToRedeem);</span>
+<span class="nc" id="L248">        logger.info(&quot;Reward points redeemed — Account {} now has {} total points. Redeemed: {} points.&quot;,</span>
+<span class="nc" id="L249">                accountId, rewardAccount.getTotalPoints(), pointsToRedeem);</span>
 
-<span class="nc" id="L244">        return toDTO(saved);</span>
+<span class="nc" id="L251">        return toDTO(saved);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

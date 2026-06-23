@@ -64,6 +64,26 @@
           </div>
         </div>
 
+        <!-- Progress to Next Tier -->
+        <div class="tier-progress-container" *ngIf="nextTierName">
+          <div class="progress-labels">
+            <span class="current-tier-text">Tier Progress: <strong>{{ tier }}</strong></span>
+            <span class="next-tier-text">Next: <strong>{{ nextTierName }}</strong> ({{ pointsToNextTier }} pts needed)</span>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" [style.width.%]="tierProgressPercent" [style.background-color]="getTierColor(nextTierName)"></div>
+          </div>
+          <div class="progress-bar-milestones">
+            <span class="milestone-start">0 pts</span>
+            <span class="milestone-end">{{ nextTierPoints }} pts</span>
+          </div>
+        </div>
+        <div class="tier-max-container" *ngIf="!nextTierName">
+          <div class="congrats-max-tier">
+            🎉 You have achieved <strong>Platinum</strong>, our highest membership tier! Enjoy unlimited VIP perks and benefits.
+          </div>
+        </div>
+
         <!-- Discrete Earning Rules Toggle -->
         <div class="rules-collapsible">
           <button class="rules-toggle-btn" (click)="showRules = !showRules">
@@ -98,7 +118,9 @@
               <span class="coupon-icon">{{ coupon.icon }}</span>
             </div>
             <div class="coupon-details">
-              <span class="coupon-provider">{{ coupon.provider }}</span>
+              <a [href]="coupon.storeUrl" target="_blank" rel="noopener noreferrer" class="coupon-provider-link" [style.color]="coupon.themeColor">
+                {{ coupon.provider }} <span class="external-link-arrow">↗</span>
+              </a>
               <h3 class="coupon-value">{{ coupon.rewardVal }}</h3>
               <p class="coupon-cost">{{ coupon.cost }} Points Required</p>
             </div>
@@ -122,7 +144,7 @@
 
         <div class="tiers-grid">
           @for (t of tiersList; track t.name) {
-          <div class="tier-card" [class.active-tier]="tier === t.name" [style.border-color]="t.color">
+          <div class="tier-card tier-glow-card" [class.active-tier]="tier === t.name" [attr.data-tier]="t.name">
             <div class="tier-header-badge" [style.background-color]="t.color">
               <span class="tier-name">{{ t.name }}</span>
             </div>
@@ -131,7 +153,7 @@
               <h4 class="tier-multiplier">{{ t.multiplier }} Multiplier</h4>
               <p class="tier-perk">{{ t.perk }}</p>
             </div>
-            <div class="tier-status-indicator" *ngIf="tier === t.name">
+            <div class="tier-status-indicator" *ngIf="tier === t.name" [style.color]="t.color">
               <span>Your Active Status</span>
             </div>
           </div>
@@ -196,6 +218,12 @@
           <span class="promo-label">Your Unique Code</span>
           <span class="promo-code">{{ scratchRedeemedCode }}</span>
           <button class="copy-code-btn" (click)="copyPromoCode()">Copy Code</button>
+        </div>
+        
+        <div class="scratch-store-link-container" *ngIf="scratchSelectedCoupon?.storeUrl">
+          <a [href]="scratchSelectedCoupon.storeUrl" target="_blank" rel="noopener noreferrer" class="scratch-store-link" [style.color]="scratchSelectedCoupon?.themeColor">
+            Go to {{ scratchSelectedCoupon.provider }} website to redeem ↗
+          </a>
         </div>
         
         <p class="scratch-footer">Copy this code and redeem it on the partner website.</p>

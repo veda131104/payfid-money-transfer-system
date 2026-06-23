@@ -361,16 +361,21 @@ export class HistoryComponent implements OnInit, OnDestroy {
       return '';
     }
 
-    if (transaction.fromAccountNumber && transaction.toAccountNumber) {
-      if (transaction.toAccountNumber === this.currentUserAccountNumber) {
-        return '+';
-      }
-      if (transaction.fromAccountNumber === this.currentUserAccountNumber) {
-        return '-';
+    if (transaction.type === 'credit') return '+';
+    if (transaction.type === 'debit') return '-';
+
+    if (transaction.type === 'transfer') {
+      if (transaction.fromAccountNumber && transaction.toAccountNumber) {
+        if (transaction.fromAccountNumber === transaction.toAccountNumber) {
+          return '-';
+        }
+        if (transaction.toAccountNumber === this.currentUserAccountNumber) {
+          return '+';
+        }
       }
     }
 
-    return transaction.type === 'credit' ? '+' : '-';
+    return '-';
   }
 
   /**
@@ -381,16 +386,21 @@ export class HistoryComponent implements OnInit, OnDestroy {
       return transaction.type === 'credit' ? 'credit' : 'debit';
     }
 
-    if (transaction.fromAccountNumber && transaction.toAccountNumber) {
-      if (transaction.toAccountNumber === this.currentUserAccountNumber) {
-        return 'credit';
-      }
-      if (transaction.fromAccountNumber === this.currentUserAccountNumber) {
-        return 'debit';
+    if (transaction.type === 'credit') return 'credit';
+    if (transaction.type === 'debit') return 'debit';
+
+    if (transaction.type === 'transfer') {
+      if (transaction.fromAccountNumber && transaction.toAccountNumber) {
+        if (transaction.fromAccountNumber === transaction.toAccountNumber) {
+          return 'debit';
+        }
+        if (transaction.toAccountNumber === this.currentUserAccountNumber) {
+          return 'credit';
+        }
       }
     }
 
-    return transaction.type === 'credit' ? 'credit' : 'debit';
+    return 'debit';
   }
 
   onLogout(): void {

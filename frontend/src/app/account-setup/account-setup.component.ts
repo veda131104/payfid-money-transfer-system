@@ -97,6 +97,9 @@ export class AccountSetupComponent implements OnInit {
   ngOnInit(): void {
     const user = this.authService.getCurrentUser();
     if (user?.name) {
+      if (user.email) {
+        this.form.patchValue({ email: user.email });
+      }
       this.svc.getAccountByUser(user.name).subscribe({
         next: (res) => {
           this.popupService.alert('Your account is already set up! Redirecting to dashboard.', 'Account Already Set Up');

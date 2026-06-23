@@ -22,6 +22,7 @@ export class DashboardComponent implements OnInit {
 
   routerLinkActiveOptions = { exact: true };
   userName = 'User';
+  currentUserAccountNumber = '';
   balance = 0;
   processedToday = 0;
   activeTransfers = 0;
@@ -53,8 +54,7 @@ export class DashboardComponent implements OnInit {
 
     this.accountSetupService.getAccountByUser(user.name).subscribe({
       next: (data) => {
-        // Fetch real balance from AccountService via AccountSetupService or direct AccountService
-        // Since getAccountByUser returns BankDetails, we might need a separate call for Account balance
+        this.currentUserAccountNumber = data.accountNumber || '';
         this.cardDetails.number = this.maskCardNumber(data.creditCardNumber || '0000000000000000');
 
         // Fetch the account using the holder name to get the balance
@@ -110,10 +110,19 @@ export class DashboardComponent implements OnInit {
   }
 
   getDisplayType(txn: Transaction): string {
-    // If we sent money, it's a debit (red). If we received, it's credit (green).
-    // Let's assume if it's 'credit' or we are the receiver, it's credit.
     if (txn.type === 'credit') return 'credit';
     if (txn.type === 'debit') return 'debit';
+
+    if (txn.type === 'transfer') {
+      if (txn.fromAccountNumber && txn.toAccountNumber) {
+        if (txn.fromAccountNumber === txn.toAccountNumber) {
+          return 'debit';
+        }
+        if (txn.toAccountNumber === this.currentUserAccountNumber) {
+          return 'credit';
+        }
+      }
+    }
 
     const currentUser = this.authService.getCurrentUser();
     if (currentUser && txn.toAccountHolderName === currentUser.name) {

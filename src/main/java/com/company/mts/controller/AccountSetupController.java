@@ -51,6 +51,13 @@ public class AccountSetupController {
         log.info("[AccountSetupController] POST / - Received account setup request for userName='{}', accountNumber='{}', bankName='{}'",
                 request.getUserName(), request.getAccountNumber(), request.getBankName());
         try {
+            if (request.getAccountNumber() == null || !request.getAccountNumber().matches("\\d{9,18}")) {
+                log.warn("[AccountSetupController] POST / - REJECTED: Invalid account number format/length");
+                Map<String, String> error = new HashMap<>();
+                error.put("message", "Account number must be between 9 and 18 digits (numbers only).");
+                return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+            }
+
             request.setCreditCardNumber(CryptoUtils.decrypt(request.getCreditCardNumber()));
             request.setCvv(CryptoUtils.decrypt(request.getCvv()));
             request.setExpiryDate(CryptoUtils.decrypt(request.getExpiryDate()));

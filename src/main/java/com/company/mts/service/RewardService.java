@@ -167,18 +167,25 @@ public class RewardService {
      */
     public boolean isEligible(TransactionLog tx) {
         if (tx.getStatus() != TransactionStatus.SUCCESS) {
+            logger.info("Transaction {} is not eligible: status is not SUCCESS (status={})", tx.getId(), tx.getStatus());
             return false;
         }
         if (tx.getAmount() == null || tx.getAmount().compareTo(REWARD_THRESHOLD) <= 0) {
+            logger.info("Transaction {} is not eligible: amount is null or <= 100 (amount={})", tx.getId(), tx.getAmount());
             return false;
         }
         if (tx.getFromAccountId() == null || tx.getToAccountId() == null) {
+            logger.info("Transaction {} is not eligible: fromAccountId or toAccountId is null (from={}, to={})", tx.getId(), tx.getFromAccountId(), tx.getToAccountId());
             return false;
         }
         if (tx.getFromAccountId().equals(tx.getToAccountId())) {
-            return false;   // self-transfer
+            if (tx.getDescription() == null || !tx.getDescription().toLowerCase().contains("external")) {
+                logger.info("Transaction {} is not eligible: standard self-transfer (from==to, desc={})", tx.getId(), tx.getDescription());
+                return false;   // standard self-transfer
+            }
         }
         if (tx.getType() != TransactionType.TRANSFER) {
+            logger.info("Transaction {} is not eligible: type is not TRANSFER (type={})", tx.getId(), tx.getType());
             return false;   // only pure transfers earn points
         }
         return true;

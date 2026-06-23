@@ -160,9 +160,9 @@ describe('RewardsComponent', () => {
   });
 
   it('should return tier colors correctly', () => {
-    expect(component.getTierColor('Platinum')).toBe('#e5e5e5');
-    expect(component.getTierColor('Gold')).toBe('#ffd700');
-    expect(component.getTierColor('Silver')).toBe('#c0c0c0');
+    expect(component.getTierColor('Platinum')).toBe('#b4c4cc');
+    expect(component.getTierColor('Gold')).toBe('#d4af37');
+    expect(component.getTierColor('Silver')).toBe('#8a9ba8');
     expect(component.getTierColor('Bronze')).toBe('#cd7f32');
     expect(component.getTierColor('Unknown')).toBe('#cd7f32');
   });

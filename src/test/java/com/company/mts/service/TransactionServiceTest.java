@@ -124,7 +124,7 @@ class TransactionServiceTest {
                                 "123456789012", "987654321098", new BigDecimal("100.00"), "External test");
 
                 assertNotNull(result);
-                assertEquals(TransactionType.DEBIT, result.getType());
+                assertEquals(TransactionType.TRANSFER, result.getType());
         }
 
         @Test

@@ -43,18 +43,22 @@ export class RewardsComponent implements OnInit {
   scratchRedeemedCode = '';
 
   coupons = [
-    { id: 'amz_100', provider: 'Amazon', cost: 50, rewardVal: '₹100 Gift Card', icon: '🛍️', themeColor: '#ff9900' },
-    { id: 'myn_150', provider: 'Myntra', cost: 70, rewardVal: '₹150 Voucher', icon: '👗', themeColor: '#ff3f6c' },
-    { id: 'zom_50', provider: 'Zomato', cost: 25, rewardVal: '₹50 Off Meals', icon: '🍕', themeColor: '#cb202d' },
-    { id: 'sbx_tall', provider: 'Starbucks', cost: 40, rewardVal: 'Free Tall Coffee', icon: '☕', themeColor: '#00704a' },
-    { id: 'bms_100', provider: 'BookMyShow', cost: 45, rewardVal: '₹100 Off Movie', icon: '🎬', themeColor: '#f84464' }
+    { id: 'amz_100', provider: 'Amazon', cost: 50, rewardVal: '₹100 Gift Card', icon: '🛍️', themeColor: '#ff9900', storeUrl: 'https://www.amazon.in' },
+    { id: 'myn_150', provider: 'Myntra', cost: 70, rewardVal: '₹150 Voucher', icon: '👗', themeColor: '#ff3f6c', storeUrl: 'https://www.myntra.com' },
+    { id: 'zom_50', provider: 'Zomato', cost: 25, rewardVal: '₹50 Off Meals', icon: '🍕', themeColor: '#cb202d', storeUrl: 'https://www.zomato.com' },
+    { id: 'sbx_tall', provider: 'Starbucks', cost: 40, rewardVal: 'Free Tall Coffee', icon: '☕', themeColor: '#00704a', storeUrl: 'https://www.starbucks.in' },
+    { id: 'bms_100', provider: 'BookMyShow', cost: 45, rewardVal: '₹100 Off Movie', icon: '🎬', themeColor: '#f84464', storeUrl: 'https://in.bookmyshow.com' },
+    { id: 'swg_60', provider: 'Swiggy', cost: 30, rewardVal: '₹60 Food Voucher', icon: '🍔', themeColor: '#fc8019', storeUrl: 'https://www.swiggy.com' },
+    { id: 'ubr_75', provider: 'Uber', cost: 35, rewardVal: '₹75 Ride Discount', icon: '🚗', themeColor: '#090909', storeUrl: 'https://www.uber.com' },
+    { id: 'spt_pre', provider: 'Spotify', cost: 60, rewardVal: '1-Month Premium', icon: '🎵', themeColor: '#1db954', storeUrl: 'https://www.spotify.com' },
+    { id: 'flp_200', provider: 'Flipkart', cost: 90, rewardVal: '₹200 Gift Card', icon: '🛒', themeColor: '#2874f0', storeUrl: 'https://www.flipkart.com' }
   ];
 
   tiersList = [
-    { name: 'Bronze', points: '0-19 pts', multiplier: '1.0x Points', perk: 'Standard Instant Processing Speed', color: '#cd7f32' },
-    { name: 'Silver', points: '20-49 pts', multiplier: '1.1x Points', perk: 'Priority Support Access & Extra Points', color: '#c0c0c0' },
-    { name: 'Gold', points: '50-99 pts', multiplier: '1.2x Points', perk: 'Zero Charges on Instant Transfers & Exclusive Brand Vouchers', color: '#ffd700' },
-    { name: 'Platinum', points: '100+ pts', multiplier: '1.5x Points', perk: 'Dedicated 24/7 Personal Manager & Free High-Value Transfers', color: '#e5e5e5' }
+    { name: 'Bronze', points: '0-19 pts', multiplier: '1.0x', perk: 'Standard payouts & basic support speed', color: '#cd7f32' },
+    { name: 'Silver', points: '20-49 pts', multiplier: '1.1x', perk: 'Priority email query handling & basic brand coupons access', color: '#8a9ba8' },
+    { name: 'Gold', points: '50-99 pts', multiplier: '1.25x', perk: 'Zero fee on all domestic transfers & premium high-value coupons', color: '#d4af37' },
+    { name: 'Platinum', points: '100+ pts', multiplier: '1.5x', perk: 'Dedicated VIP relationship manager & unlimited zero-charge payouts', color: '#b4c4cc' }
   ];
 
   ngOnInit(): void {
@@ -136,11 +140,39 @@ export class RewardsComponent implements OnInit {
     return 'Bronze';
   }
 
+  get nextTierName(): string {
+    if (this.points < 20) return 'Silver';
+    if (this.points < 50) return 'Gold';
+    if (this.points < 100) return 'Platinum';
+    return '';
+  }
+
+  get nextTierPoints(): number {
+    if (this.points < 20) return 20;
+    if (this.points < 50) return 50;
+    if (this.points < 100) return 100;
+    return 100;
+  }
+
+  get pointsToNextTier(): number {
+    if (this.points < 20) return 20 - this.points;
+    if (this.points < 50) return 50 - this.points;
+    if (this.points < 100) return 100 - this.points;
+    return 0;
+  }
+
+  get tierProgressPercent(): number {
+    if (this.points >= 100) return 100;
+    if (this.points < 20) return Math.min(100, Math.max(0, (this.points / 20) * 100));
+    if (this.points < 50) return Math.min(100, Math.max(0, ((this.points - 20) / 30) * 100));
+    return Math.min(100, Math.max(0, ((this.points - 50) / 50) * 100));
+  }
+
   getTierColor(tierName: string): string {
     switch (tierName) {
-      case 'Platinum': return '#e5e5e5';
-      case 'Gold': return '#ffd700';
-      case 'Silver': return '#c0c0c0';
+      case 'Platinum': return '#b4c4cc';
+      case 'Gold': return '#d4af37';
+      case 'Silver': return '#8a9ba8';
       default: return '#cd7f32'; // Bronze
     }
   }

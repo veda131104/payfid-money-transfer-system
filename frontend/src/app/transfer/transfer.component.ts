@@ -110,6 +110,10 @@ export class TransferComponent {
     }
 
     if (!this.accountNumber.includes('@')) {
+      if (!/^\d+$/.test(this.accountNumber)) {
+        this.popupService.alert('Account number must contain only numbers.', 'Validation Error');
+        return;
+      }
       if (this.accountNumber.length < 9 || this.accountNumber.length > 18) {
         this.popupService.alert('Account number must be between 9 and 18 digits.', 'Validation Error');
         return;

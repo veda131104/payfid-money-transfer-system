@@ -230,23 +230,31 @@ public class TransactionService {
 
                         logger.info("Recipient {} not found in system. Processing as external debit.", toAccountNumber);
 
-                        // External Debit Only
+                        // External Payout Transfer
                         fromAccount.debit(amount);
 
                         TransactionLog txLog = TransactionLog.builder()
                                         .fromAccountId(fromAccount.getId())
                                         .toAccountId(fromAccount.getId()) // Self reference for external debit
                                         .amount(amount)
-                                        .type(TransactionType.DEBIT)
+                                        .type(TransactionType.TRANSFER)
                                         .status(TransactionStatus.SUCCESS)
-                                        .description(description != null ? description
-                                                        : "External payment to " + toAccountNumber)
+                                        .description(description != null ? "External: " + description
+                                                         : "External payment to " + toAccountNumber)
                                         .fromAccountBalanceBefore(fromBalanceBefore)
                                         .fromAccountBalanceAfter(fromAccount.getBalance())
                                         .transactionDate(LocalDateTime.now())
                                         .build();
 
                         TransactionLog savedTx = transactionLogRepository.save(txLog);
+
+                        // Evaluate reward for external transfer
+                        try {
+                                rewardService.evaluateAndGrantReward(savedTx.getId());
+                        } catch (Exception rewardEx) {
+                                logger.warn("Reward evaluation failed for TX {}: {}", savedTx.getId(), rewardEx.getMessage());
+                        }
+
                         return convertToDTO(savedTx, fromAccount, null);
                 }
         }

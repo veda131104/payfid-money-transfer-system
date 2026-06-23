@@ -51,292 +51,299 @@ public class AccountSetupController {
 <span class="fc" id="L51">        log.info(&quot;[AccountSetupController] POST / - Received account setup request for userName='{}', accountNumber='{}', bankName='{}'&quot;,</span>
 <span class="fc" id="L52">                request.getUserName(), request.getAccountNumber(), request.getBankName());</span>
         try {
-<span class="fc" id="L54">            request.setCreditCardNumber(CryptoUtils.decrypt(request.getCreditCardNumber()));</span>
-<span class="fc" id="L55">            request.setCvv(CryptoUtils.decrypt(request.getCvv()));</span>
-<span class="fc" id="L56">            request.setExpiryDate(CryptoUtils.decrypt(request.getExpiryDate()));</span>
+<span class="pc bpc" id="L54" title="2 of 4 branches missed.">            if (request.getAccountNumber() == null || !request.getAccountNumber().matches(&quot;\\d{9,18}&quot;)) {</span>
+<span class="nc" id="L55">                log.warn(&quot;[AccountSetupController] POST / - REJECTED: Invalid account number format/length&quot;);</span>
+<span class="nc" id="L56">                Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L57">                error.put(&quot;message&quot;, &quot;Account number must be between 9 and 18 digits (numbers only).&quot;);</span>
+<span class="nc" id="L58">                return new ResponseEntity&lt;&gt;(error, HttpStatus.BAD_REQUEST);</span>
+            }
+
+<span class="fc" id="L61">            request.setCreditCardNumber(CryptoUtils.decrypt(request.getCreditCardNumber()));</span>
+<span class="fc" id="L62">            request.setCvv(CryptoUtils.decrypt(request.getCvv()));</span>
+<span class="fc" id="L63">            request.setExpiryDate(CryptoUtils.decrypt(request.getExpiryDate()));</span>
             // Ensure userName is present: prefer request value, otherwise try to infer from the security context (JWT)
-<span class="pc bpc" id="L58" title="1 of 4 branches missed.">            if (request.getUserName() == null || request.getUserName().isBlank()) {</span>
-<span class="fc" id="L59">                Authentication auth = SecurityContextHolder.getContext().getAuthentication();</span>
-<span class="pc bpc" id="L60" title="3 of 6 branches missed.">                if (auth != null &amp;&amp; auth.isAuthenticated()</span>
+<span class="pc bpc" id="L65" title="1 of 4 branches missed.">            if (request.getUserName() == null || request.getUserName().isBlank()) {</span>
+<span class="fc" id="L66">                Authentication auth = SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="pc bpc" id="L67" title="3 of 6 branches missed.">                if (auth != null &amp;&amp; auth.isAuthenticated()</span>
                         &amp;&amp; !(auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)
-<span class="nc bnc" id="L62" title="All 4 branches missed.">                        &amp;&amp; auth.getName() != null &amp;&amp; !auth.getName().isBlank()) {</span>
-<span class="nc" id="L63">                    request.setUserName(auth.getName());</span>
-<span class="nc" id="L64">                    log.info(&quot;[AccountSetupController] POST / - Inferred userName '{}' from security context&quot;, auth.getName());</span>
+<span class="nc bnc" id="L69" title="All 4 branches missed.">                        &amp;&amp; auth.getName() != null &amp;&amp; !auth.getName().isBlank()) {</span>
+<span class="nc" id="L70">                    request.setUserName(auth.getName());</span>
+<span class="nc" id="L71">                    log.info(&quot;[AccountSetupController] POST / - Inferred userName '{}' from security context&quot;, auth.getName());</span>
                 }
             }
 
             // If still missing, reject the request
-<span class="pc bpc" id="L69" title="1 of 4 branches missed.">            if (request.getUserName() == null || request.getUserName().isBlank()) {</span>
-<span class="fc" id="L70">                log.warn(&quot;[AccountSetupController] POST / - REJECTED: Missing userName in request and security context&quot;);</span>
-<span class="fc" id="L71">                Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L72">                error.put(&quot;message&quot;, &quot;User not logged in or session expired. Please log in and try again.&quot;);</span>
-<span class="fc" id="L73">                return new ResponseEntity&lt;&gt;(error, HttpStatus.BAD_REQUEST);</span>
+<span class="pc bpc" id="L76" title="1 of 4 branches missed.">            if (request.getUserName() == null || request.getUserName().isBlank()) {</span>
+<span class="fc" id="L77">                log.warn(&quot;[AccountSetupController] POST / - REJECTED: Missing userName in request and security context&quot;);</span>
+<span class="fc" id="L78">                Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L79">                error.put(&quot;message&quot;, &quot;User not logged in or session expired. Please log in and try again.&quot;);</span>
+<span class="fc" id="L80">                return new ResponseEntity&lt;&gt;(error, HttpStatus.BAD_REQUEST);</span>
             }
 
 
             // Generate UPI ID from userName (always unique) instead of email prefix
-<span class="fc" id="L78">            String generatedUpiId = generateUpiId(request.getUserName(), request.getBankName());</span>
-<span class="fc" id="L79">            log.debug(&quot;[AccountSetupController] POST / - Generated UPI ID: '{}'&quot;, generatedUpiId);</span>
+<span class="fc" id="L85">            String generatedUpiId = generateUpiId(request.getUserName(), request.getBankName());</span>
+<span class="fc" id="L86">            log.debug(&quot;[AccountSetupController] POST / - Generated UPI ID: '{}'&quot;, generatedUpiId);</span>
 
             // Check if bank details already exist for this user or account number (self-healing mode)
-<span class="fc" id="L82">            Optional&lt;BankDetails&gt; existingDetails = service.findByUserName(request.getUserName());</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">            if (existingDetails.isEmpty()) {</span>
-<span class="fc" id="L84">                existingDetails = service.findByAccountNumber(request.getAccountNumber());</span>
+<span class="fc" id="L89">            Optional&lt;BankDetails&gt; existingDetails = service.findByUserName(request.getUserName());</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">            if (existingDetails.isEmpty()) {</span>
+<span class="fc" id="L91">                existingDetails = service.findByAccountNumber(request.getAccountNumber());</span>
             }
 
             BankDetails saved;
-<span class="fc bfc" id="L88" title="All 2 branches covered.">            if (existingDetails.isPresent()) {</span>
-<span class="fc" id="L89">                saved = existingDetails.get();</span>
-<span class="fc" id="L90">                log.info(&quot;[AccountSetupController] POST / - Found existing bank details for user='{}' or account='{}'&quot;,</span>
-<span class="fc" id="L91">                        saved.getUserName(), saved.getAccountNumber());</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            if (existingDetails.isPresent()) {</span>
+<span class="fc" id="L96">                saved = existingDetails.get();</span>
+<span class="fc" id="L97">                log.info(&quot;[AccountSetupController] POST / - Found existing bank details for user='{}' or account='{}'&quot;,</span>
+<span class="fc" id="L98">                        saved.getUserName(), saved.getAccountNumber());</span>
                 // Verify if it belongs to the same user and account number
-<span class="pc bpc" id="L93" title="1 of 4 branches missed.">                if (!saved.getUserName().equalsIgnoreCase(request.getUserName()) || !saved.getAccountNumber().equals(request.getAccountNumber())) {</span>
-<span class="fc" id="L94">                    log.warn(&quot;[AccountSetupController] POST / - CONFLICT: Bank details belong to different user/account. Existing user='{}', request user='{}'&quot;,</span>
-<span class="fc" id="L95">                            saved.getUserName(), request.getUserName());</span>
-<span class="fc" id="L96">                    Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L97">                    error.put(&quot;message&quot;, &quot;Account setup already exists for this user or account number. Please contact support.&quot;);</span>
-<span class="fc" id="L98">                    return new ResponseEntity&lt;&gt;(error, HttpStatus.CONFLICT);</span>
+<span class="pc bpc" id="L100" title="1 of 4 branches missed.">                if (!saved.getUserName().equalsIgnoreCase(request.getUserName()) || !saved.getAccountNumber().equals(request.getAccountNumber())) {</span>
+<span class="fc" id="L101">                    log.warn(&quot;[AccountSetupController] POST / - CONFLICT: Bank details belong to different user/account. Existing user='{}', request user='{}'&quot;,</span>
+<span class="fc" id="L102">                            saved.getUserName(), request.getUserName());</span>
+<span class="fc" id="L103">                    Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L104">                    error.put(&quot;message&quot;, &quot;Account setup already exists for this user or account number. Please contact support.&quot;);</span>
+<span class="fc" id="L105">                    return new ResponseEntity&lt;&gt;(error, HttpStatus.CONFLICT);</span>
                 }
-<span class="fc" id="L100">                log.info(&quot;[AccountSetupController] POST / - Re-using existing bank details (self-healing). id={}&quot;, saved.getId());</span>
+<span class="fc" id="L107">                log.info(&quot;[AccountSetupController] POST / - Re-using existing bank details (self-healing). id={}&quot;, saved.getId());</span>
             } else {
-<span class="fc" id="L102">                log.info(&quot;[AccountSetupController] POST / - Creating new bank details for userName='{}'&quot;, request.getUserName());</span>
-<span class="fc" id="L103">                BankDetails details = BankDetails.builder()</span>
-<span class="fc" id="L104">                        .accountNumber(request.getAccountNumber())</span>
-<span class="fc" id="L105">                        .bankName(request.getBankName())</span>
-<span class="fc" id="L106">                        .ifscCode(request.getIfscCode())</span>
-<span class="fc" id="L107">                        .branchName(request.getBranchName())</span>
-<span class="fc" id="L108">                        .address(request.getAddress())</span>
-<span class="fc" id="L109">                        .email(request.getEmail())</span>
-<span class="fc" id="L110">                        .phoneNumber(request.getPhoneNumber())</span>
-<span class="fc" id="L111">                        .userName(request.getUserName())</span>
-<span class="fc" id="L112">                        .creditCardNumber(request.getCreditCardNumber())</span>
-<span class="fc" id="L113">                        .cvv(request.getCvv())</span>
-<span class="fc" id="L114">                        .expiryDate(request.getExpiryDate())</span>
-<span class="fc" id="L115">                        .upiId(generatedUpiId)</span>
-<span class="fc" id="L116">                        .build();</span>
+<span class="fc" id="L109">                log.info(&quot;[AccountSetupController] POST / - Creating new bank details for userName='{}'&quot;, request.getUserName());</span>
+<span class="fc" id="L110">                BankDetails details = BankDetails.builder()</span>
+<span class="fc" id="L111">                        .accountNumber(request.getAccountNumber())</span>
+<span class="fc" id="L112">                        .bankName(request.getBankName())</span>
+<span class="fc" id="L113">                        .ifscCode(request.getIfscCode())</span>
+<span class="fc" id="L114">                        .branchName(request.getBranchName())</span>
+<span class="fc" id="L115">                        .address(request.getAddress())</span>
+<span class="fc" id="L116">                        .email(request.getEmail())</span>
+<span class="fc" id="L117">                        .phoneNumber(request.getPhoneNumber())</span>
+<span class="fc" id="L118">                        .userName(request.getUserName())</span>
+<span class="fc" id="L119">                        .creditCardNumber(request.getCreditCardNumber())</span>
+<span class="fc" id="L120">                        .cvv(request.getCvv())</span>
+<span class="fc" id="L121">                        .expiryDate(request.getExpiryDate())</span>
+<span class="fc" id="L122">                        .upiId(generatedUpiId)</span>
+<span class="fc" id="L123">                        .build();</span>
 
-<span class="fc" id="L118">                saved = service.save(details);</span>
-<span class="fc" id="L119">                log.info(&quot;[AccountSetupController] POST / - Bank details SAVED. id={}, accountNumber='{}', upiId='{}'&quot;,</span>
-<span class="fc" id="L120">                        saved.getId(), saved.getAccountNumber(), saved.getUpiId());</span>
+<span class="fc" id="L125">                saved = service.save(details);</span>
+<span class="fc" id="L126">                log.info(&quot;[AccountSetupController] POST / - Bank details SAVED. id={}, accountNumber='{}', upiId='{}'&quot;,</span>
+<span class="fc" id="L127">                        saved.getId(), saved.getAccountNumber(), saved.getUpiId());</span>
             }
 
             // SYNC: Create an Account entry with ₹10,000 initial balance if it doesn't exist
-<span class="fc bfc" id="L124" title="All 2 branches covered.">            if (!accountRepository.existsByAccountNumber(saved.getAccountNumber())) {</span>
-<span class="fc" id="L125">                log.info(&quot;[AccountSetupController] POST / - Creating Account entry with ₹10,000 for accountNumber='{}'&quot;,</span>
-<span class="fc" id="L126">                        saved.getAccountNumber());</span>
-<span class="fc" id="L127">                Account account = Account.builder()</span>
-<span class="fc" id="L128">                        .accountNumber(saved.getAccountNumber())</span>
-<span class="fc" id="L129">                        .holderName(saved.getUserName())</span>
-<span class="fc" id="L130">                        .balance(new java.math.BigDecimal(&quot;10000.00&quot;))</span>
-<span class="fc" id="L131">                        .status(AccountStatus.ACTIVE)</span>
-<span class="fc" id="L132">                        .build();</span>
-<span class="fc" id="L133">                accountRepository.save(account);</span>
-<span class="fc" id="L134">                log.info(&quot;[AccountSetupController] POST / - Account entry CREATED for accountNumber='{}'&quot;, saved.getAccountNumber());</span>
-<span class="fc" id="L135">            } else {</span>
-<span class="fc" id="L136">                log.info(&quot;[AccountSetupController] POST / - Account entry already exists for accountNumber='{}'&quot;, saved.getAccountNumber());</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">            if (!accountRepository.existsByAccountNumber(saved.getAccountNumber())) {</span>
+<span class="fc" id="L132">                log.info(&quot;[AccountSetupController] POST / - Creating Account entry with ₹10,000 for accountNumber='{}'&quot;,</span>
+<span class="fc" id="L133">                        saved.getAccountNumber());</span>
+<span class="fc" id="L134">                Account account = Account.builder()</span>
+<span class="fc" id="L135">                        .accountNumber(saved.getAccountNumber())</span>
+<span class="fc" id="L136">                        .holderName(saved.getUserName())</span>
+<span class="fc" id="L137">                        .balance(new java.math.BigDecimal(&quot;10000.00&quot;))</span>
+<span class="fc" id="L138">                        .status(AccountStatus.ACTIVE)</span>
+<span class="fc" id="L139">                        .build();</span>
+<span class="fc" id="L140">                accountRepository.save(account);</span>
+<span class="fc" id="L141">                log.info(&quot;[AccountSetupController] POST / - Account entry CREATED for accountNumber='{}'&quot;, saved.getAccountNumber());</span>
+<span class="fc" id="L142">            } else {</span>
+<span class="fc" id="L143">                log.info(&quot;[AccountSetupController] POST / - Account entry already exists for accountNumber='{}'&quot;, saved.getAccountNumber());</span>
             }
 
             // Update AuthUser firstLogin flag to false
-<span class="fc" id="L140">            authUserRepository.findByNameIgnoreCase(saved.getUserName()).ifPresent(user -&gt; {</span>
-<span class="pc bpc" id="L141" title="1 of 2 branches missed.">                if (user.isFirstLogin()) {</span>
-<span class="fc" id="L142">                    user.setFirstLogin(false);</span>
-<span class="fc" id="L143">                    authUserRepository.save(user);</span>
-<span class="fc" id="L144">                    log.info(&quot;[AccountSetupController] POST / - Updated AuthUser '{}' firstLogin flag to false&quot;, saved.getUserName());</span>
+<span class="fc" id="L147">            authUserRepository.findByNameIgnoreCase(saved.getUserName()).ifPresent(user -&gt; {</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">                if (user.isFirstLogin()) {</span>
+<span class="fc" id="L149">                    user.setFirstLogin(false);</span>
+<span class="fc" id="L150">                    authUserRepository.save(user);</span>
+<span class="fc" id="L151">                    log.info(&quot;[AccountSetupController] POST / - Updated AuthUser '{}' firstLogin flag to false&quot;, saved.getUserName());</span>
                 }
-<span class="fc" id="L146">            });</span>
+<span class="fc" id="L153">            });</span>
 
-<span class="fc" id="L148">            AccountSetupResponse resp = new AccountSetupResponse(saved.getId(), saved.getAccountNumber(),</span>
-<span class="fc" id="L149">                    saved.getUpiId());</span>
-<span class="fc" id="L150">            log.info(&quot;[AccountSetupController] POST / - Account setup SUCCESS. Returning response: id={}, accountNumber='{}', upiId='{}'&quot;,</span>
-<span class="fc" id="L151">                    resp.getId(), resp.getAccountNumber(), resp.getUpiId());</span>
-<span class="fc" id="L152">            return new ResponseEntity&lt;&gt;(resp, HttpStatus.CREATED);</span>
+<span class="fc" id="L155">            AccountSetupResponse resp = new AccountSetupResponse(saved.getId(), saved.getAccountNumber(),</span>
+<span class="fc" id="L156">                    saved.getUpiId());</span>
+<span class="fc" id="L157">            log.info(&quot;[AccountSetupController] POST / - Account setup SUCCESS. Returning response: id={}, accountNumber='{}', upiId='{}'&quot;,</span>
+<span class="fc" id="L158">                    resp.getId(), resp.getAccountNumber(), resp.getUpiId());</span>
+<span class="fc" id="L159">            return new ResponseEntity&lt;&gt;(resp, HttpStatus.CREATED);</span>
 
-<span class="fc" id="L154">        } catch (DataIntegrityViolationException e) {</span>
-<span class="fc" id="L155">            log.error(&quot;[AccountSetupController] POST / - DataIntegrityViolationException: {}&quot;, e.getMessage());</span>
-<span class="fc" id="L156">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L157">            error.put(&quot;message&quot;, &quot;Account setup already exists for this user or account number. Please contact support.&quot;);</span>
-<span class="fc" id="L158">            return new ResponseEntity&lt;&gt;(error, HttpStatus.CONFLICT);</span>
-<span class="fc" id="L159">        } catch (Exception e) {</span>
-<span class="fc" id="L160">            log.error(&quot;[AccountSetupController] POST / - Unexpected error: {} - {}&quot;, e.getClass().getSimpleName(), e.getMessage(), e);</span>
-<span class="fc" id="L161">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
-<span class="pc bpc" id="L162" title="1 of 2 branches missed.">            error.put(&quot;message&quot;, e.getMessage() != null ? e.getMessage() : &quot;An unexpected error occurred during account setup.&quot;);</span>
-<span class="fc" id="L163">            return new ResponseEntity&lt;&gt;(error, HttpStatus.INTERNAL_SERVER_ERROR);</span>
+<span class="fc" id="L161">        } catch (DataIntegrityViolationException e) {</span>
+<span class="fc" id="L162">            log.error(&quot;[AccountSetupController] POST / - DataIntegrityViolationException: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L163">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L164">            error.put(&quot;message&quot;, &quot;Account setup already exists for this user or account number. Please contact support.&quot;);</span>
+<span class="fc" id="L165">            return new ResponseEntity&lt;&gt;(error, HttpStatus.CONFLICT);</span>
+<span class="fc" id="L166">        } catch (Exception e) {</span>
+<span class="fc" id="L167">            log.error(&quot;[AccountSetupController] POST / - Unexpected error: {} - {}&quot;, e.getClass().getSimpleName(), e.getMessage(), e);</span>
+<span class="fc" id="L168">            Map&lt;String, String&gt; error = new HashMap&lt;&gt;();</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            error.put(&quot;message&quot;, e.getMessage() != null ? e.getMessage() : &quot;An unexpected error occurred during account setup.&quot;);</span>
+<span class="fc" id="L170">            return new ResponseEntity&lt;&gt;(error, HttpStatus.INTERNAL_SERVER_ERROR);</span>
         }
     }
 
     private String generateUpiId(String userName, String bankName) {
-<span class="fc bfc" id="L168" title="All 4 branches covered.">        if (userName == null || bankName == null)</span>
-<span class="fc" id="L169">            return null;</span>
+<span class="fc bfc" id="L175" title="All 4 branches covered.">        if (userName == null || bankName == null)</span>
+<span class="fc" id="L176">            return null;</span>
 
         // Use userName (always unique) as UPI prefix to avoid conflicts
-<span class="fc" id="L172">        String prefix = userName.toLowerCase().replaceAll(&quot;[^a-z0-9]&quot;, &quot;&quot;);</span>
-<span class="fc" id="L173">        String suffix = &quot;@payfid&quot;;</span>
+<span class="fc" id="L179">        String prefix = userName.toLowerCase().replaceAll(&quot;[^a-z0-9]&quot;, &quot;&quot;);</span>
+<span class="fc" id="L180">        String suffix = &quot;@payfid&quot;;</span>
 
-<span class="fc" id="L175">        String upiId = prefix + suffix;</span>
-<span class="fc" id="L176">        log.debug(&quot;[AccountSetupController] generateUpiId: userName='{}', bankName='{}' =&gt; upiId='{}'&quot;, userName, bankName, upiId);</span>
-<span class="fc" id="L177">        return upiId;</span>
+<span class="fc" id="L182">        String upiId = prefix + suffix;</span>
+<span class="fc" id="L183">        log.debug(&quot;[AccountSetupController] generateUpiId: userName='{}', bankName='{}' =&gt; upiId='{}'&quot;, userName, bankName, upiId);</span>
+<span class="fc" id="L184">        return upiId;</span>
     }
 
     private String normalizeContact(String contact) {
-<span class="pc bpc" id="L181" title="2 of 4 branches missed.">        if (contact == null || contact.isBlank()) {</span>
-<span class="nc" id="L182">            return null;</span>
+<span class="pc bpc" id="L188" title="2 of 4 branches missed.">        if (contact == null || contact.isBlank()) {</span>
+<span class="nc" id="L189">            return null;</span>
         }
-<span class="fc" id="L184">        return contact.trim().toLowerCase();</span>
+<span class="fc" id="L191">        return contact.trim().toLowerCase();</span>
     }
 
     @GetMapping(&quot;/{accountNumber}&quot;)
     public ResponseEntity&lt;BankDetails&gt; getByAccountNumber(@PathVariable String accountNumber) {
-<span class="fc" id="L189">        log.info(&quot;[AccountSetupController] GET /{} - Looking up bank details by account number&quot;, accountNumber);</span>
-<span class="fc" id="L190">        BankDetails details = service.findByAccountNumber(accountNumber)</span>
-<span class="fc" id="L191">                .orElseThrow(() -&gt; {</span>
-<span class="fc" id="L192">                    log.warn(&quot;[AccountSetupController] GET /{} - Bank details NOT FOUND&quot;, accountNumber);</span>
-<span class="fc" id="L193">                    return new IllegalArgumentException(&quot;Not found&quot;);</span>
+<span class="fc" id="L196">        log.info(&quot;[AccountSetupController] GET /{} - Looking up bank details by account number&quot;, accountNumber);</span>
+<span class="fc" id="L197">        BankDetails details = service.findByAccountNumber(accountNumber)</span>
+<span class="fc" id="L198">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L199">                    log.warn(&quot;[AccountSetupController] GET /{} - Bank details NOT FOUND&quot;, accountNumber);</span>
+<span class="fc" id="L200">                    return new IllegalArgumentException(&quot;Not found&quot;);</span>
                 });
-<span class="fc" id="L195">        log.info(&quot;[AccountSetupController] GET /{} - Bank details FOUND. id={}, userName='{}'&quot;,</span>
-<span class="fc" id="L196">                accountNumber, details.getId(), details.getUserName());</span>
-<span class="fc" id="L197">        return ResponseEntity.ok(encryptSensitiveFields(details));</span>
+<span class="fc" id="L202">        log.info(&quot;[AccountSetupController] GET /{} - Bank details FOUND. id={}, userName='{}'&quot;,</span>
+<span class="fc" id="L203">                accountNumber, details.getId(), details.getUserName());</span>
+<span class="fc" id="L204">        return ResponseEntity.ok(encryptSensitiveFields(details));</span>
     }
 
     @PostMapping(&quot;/{id}/upi&quot;)
     public ResponseEntity&lt;AccountSetupResponse&gt; setupUpi(@PathVariable Long id, @RequestBody Map&lt;String, String&gt; body) {
-<span class="fc" id="L202">        String upiId = body.get(&quot;upiId&quot;);</span>
-<span class="fc" id="L203">        log.info(&quot;[AccountSetupController] POST /{}/upi - Setting up UPI ID: '{}'&quot;, id, upiId);</span>
-<span class="fc" id="L204">        BankDetails updated = service.setupUpi(id, upiId);</span>
-<span class="fc" id="L205">        log.info(&quot;[AccountSetupController] POST /{}/upi - UPI setup SUCCESS. upiId='{}'&quot;, id, updated.getUpiId());</span>
-<span class="fc" id="L206">        return ResponseEntity</span>
-<span class="fc" id="L207">                .ok(new AccountSetupResponse(updated.getId(), updated.getAccountNumber(), updated.getUpiId()));</span>
+<span class="fc" id="L209">        String upiId = body.get(&quot;upiId&quot;);</span>
+<span class="fc" id="L210">        log.info(&quot;[AccountSetupController] POST /{}/upi - Setting up UPI ID: '{}'&quot;, id, upiId);</span>
+<span class="fc" id="L211">        BankDetails updated = service.setupUpi(id, upiId);</span>
+<span class="fc" id="L212">        log.info(&quot;[AccountSetupController] POST /{}/upi - UPI setup SUCCESS. upiId='{}'&quot;, id, updated.getUpiId());</span>
+<span class="fc" id="L213">        return ResponseEntity</span>
+<span class="fc" id="L214">                .ok(new AccountSetupResponse(updated.getId(), updated.getAccountNumber(), updated.getUpiId()));</span>
     }
 
     @GetMapping(&quot;/user/{userName}&quot;)
     public ResponseEntity&lt;BankDetails&gt; getByUserName(@PathVariable String userName) {
-<span class="fc" id="L212">        log.info(&quot;[AccountSetupController] GET /user/{} - Looking up bank details by userName&quot;, userName);</span>
-<span class="fc" id="L213">        BankDetails details = service.findByUserName(userName)</span>
-<span class="fc" id="L214">                .orElseThrow(() -&gt; {</span>
-<span class="fc" id="L215">                    log.warn(&quot;[AccountSetupController] GET /user/{} - Bank details NOT FOUND&quot;, userName);</span>
-<span class="fc" id="L216">                    return new IllegalArgumentException(&quot;Bank details not found for user: &quot; + userName);</span>
+<span class="fc" id="L219">        log.info(&quot;[AccountSetupController] GET /user/{} - Looking up bank details by userName&quot;, userName);</span>
+<span class="fc" id="L220">        BankDetails details = service.findByUserName(userName)</span>
+<span class="fc" id="L221">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L222">                    log.warn(&quot;[AccountSetupController] GET /user/{} - Bank details NOT FOUND&quot;, userName);</span>
+<span class="fc" id="L223">                    return new IllegalArgumentException(&quot;Bank details not found for user: &quot; + userName);</span>
                 });
-<span class="fc" id="L218">        log.info(&quot;[AccountSetupController] GET /user/{} - Bank details FOUND. id={}, accountNumber='{}'&quot;,</span>
-<span class="fc" id="L219">                userName, details.getId(), details.getAccountNumber());</span>
-<span class="fc" id="L220">        return ResponseEntity.ok(encryptSensitiveFields(details));</span>
+<span class="fc" id="L225">        log.info(&quot;[AccountSetupController] GET /user/{} - Bank details FOUND. id={}, accountNumber='{}'&quot;,</span>
+<span class="fc" id="L226">                userName, details.getId(), details.getAccountNumber());</span>
+<span class="fc" id="L227">        return ResponseEntity.ok(encryptSensitiveFields(details));</span>
     }
 
     @PutMapping(&quot;/user/{userName}&quot;)
     public ResponseEntity&lt;BankDetails&gt; update(@PathVariable String userName, @RequestBody AccountSetupRequest request) {
-<span class="fc" id="L225">        log.info(&quot;[AccountSetupController] PUT /user/{} - Updating bank details&quot;, userName);</span>
-<span class="fc" id="L226">        request.setCreditCardNumber(CryptoUtils.decrypt(request.getCreditCardNumber()));</span>
-<span class="fc" id="L227">        request.setCvv(CryptoUtils.decrypt(request.getCvv()));</span>
-<span class="fc" id="L228">        request.setExpiryDate(CryptoUtils.decrypt(request.getExpiryDate()));</span>
-<span class="fc" id="L229">        BankDetails existing = service.findByUserName(userName)</span>
-<span class="fc" id="L230">                .orElseThrow(() -&gt; {</span>
-<span class="fc" id="L231">                    log.warn(&quot;[AccountSetupController] PUT /user/{} - Bank details NOT FOUND&quot;, userName);</span>
-<span class="fc" id="L232">                    return new IllegalArgumentException(&quot;Bank details not found for user: &quot; + userName);</span>
+<span class="fc" id="L232">        log.info(&quot;[AccountSetupController] PUT /user/{} - Updating bank details&quot;, userName);</span>
+<span class="fc" id="L233">        request.setCreditCardNumber(CryptoUtils.decrypt(request.getCreditCardNumber()));</span>
+<span class="fc" id="L234">        request.setCvv(CryptoUtils.decrypt(request.getCvv()));</span>
+<span class="fc" id="L235">        request.setExpiryDate(CryptoUtils.decrypt(request.getExpiryDate()));</span>
+<span class="fc" id="L236">        BankDetails existing = service.findByUserName(userName)</span>
+<span class="fc" id="L237">                .orElseThrow(() -&gt; {</span>
+<span class="fc" id="L238">                    log.warn(&quot;[AccountSetupController] PUT /user/{} - Bank details NOT FOUND&quot;, userName);</span>
+<span class="fc" id="L239">                    return new IllegalArgumentException(&quot;Bank details not found for user: &quot; + userName);</span>
                 });
 
-<span class="fc" id="L235">        existing.setBankName(request.getBankName());</span>
-<span class="fc" id="L236">        existing.setIfscCode(request.getIfscCode());</span>
-<span class="fc" id="L237">        existing.setBranchName(request.getBranchName());</span>
-<span class="fc" id="L238">        existing.setAddress(request.getAddress());</span>
-<span class="fc" id="L239">        existing.setEmail(request.getEmail());</span>
-<span class="fc" id="L240">        existing.setPhoneNumber(request.getPhoneNumber());</span>
-<span class="fc" id="L241">        existing.setCreditCardNumber(request.getCreditCardNumber());</span>
-<span class="fc" id="L242">        existing.setCvv(request.getCvv());</span>
-<span class="fc" id="L243">        existing.setExpiryDate(request.getExpiryDate());</span>
+<span class="fc" id="L242">        existing.setBankName(request.getBankName());</span>
+<span class="fc" id="L243">        existing.setIfscCode(request.getIfscCode());</span>
+<span class="fc" id="L244">        existing.setBranchName(request.getBranchName());</span>
+<span class="fc" id="L245">        existing.setAddress(request.getAddress());</span>
+<span class="fc" id="L246">        existing.setEmail(request.getEmail());</span>
+<span class="fc" id="L247">        existing.setPhoneNumber(request.getPhoneNumber());</span>
+<span class="fc" id="L248">        existing.setCreditCardNumber(request.getCreditCardNumber());</span>
+<span class="fc" id="L249">        existing.setCvv(request.getCvv());</span>
+<span class="fc" id="L250">        existing.setExpiryDate(request.getExpiryDate());</span>
 
-<span class="fc" id="L245">        BankDetails saved = service.save(existing);</span>
-<span class="fc" id="L246">        log.info(&quot;[AccountSetupController] PUT /user/{} - Bank details UPDATED. id={}&quot;, userName, saved.getId());</span>
-<span class="fc" id="L247">        return ResponseEntity.ok(encryptSensitiveFields(saved));</span>
+<span class="fc" id="L252">        BankDetails saved = service.save(existing);</span>
+<span class="fc" id="L253">        log.info(&quot;[AccountSetupController] PUT /user/{} - Bank details UPDATED. id={}&quot;, userName, saved.getId());</span>
+<span class="fc" id="L254">        return ResponseEntity.ok(encryptSensitiveFields(saved));</span>
     }
 
     @PostMapping(&quot;/user/{userName}/pin&quot;)
     public ResponseEntity&lt;BankDetails&gt; setPin(@PathVariable String userName, @RequestBody Map&lt;String, String&gt; body) {
-<span class="fc" id="L252">        String pin = CryptoUtils.decrypt(body.get(&quot;pin&quot;));</span>
-<span class="pc bpc" id="L253" title="1 of 2 branches missed.">        log.info(&quot;[AccountSetupController] POST /user/{}/pin - Setting PIN (length={})&quot;, userName, pin != null ? pin.length() : 0);</span>
-<span class="pc bpc" id="L254" title="1 of 4 branches missed.">        if (pin == null || pin.length() != 4) {</span>
-<span class="fc" id="L255">            log.warn(&quot;[AccountSetupController] POST /user/{}/pin - REJECTED: Invalid PIN length&quot;, userName);</span>
-<span class="fc" id="L256">            throw new IllegalArgumentException(&quot;PIN must be 4 digits&quot;);</span>
+<span class="fc" id="L259">        String pin = CryptoUtils.decrypt(body.get(&quot;pin&quot;));</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">        log.info(&quot;[AccountSetupController] POST /user/{}/pin - Setting PIN (length={})&quot;, userName, pin != null ? pin.length() : 0);</span>
+<span class="pc bpc" id="L261" title="1 of 4 branches missed.">        if (pin == null || pin.length() != 4) {</span>
+<span class="fc" id="L262">            log.warn(&quot;[AccountSetupController] POST /user/{}/pin - REJECTED: Invalid PIN length&quot;, userName);</span>
+<span class="fc" id="L263">            throw new IllegalArgumentException(&quot;PIN must be 4 digits&quot;);</span>
         }
-<span class="fc" id="L258">        BankDetails updated = service.updatePin(userName, pin);</span>
-<span class="fc" id="L259">        log.info(&quot;[AccountSetupController] POST /user/{}/pin - PIN set SUCCESS&quot;, userName);</span>
-<span class="fc" id="L260">        return ResponseEntity.ok(encryptSensitiveFields(updated));</span>
+<span class="fc" id="L265">        BankDetails updated = service.updatePin(userName, pin);</span>
+<span class="fc" id="L266">        log.info(&quot;[AccountSetupController] POST /user/{}/pin - PIN set SUCCESS&quot;, userName);</span>
+<span class="fc" id="L267">        return ResponseEntity.ok(encryptSensitiveFields(updated));</span>
     }
 
     @PostMapping(&quot;/send-otp&quot;)
     public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; sendOtp(@RequestBody Map&lt;String, String&gt; body) {
-<span class="fc" id="L265">        String contact = normalizeContact(body.get(&quot;contact&quot;));</span>
-<span class="fc" id="L266">        log.info(&quot;[AccountSetupController] POST /send-otp - Sending OTP to contact='{}'&quot;, contact);</span>
-<span class="pc bpc" id="L267" title="2 of 4 branches missed.">        if (contact == null || contact.isBlank()) {</span>
-<span class="nc" id="L268">            Map&lt;String, Object&gt; bad = new HashMap&lt;&gt;();</span>
-<span class="nc" id="L269">            bad.put(&quot;sent&quot;, false);</span>
-<span class="nc" id="L270">            bad.put(&quot;message&quot;, &quot;Contact is required to send OTP.&quot;);</span>
-<span class="nc" id="L271">            return new ResponseEntity&lt;&gt;(bad, HttpStatus.BAD_REQUEST);</span>
+<span class="fc" id="L272">        String contact = normalizeContact(body.get(&quot;contact&quot;));</span>
+<span class="fc" id="L273">        log.info(&quot;[AccountSetupController] POST /send-otp - Sending OTP to contact='{}'&quot;, contact);</span>
+<span class="pc bpc" id="L274" title="2 of 4 branches missed.">        if (contact == null || contact.isBlank()) {</span>
+<span class="nc" id="L275">            Map&lt;String, Object&gt; bad = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L276">            bad.put(&quot;sent&quot;, false);</span>
+<span class="nc" id="L277">            bad.put(&quot;message&quot;, &quot;Contact is required to send OTP.&quot;);</span>
+<span class="nc" id="L278">            return new ResponseEntity&lt;&gt;(bad, HttpStatus.BAD_REQUEST);</span>
         }
-<span class="fc" id="L273">        verifiedContacts.remove(contact);</span>
+<span class="fc" id="L280">        verifiedContacts.remove(contact);</span>
         // generate simple 6-digit OTP
-<span class="fc" id="L275">        String otp = String.valueOf((int) ((Math.random() * 900000) + 100000));</span>
-<span class="fc" id="L276">        otpStore.put(contact, otp);</span>
-<span class="fc" id="L277">        log.debug(&quot;[AccountSetupController] POST /send-otp - Generated OTP for contact='{}' (stored in memory)&quot;, contact);</span>
+<span class="fc" id="L282">        String otp = String.valueOf((int) ((Math.random() * 900000) + 100000));</span>
+<span class="fc" id="L283">        otpStore.put(contact, otp);</span>
+<span class="fc" id="L284">        log.debug(&quot;[AccountSetupController] POST /send-otp - Generated OTP for contact='{}' (stored in memory)&quot;, contact);</span>
 
         // Send real email if contact looks like an email address
-<span class="fc bfc" id="L280" title="All 2 branches covered.">        if (contact.contains(&quot;@&quot;)) {</span>
-<span class="fc" id="L281">            log.info(&quot;[AccountSetupController] POST /send-otp - Contact is an email, sending OTP email to '{}'&quot;, contact);</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">        if (contact.contains(&quot;@&quot;)) {</span>
+<span class="fc" id="L288">            log.info(&quot;[AccountSetupController] POST /send-otp - Contact is an email, sending OTP email to '{}'&quot;, contact);</span>
             try {
-<span class="fc" id="L283">                emailService.sendOtpEmail(contact, otp);</span>
-<span class="fc" id="L284">                log.info(&quot;[AccountSetupController] POST /send-otp - OTP email sent successfully to '{}'&quot;, contact);</span>
-<span class="fc" id="L285">            } catch (Exception e) {</span>
-<span class="fc" id="L286">                log.error(&quot;[AccountSetupController] POST /send-otp - Failed to send OTP email to '{}': {} - {}&quot;,</span>
-<span class="fc" id="L287">                        contact, e.getClass().getSimpleName(), e.getMessage());</span>
+<span class="fc" id="L290">                emailService.sendOtpEmail(contact, otp);</span>
+<span class="fc" id="L291">                log.info(&quot;[AccountSetupController] POST /send-otp - OTP email sent successfully to '{}'&quot;, contact);</span>
+<span class="fc" id="L292">            } catch (Exception e) {</span>
+<span class="fc" id="L293">                log.error(&quot;[AccountSetupController] POST /send-otp - Failed to send OTP email to '{}': {} - {}&quot;,</span>
+<span class="fc" id="L294">                        contact, e.getClass().getSimpleName(), e.getMessage());</span>
                 // Don't fail the entire request if email fails - store OTP anyway for testing
-<span class="fc" id="L289">                log.warn(&quot;[AccountSetupController] POST /send-otp - OTP stored in memory despite email failure. For testing, check logs.&quot;);</span>
-<span class="fc" id="L290">            }</span>
+<span class="fc" id="L296">                log.warn(&quot;[AccountSetupController] POST /send-otp - OTP stored in memory despite email failure. For testing, check logs.&quot;);</span>
+<span class="fc" id="L297">            }</span>
         }
 
-<span class="fc" id="L293">        Map&lt;String, Object&gt; resp = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L294">        resp.put(&quot;sent&quot;, true);</span>
-<span class="fc" id="L295">        resp.put(&quot;contact&quot;, contact);</span>
+<span class="fc" id="L300">        Map&lt;String, Object&gt; resp = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L301">        resp.put(&quot;sent&quot;, true);</span>
+<span class="fc" id="L302">        resp.put(&quot;contact&quot;, contact);</span>
         // OTP is NOT returned in response - it is sent to user's email only
-<span class="fc" id="L297">        log.info(&quot;[AccountSetupController] POST /send-otp - Response sent. OTP generated for contact='{}'&quot;, contact);</span>
-<span class="fc" id="L298">        return ResponseEntity.ok(resp);</span>
+<span class="fc" id="L304">        log.info(&quot;[AccountSetupController] POST /send-otp - Response sent. OTP generated for contact='{}'&quot;, contact);</span>
+<span class="fc" id="L305">        return ResponseEntity.ok(resp);</span>
     }
 
     @PostMapping(&quot;/verify-otp&quot;)
     public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; verifyOtp(@RequestBody Map&lt;String, String&gt; body) {
-<span class="fc" id="L303">        String contact = normalizeContact(body.get(&quot;contact&quot;));</span>
-<span class="fc" id="L304">        String otp = body.get(&quot;otp&quot;);</span>
-<span class="fc" id="L305">        log.info(&quot;[AccountSetupController] POST /verify-otp - Verifying OTP for contact='{}', otp='{}'&quot;, contact, otp);</span>
-<span class="pc bpc" id="L306" title="2 of 6 branches missed.">        boolean ok = contact != null &amp;&amp; otp != null &amp;&amp; otp.equals(otpStore.get(contact));</span>
-<span class="fc" id="L307">        Map&lt;String, Object&gt; resp = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L308">        resp.put(&quot;verified&quot;, ok);</span>
-<span class="fc bfc" id="L309" title="All 2 branches covered.">        if (ok) {</span>
-<span class="fc" id="L310">            otpStore.remove(contact);</span>
-<span class="fc" id="L311">            verifiedContacts.add(contact);</span>
-<span class="fc" id="L312">            log.info(&quot;[AccountSetupController] POST /verify-otp - OTP verification SUCCESS for contact='{}'&quot;, contact);</span>
+<span class="fc" id="L310">        String contact = normalizeContact(body.get(&quot;contact&quot;));</span>
+<span class="fc" id="L311">        String otp = body.get(&quot;otp&quot;);</span>
+<span class="fc" id="L312">        log.info(&quot;[AccountSetupController] POST /verify-otp - Verifying OTP for contact='{}', otp='{}'&quot;, contact, otp);</span>
+<span class="pc bpc" id="L313" title="2 of 6 branches missed.">        boolean ok = contact != null &amp;&amp; otp != null &amp;&amp; otp.equals(otpStore.get(contact));</span>
+<span class="fc" id="L314">        Map&lt;String, Object&gt; resp = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L315">        resp.put(&quot;verified&quot;, ok);</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">        if (ok) {</span>
+<span class="fc" id="L317">            otpStore.remove(contact);</span>
+<span class="fc" id="L318">            verifiedContacts.add(contact);</span>
+<span class="fc" id="L319">            log.info(&quot;[AccountSetupController] POST /verify-otp - OTP verification SUCCESS for contact='{}'&quot;, contact);</span>
         } else {
-<span class="fc" id="L314">            log.warn(&quot;[AccountSetupController] POST /verify-otp - OTP verification FAILED for contact='{}'. Expected='{}', Got='{}'&quot;,</span>
-<span class="fc" id="L315">                    contact, otpStore.get(contact), otp);</span>
+<span class="fc" id="L321">            log.warn(&quot;[AccountSetupController] POST /verify-otp - OTP verification FAILED for contact='{}'. Expected='{}', Got='{}'&quot;,</span>
+<span class="fc" id="L322">                    contact, otpStore.get(contact), otp);</span>
         }
-<span class="fc" id="L317">        return ResponseEntity.ok(resp);</span>
+<span class="fc" id="L324">        return ResponseEntity.ok(resp);</span>
     }
 
     private BankDetails encryptSensitiveFields(BankDetails details) {
-<span class="pc bpc" id="L321" title="1 of 2 branches missed.">        if (details == null) return null;</span>
-<span class="fc" id="L322">        return BankDetails.builder()</span>
-<span class="fc" id="L323">                .id(details.getId())</span>
-<span class="fc" id="L324">                .accountNumber(details.getAccountNumber())</span>
-<span class="fc" id="L325">                .bankName(details.getBankName())</span>
-<span class="fc" id="L326">                .ifscCode(details.getIfscCode())</span>
-<span class="fc" id="L327">                .branchName(details.getBranchName())</span>
-<span class="fc" id="L328">                .address(details.getAddress())</span>
-<span class="fc" id="L329">                .email(details.getEmail())</span>
-<span class="fc" id="L330">                .phoneNumber(details.getPhoneNumber())</span>
-<span class="fc" id="L331">                .userName(details.getUserName())</span>
-<span class="fc" id="L332">                .creditCardNumber(CryptoUtils.encrypt(details.getCreditCardNumber()))</span>
-<span class="fc" id="L333">                .cvv(CryptoUtils.encrypt(details.getCvv()))</span>
-<span class="fc" id="L334">                .expiryDate(CryptoUtils.encrypt(details.getExpiryDate()))</span>
-<span class="fc" id="L335">                .upiId(details.getUpiId())</span>
-<span class="fc" id="L336">                .pin(CryptoUtils.encrypt(details.getPin()))</span>
-<span class="fc" id="L337">                .createdAt(details.getCreatedAt())</span>
-<span class="fc" id="L338">                .lastUpdated(details.getLastUpdated())</span>
-<span class="fc" id="L339">                .build();</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">        if (details == null) return null;</span>
+<span class="fc" id="L329">        return BankDetails.builder()</span>
+<span class="fc" id="L330">                .id(details.getId())</span>
+<span class="fc" id="L331">                .accountNumber(details.getAccountNumber())</span>
+<span class="fc" id="L332">                .bankName(details.getBankName())</span>
+<span class="fc" id="L333">                .ifscCode(details.getIfscCode())</span>
+<span class="fc" id="L334">                .branchName(details.getBranchName())</span>
+<span class="fc" id="L335">                .address(details.getAddress())</span>
+<span class="fc" id="L336">                .email(details.getEmail())</span>
+<span class="fc" id="L337">                .phoneNumber(details.getPhoneNumber())</span>
+<span class="fc" id="L338">                .userName(details.getUserName())</span>
+<span class="fc" id="L339">                .creditCardNumber(CryptoUtils.encrypt(details.getCreditCardNumber()))</span>
+<span class="fc" id="L340">                .cvv(CryptoUtils.encrypt(details.getCvv()))</span>
+<span class="fc" id="L341">                .expiryDate(CryptoUtils.encrypt(details.getExpiryDate()))</span>
+<span class="fc" id="L342">                .upiId(details.getUpiId())</span>
+<span class="fc" id="L343">                .pin(CryptoUtils.encrypt(details.getPin()))</span>
+<span class="fc" id="L344">                .createdAt(details.getCreatedAt())</span>
+<span class="fc" id="L345">                .lastUpdated(details.getLastUpdated())</span>
+<span class="fc" id="L346">                .build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
