@@ -22,7 +22,6 @@ export const routes: Routes = [
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'account-setup', component: AccountSetupComponent, canActivate: [authGuard] },
   { path: 'pin-confirm', component: PinConfirmComponent, canActivate: [authGuard] },
-  { path: 'analytics', component: AnalyticsComponent, canActivate: [authGuard] },
   { path: 'rewards', component: RewardsComponent, canActivate: [authGuard] },
   { path: 'reset-password', loadComponent: () => import('./reset-password/reset-password.component').then(m => m.ResetPasswordComponent) },
   { path: 'forgot-password', loadComponent: () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) },

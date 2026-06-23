@@ -38,6 +38,8 @@ export class ProfileComponent implements OnInit {
   pinError = '';
   profileForm!: FormGroup;
   currentBalance = 0;
+  isPinFocused = false;
+  pinVisible = false;
 
   profileData = {
     name: '',

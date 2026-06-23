@@ -44,6 +44,7 @@ public class TransferController {
                 transaction.getAmount(),
                 transaction.getStatus().toString(),
                 transaction.getIdempotencyKey());
+        response.setPointsEarned(transaction.getPointsEarned());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -68,6 +69,7 @@ public class TransferController {
                 transaction.getAmount(),
                 transaction.getStatus().toString(),
                 null);
+        response.setPointsEarned(transaction.getPointsEarned());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -130,6 +132,7 @@ public class TransferController {
         private java.math.BigDecimal amount;
         private String status;
         private String idempotencyKey;
+        private Integer pointsEarned;
 
         public TransferResponse(String message, Long transactionId, java.math.BigDecimal amount,
                 String status, String idempotencyKey) {
@@ -138,6 +141,14 @@ public class TransferController {
             this.amount = amount;
             this.status = status;
             this.idempotencyKey = idempotencyKey;
+        }
+
+        public Integer getPointsEarned() {
+            return pointsEarned;
+        }
+
+        public void setPointsEarned(Integer pointsEarned) {
+            this.pointsEarned = pointsEarned;
         }
 
         // Getters and Setters

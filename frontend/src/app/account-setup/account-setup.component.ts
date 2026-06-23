@@ -57,6 +57,10 @@ export class AccountSetupComponent implements OnInit {
   currentBalance: number = 0;
   pinForm!: FormGroup;
   editDetailsForm!: FormGroup;
+  isPinFocused = false;
+  isConfirmPinFocused = false;
+  pinVisible = false;
+  confirmPinVisible = false;
   private readonly popupService = inject(PopupService);
 
   constructor(
@@ -79,8 +83,8 @@ export class AccountSetupComponent implements OnInit {
     });
 
     this.pinForm = this.fb.nonNullable.group({
-      pin: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(6)]],
-      confirmPin: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(6)]]
+      pin: ['', [Validators.required, Validators.pattern(/^\d{4}$/)]],
+      confirmPin: ['', [Validators.required, Validators.pattern(/^\d{4}$/)]]
     });
 
     this.editDetailsForm = this.fb.nonNullable.group({
@@ -270,7 +274,7 @@ export class AccountSetupComponent implements OnInit {
 
   setPin(): void {
     if (this.pinForm.invalid) {
-      this.popupService.alert('Please enter a valid PIN (4-6 digits)', 'Validation Error');
+      this.popupService.alert('Please enter a valid 4-digit PIN', 'Validation Error');
       return;
     }
 

@@ -112,23 +112,29 @@ public class TransactionService {
 <span class="fc" id="L112">                                        savedTx.getId(), idempotencyKey);</span>
 
                         // Evaluate and grant reward points for eligible transfers
+<span class="fc" id="L115">                        int pointsEarned = 0;</span>
                         try {
-<span class="fc" id="L116">                                rewardService.evaluateAndGrantReward(savedTx.getId());</span>
-<span class="fc" id="L117">                        } catch (Exception rewardEx) {</span>
-<span class="fc" id="L118">                                logger.warn(&quot;Reward evaluation failed for TX {}: {}&quot;, savedTx.getId(), rewardEx.getMessage());</span>
-<span class="fc" id="L119">                        }</span>
+<span class="fc" id="L117">                                com.company.mts.dto.RewardLedgerDTO reward = rewardService.evaluateAndGrantReward(savedTx.getId());</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">                                if (reward != null) {</span>
+<span class="nc" id="L119">                                        pointsEarned = reward.getPointsAwarded();</span>
+                                }
+<span class="fc" id="L121">                        } catch (Exception rewardEx) {</span>
+<span class="fc" id="L122">                                logger.warn(&quot;Reward evaluation failed for TX {}: {}&quot;, savedTx.getId(), rewardEx.getMessage());</span>
+<span class="fc" id="L123">                        }</span>
 
-<span class="fc" id="L121">                        return convertToDTO(savedTx, fromAccount, toAccount);</span>
+<span class="fc" id="L125">                        TransactionDTO dto = convertToDTO(savedTx, fromAccount, toAccount);</span>
+<span class="fc" id="L126">                        dto.setPointsEarned(pointsEarned);</span>
+<span class="fc" id="L127">                        return dto;</span>
 
-<span class="fc" id="L123">                } catch (Exception e) {</span>
+<span class="fc" id="L129">                } catch (Exception e) {</span>
                         // Mark transaction as failed
-<span class="fc" id="L125">                        txLog.setStatus(TransactionStatus.FAILED);</span>
-<span class="fc" id="L126">                        txLog.setFailureReason(e.getMessage());</span>
-<span class="fc" id="L127">                        transactionLogRepository.save(txLog);</span>
+<span class="fc" id="L131">                        txLog.setStatus(TransactionStatus.FAILED);</span>
+<span class="fc" id="L132">                        txLog.setFailureReason(e.getMessage());</span>
+<span class="fc" id="L133">                        transactionLogRepository.save(txLog);</span>
 
-<span class="fc" id="L129">                        logger.error(&quot;Transfer failed - Idempotency Key: {}, Error: {}&quot;, idempotencyKey,</span>
-<span class="fc" id="L130">                                        e.getMessage());</span>
-<span class="fc" id="L131">                        throw e;</span>
+<span class="fc" id="L135">                        logger.error(&quot;Transfer failed - Idempotency Key: {}, Error: {}&quot;, idempotencyKey,</span>
+<span class="fc" id="L136">                                        e.getMessage());</span>
+<span class="fc" id="L137">                        throw e;</span>
                 }
         }
 
@@ -143,119 +149,131 @@ public class TransactionService {
         @Transactional
         public TransactionDTO executeTransferByAccountNumber(String fromAccountNumber, String toAccountNumber,
                         BigDecimal amount, String description) {
-<span class="fc" id="L146">                logger.info(&quot;Executing transfer by account numbers - From: {}, To: {}, Amount: {}&quot;,</span>
+<span class="fc" id="L152">                logger.info(&quot;Executing transfer by account numbers - From: {}, To: {}, Amount: {}&quot;,</span>
                                 fromAccountNumber, toAccountNumber, amount);
 
                 // Resolve UPI ID to Account Number if it looks like a UPI ID
-<span class="pc bpc" id="L150" title="1 of 4 branches missed.">                if (toAccountNumber != null &amp;&amp; toAccountNumber.contains(&quot;@&quot;)) {</span>
-<span class="nc" id="L151">                    final String upiId = toAccountNumber;</span>
-<span class="nc" id="L152">                    BankDetails bankDetails = bankDetailsRepository.findByUpiId(upiId)</span>
-<span class="nc" id="L153">                            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Invalid UPI ID: &quot; + upiId));</span>
-<span class="nc" id="L154">                    toAccountNumber = bankDetails.getAccountNumber();</span>
+<span class="pc bpc" id="L156" title="1 of 4 branches missed.">                if (toAccountNumber != null &amp;&amp; toAccountNumber.contains(&quot;@&quot;)) {</span>
+<span class="nc" id="L157">                    final String upiId = toAccountNumber;</span>
+<span class="nc" id="L158">                    BankDetails bankDetails = bankDetailsRepository.findByUpiId(upiId)</span>
+<span class="nc" id="L159">                            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Invalid UPI ID: &quot; + upiId));</span>
+<span class="nc" id="L160">                    toAccountNumber = bankDetails.getAccountNumber();</span>
                 }
 
-<span class="fc bfc" id="L157" title="All 2 branches covered.">                if (fromAccountNumber.equals(toAccountNumber)) {</span>
-<span class="fc" id="L158">                        throw new IllegalArgumentException(&quot;Self-transfer is not allowed.&quot;);</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">                if (fromAccountNumber.equals(toAccountNumber)) {</span>
+<span class="fc" id="L164">                        throw new IllegalArgumentException(&quot;Self-transfer is not allowed.&quot;);</span>
                 }
 
                 // Smart Provisioning: If sender account doesn't exist in 'accounts' table,
                 // check 'bank_details'
-<span class="fc" id="L163">                Account fromAccount = accountRepository.findByAccountNumber(fromAccountNumber)</span>
-<span class="fc" id="L164">                                .orElseGet(() -&gt; {</span>
-<span class="fc" id="L165">                                        logger.info(&quot;Sender account {} not found in accounts table. Checking bank_details.&quot;,</span>
+<span class="fc" id="L169">                Account fromAccount = accountRepository.findByAccountNumber(fromAccountNumber)</span>
+<span class="fc" id="L170">                                .orElseGet(() -&gt; {</span>
+<span class="fc" id="L171">                                        logger.info(&quot;Sender account {} not found in accounts table. Checking bank_details.&quot;,</span>
                                                         fromAccountNumber);
-<span class="fc" id="L167">                                        BankDetails bankDetails = bankDetailsRepository</span>
-<span class="fc" id="L168">                                                        .findByAccountNumber(fromAccountNumber)</span>
-<span class="fc" id="L169">                                                        .orElseThrow(() -&gt; new ResourceNotFoundException(</span>
+<span class="fc" id="L173">                                        BankDetails bankDetails = bankDetailsRepository</span>
+<span class="fc" id="L174">                                                        .findByAccountNumber(fromAccountNumber)</span>
+<span class="fc" id="L175">                                                        .orElseThrow(() -&gt; new ResourceNotFoundException(</span>
                                                                         &quot;Sender account not found with number: &quot;
                                                                                         + fromAccountNumber));
 
                                         // Provision new account for existing bank user
-<span class="fc" id="L174">                                        Account newAccount = Account.builder()</span>
-<span class="fc" id="L175">                                                        .accountNumber(fromAccountNumber)</span>
-<span class="fc" id="L176">                                                        .holderName(bankDetails.getUserName()) // Use userName from</span>
+<span class="fc" id="L180">                                        Account newAccount = Account.builder()</span>
+<span class="fc" id="L181">                                                        .accountNumber(fromAccountNumber)</span>
+<span class="fc" id="L182">                                                        .holderName(bankDetails.getUserName()) // Use userName from</span>
                                                                                                // BankDetails
-<span class="fc" id="L178">                                                        .balance(new BigDecimal(&quot;10000.00&quot;)) // Default balance for demo</span>
-<span class="fc" id="L179">                                                        .status(AccountStatus.ACTIVE)</span>
-<span class="fc" id="L180">                                                        .build();</span>
+<span class="fc" id="L184">                                                        .balance(new BigDecimal(&quot;10000.00&quot;)) // Default balance for demo</span>
+<span class="fc" id="L185">                                                        .status(AccountStatus.ACTIVE)</span>
+<span class="fc" id="L186">                                                        .build();</span>
 
-<span class="fc" id="L182">                                        logger.info(&quot;Auto-provisioned account for user: {}&quot;, bankDetails.getUserName());</span>
-<span class="fc" id="L183">                                        return accountRepository.save(newAccount);</span>
+<span class="fc" id="L188">                                        logger.info(&quot;Auto-provisioned account for user: {}&quot;, bankDetails.getUserName());</span>
+<span class="fc" id="L189">                                        return accountRepository.save(newAccount);</span>
                                 });
 
-<span class="fc" id="L186">                Optional&lt;Account&gt; toAccountOpt = accountRepository.findByAccountNumber(toAccountNumber);</span>
+<span class="fc" id="L192">                Optional&lt;Account&gt; toAccountOpt = accountRepository.findByAccountNumber(toAccountNumber);</span>
 
-<span class="fc" id="L188">                BigDecimal fromBalanceBefore = fromAccount.getBalance();</span>
+<span class="fc" id="L194">                BigDecimal fromBalanceBefore = fromAccount.getBalance();</span>
 
-<span class="fc bfc" id="L190" title="All 2 branches covered.">                if (toAccountOpt.isPresent()) {</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">                if (toAccountOpt.isPresent()) {</span>
                         // Internal Transfer
-<span class="fc" id="L192">                        Account toAccount = toAccountOpt.get();</span>
-<span class="fc" id="L193">                        BigDecimal toBalanceBefore = toAccount.getBalance();</span>
+<span class="fc" id="L198">                        Account toAccount = toAccountOpt.get();</span>
+<span class="fc" id="L199">                        BigDecimal toBalanceBefore = toAccount.getBalance();</span>
 
-<span class="fc" id="L195">                        fromAccount.debit(amount);</span>
-<span class="fc" id="L196">                        toAccount.credit(amount);</span>
+<span class="fc" id="L201">                        fromAccount.debit(amount);</span>
+<span class="fc" id="L202">                        toAccount.credit(amount);</span>
 
-<span class="fc" id="L198">                        TransactionLog txLog = TransactionLog.builder()</span>
-<span class="fc" id="L199">                                        .fromAccountId(fromAccount.getId())</span>
-<span class="fc" id="L200">                                        .toAccountId(toAccount.getId())</span>
-<span class="fc" id="L201">                                        .amount(amount)</span>
-<span class="fc" id="L202">                                        .type(TransactionType.TRANSFER)</span>
-<span class="fc" id="L203">                                        .status(TransactionStatus.SUCCESS)</span>
-<span class="pc bpc" id="L204" title="1 of 2 branches missed.">                                        .description(description != null ? description</span>
-<span class="nc" id="L205">                                                        : &quot;Transfer to &quot; + toAccountNumber)</span>
-<span class="fc" id="L206">                                        .fromAccountBalanceBefore(fromBalanceBefore)</span>
-<span class="fc" id="L207">                                        .fromAccountBalanceAfter(fromAccount.getBalance())</span>
-<span class="fc" id="L208">                                        .toAccountBalanceBefore(toBalanceBefore)</span>
-<span class="fc" id="L209">                                        .toAccountBalanceAfter(toAccount.getBalance())</span>
-<span class="fc" id="L210">                                        .transactionDate(LocalDateTime.now())</span>
-<span class="fc" id="L211">                                        .build();</span>
+<span class="fc" id="L204">                        TransactionLog txLog = TransactionLog.builder()</span>
+<span class="fc" id="L205">                                        .fromAccountId(fromAccount.getId())</span>
+<span class="fc" id="L206">                                        .toAccountId(toAccount.getId())</span>
+<span class="fc" id="L207">                                        .amount(amount)</span>
+<span class="fc" id="L208">                                        .type(TransactionType.TRANSFER)</span>
+<span class="fc" id="L209">                                        .status(TransactionStatus.SUCCESS)</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">                                        .description(description != null ? description</span>
+<span class="nc" id="L211">                                                        : &quot;Transfer to &quot; + toAccountNumber)</span>
+<span class="fc" id="L212">                                        .fromAccountBalanceBefore(fromBalanceBefore)</span>
+<span class="fc" id="L213">                                        .fromAccountBalanceAfter(fromAccount.getBalance())</span>
+<span class="fc" id="L214">                                        .toAccountBalanceBefore(toBalanceBefore)</span>
+<span class="fc" id="L215">                                        .toAccountBalanceAfter(toAccount.getBalance())</span>
+<span class="fc" id="L216">                                        .transactionDate(LocalDateTime.now())</span>
+<span class="fc" id="L217">                                        .build();</span>
 
-<span class="fc" id="L213">                        TransactionLog savedTx = transactionLogRepository.save(txLog);</span>
+<span class="fc" id="L219">                        TransactionLog savedTx = transactionLogRepository.save(txLog);</span>
 
                         // Evaluate reward for internal transfer
+<span class="fc" id="L222">                        int pointsEarned = 0;</span>
                         try {
-<span class="fc" id="L217">                                rewardService.evaluateAndGrantReward(savedTx.getId());</span>
-<span class="fc" id="L218">                        } catch (Exception rewardEx) {</span>
-<span class="fc" id="L219">                                logger.warn(&quot;Reward evaluation failed for TX {}: {}&quot;, savedTx.getId(), rewardEx.getMessage());</span>
-<span class="fc" id="L220">                        }</span>
+<span class="fc" id="L224">                                com.company.mts.dto.RewardLedgerDTO reward = rewardService.evaluateAndGrantReward(savedTx.getId());</span>
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">                                if (reward != null) {</span>
+<span class="nc" id="L226">                                        pointsEarned = reward.getPointsAwarded();</span>
+                                }
+<span class="fc" id="L228">                        } catch (Exception rewardEx) {</span>
+<span class="fc" id="L229">                                logger.warn(&quot;Reward evaluation failed for TX {}: {}&quot;, savedTx.getId(), rewardEx.getMessage());</span>
+<span class="fc" id="L230">                        }</span>
 
-<span class="fc" id="L222">                        return convertToDTO(savedTx, fromAccount, toAccount);</span>
+<span class="fc" id="L232">                        TransactionDTO dto = convertToDTO(savedTx, fromAccount, toAccount);</span>
+<span class="fc" id="L233">                        dto.setPointsEarned(pointsEarned);</span>
+<span class="fc" id="L234">                        return dto;</span>
                 } else {
                         // External Debit Case
                         // Account Number Range Verification (9-18 digits)
-<span class="fc bfc" id="L226" title="All 4 branches covered.">                        if (toAccountNumber == null || !toAccountNumber.matches(&quot;\\d{9,18}&quot;)) {</span>
-<span class="fc" id="L227">                                throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L238" title="All 4 branches covered.">                        if (toAccountNumber == null || !toAccountNumber.matches(&quot;\\d{9,18}&quot;)) {</span>
+<span class="fc" id="L239">                                throw new IllegalArgumentException(</span>
                                                 &quot;Recipient account number must be between 9 and 18 digits for external transfers.&quot;);
                         }
 
-<span class="fc" id="L231">                        logger.info(&quot;Recipient {} not found in system. Processing as external debit.&quot;, toAccountNumber);</span>
+<span class="fc" id="L243">                        logger.info(&quot;Recipient {} not found in system. Processing as external debit.&quot;, toAccountNumber);</span>
 
                         // External Payout Transfer
-<span class="fc" id="L234">                        fromAccount.debit(amount);</span>
+<span class="fc" id="L246">                        fromAccount.debit(amount);</span>
 
-<span class="fc" id="L236">                        TransactionLog txLog = TransactionLog.builder()</span>
-<span class="fc" id="L237">                                        .fromAccountId(fromAccount.getId())</span>
-<span class="fc" id="L238">                                        .toAccountId(fromAccount.getId()) // Self reference for external debit</span>
-<span class="fc" id="L239">                                        .amount(amount)</span>
-<span class="fc" id="L240">                                        .type(TransactionType.TRANSFER)</span>
-<span class="fc" id="L241">                                        .status(TransactionStatus.SUCCESS)</span>
-<span class="pc bpc" id="L242" title="1 of 2 branches missed.">                                        .description(description != null ? &quot;External: &quot; + description</span>
-<span class="nc" id="L243">                                                         : &quot;External payment to &quot; + toAccountNumber)</span>
-<span class="fc" id="L244">                                        .fromAccountBalanceBefore(fromBalanceBefore)</span>
-<span class="fc" id="L245">                                        .fromAccountBalanceAfter(fromAccount.getBalance())</span>
-<span class="fc" id="L246">                                        .transactionDate(LocalDateTime.now())</span>
-<span class="fc" id="L247">                                        .build();</span>
+<span class="fc" id="L248">                        TransactionLog txLog = TransactionLog.builder()</span>
+<span class="fc" id="L249">                                        .fromAccountId(fromAccount.getId())</span>
+<span class="fc" id="L250">                                        .toAccountId(fromAccount.getId()) // Self reference for external debit</span>
+<span class="fc" id="L251">                                        .amount(amount)</span>
+<span class="fc" id="L252">                                        .type(TransactionType.TRANSFER)</span>
+<span class="fc" id="L253">                                        .status(TransactionStatus.SUCCESS)</span>
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">                                        .description(description != null ? &quot;External: &quot; + description</span>
+<span class="nc" id="L255">                                                         : &quot;External payment to &quot; + toAccountNumber)</span>
+<span class="fc" id="L256">                                        .fromAccountBalanceBefore(fromBalanceBefore)</span>
+<span class="fc" id="L257">                                        .fromAccountBalanceAfter(fromAccount.getBalance())</span>
+<span class="fc" id="L258">                                        .transactionDate(LocalDateTime.now())</span>
+<span class="fc" id="L259">                                        .build();</span>
 
-<span class="fc" id="L249">                        TransactionLog savedTx = transactionLogRepository.save(txLog);</span>
+<span class="fc" id="L261">                        TransactionLog savedTx = transactionLogRepository.save(txLog);</span>
 
                         // Evaluate reward for external transfer
+<span class="fc" id="L264">                        int pointsEarned = 0;</span>
                         try {
-<span class="fc" id="L253">                                rewardService.evaluateAndGrantReward(savedTx.getId());</span>
-<span class="nc" id="L254">                        } catch (Exception rewardEx) {</span>
-<span class="nc" id="L255">                                logger.warn(&quot;Reward evaluation failed for TX {}: {}&quot;, savedTx.getId(), rewardEx.getMessage());</span>
-<span class="fc" id="L256">                        }</span>
+<span class="fc" id="L266">                                com.company.mts.dto.RewardLedgerDTO reward = rewardService.evaluateAndGrantReward(savedTx.getId());</span>
+<span class="pc bpc" id="L267" title="1 of 2 branches missed.">                                if (reward != null) {</span>
+<span class="nc" id="L268">                                        pointsEarned = reward.getPointsAwarded();</span>
+                                }
+<span class="nc" id="L270">                        } catch (Exception rewardEx) {</span>
+<span class="nc" id="L271">                                logger.warn(&quot;Reward evaluation failed for TX {}: {}&quot;, savedTx.getId(), rewardEx.getMessage());</span>
+<span class="fc" id="L272">                        }</span>
 
-<span class="fc" id="L258">                        return convertToDTO(savedTx, fromAccount, null);</span>
+<span class="fc" id="L274">                        TransactionDTO dto = convertToDTO(savedTx, fromAccount, null);</span>
+<span class="fc" id="L275">                        dto.setPointsEarned(pointsEarned);</span>
+<span class="fc" id="L276">                        return dto;</span>
                 }
         }
 
@@ -264,22 +282,22 @@ public class TransactionService {
          */
         @Transactional
         public TransactionLog logCreditTransaction(Account account, BigDecimal amount, String description) {
-<span class="fc" id="L267">                BigDecimal balanceBefore = account.getBalance();</span>
+<span class="fc" id="L285">                BigDecimal balanceBefore = account.getBalance();</span>
 
-<span class="fc" id="L269">                TransactionLog txLog = TransactionLog.builder()</span>
-<span class="fc" id="L270">                                .toAccountId(account.getId())</span>
-<span class="fc" id="L271">                                .fromAccountId(account.getId()) // Self reference for deposits</span>
-<span class="fc" id="L272">                                .amount(amount)</span>
-<span class="fc" id="L273">                                .type(TransactionType.CREDIT)</span>
-<span class="fc" id="L274">                                .status(TransactionStatus.SUCCESS)</span>
-<span class="pc bpc" id="L275" title="1 of 2 branches missed.">                                .description(description != null ? description</span>
-<span class="nc" id="L276">                                                : &quot;Deposit to account &quot; + account.getAccountNumber())</span>
-<span class="fc" id="L277">                                .toAccountBalanceBefore(balanceBefore)</span>
-<span class="fc" id="L278">                                .toAccountBalanceAfter(account.getBalance())</span>
-<span class="fc" id="L279">                                .transactionDate(LocalDateTime.now())</span>
-<span class="fc" id="L280">                                .build();</span>
+<span class="fc" id="L287">                TransactionLog txLog = TransactionLog.builder()</span>
+<span class="fc" id="L288">                                .toAccountId(account.getId())</span>
+<span class="fc" id="L289">                                .fromAccountId(account.getId()) // Self reference for deposits</span>
+<span class="fc" id="L290">                                .amount(amount)</span>
+<span class="fc" id="L291">                                .type(TransactionType.CREDIT)</span>
+<span class="fc" id="L292">                                .status(TransactionStatus.SUCCESS)</span>
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">                                .description(description != null ? description</span>
+<span class="nc" id="L294">                                                : &quot;Deposit to account &quot; + account.getAccountNumber())</span>
+<span class="fc" id="L295">                                .toAccountBalanceBefore(balanceBefore)</span>
+<span class="fc" id="L296">                                .toAccountBalanceAfter(account.getBalance())</span>
+<span class="fc" id="L297">                                .transactionDate(LocalDateTime.now())</span>
+<span class="fc" id="L298">                                .build();</span>
 
-<span class="fc" id="L282">                return transactionLogRepository.save(txLog);</span>
+<span class="fc" id="L300">                return transactionLogRepository.save(txLog);</span>
         }
 
         /**
@@ -287,66 +305,66 @@ public class TransactionService {
          */
         @Transactional
         public TransactionLog logDebitTransaction(Account account, BigDecimal amount, String description) {
-<span class="fc" id="L290">                BigDecimal balanceBefore = account.getBalance();</span>
+<span class="fc" id="L308">                BigDecimal balanceBefore = account.getBalance();</span>
 
-<span class="fc" id="L292">                TransactionLog txLog = TransactionLog.builder()</span>
-<span class="fc" id="L293">                                .fromAccountId(account.getId())</span>
-<span class="fc" id="L294">                                .toAccountId(account.getId()) // Self reference for withdrawals</span>
-<span class="fc" id="L295">                                .amount(amount)</span>
-<span class="fc" id="L296">                                .type(TransactionType.DEBIT)</span>
-<span class="fc" id="L297">                                .status(TransactionStatus.SUCCESS)</span>
-<span class="pc bpc" id="L298" title="1 of 2 branches missed.">                                .description(description != null ? description</span>
-<span class="nc" id="L299">                                                : &quot;Withdrawal from account &quot; + account.getAccountNumber())</span>
-<span class="fc" id="L300">                                .fromAccountBalanceBefore(balanceBefore)</span>
-<span class="fc" id="L301">                                .fromAccountBalanceAfter(account.getBalance())</span>
-<span class="fc" id="L302">                                .transactionDate(LocalDateTime.now())</span>
-<span class="fc" id="L303">                                .build();</span>
+<span class="fc" id="L310">                TransactionLog txLog = TransactionLog.builder()</span>
+<span class="fc" id="L311">                                .fromAccountId(account.getId())</span>
+<span class="fc" id="L312">                                .toAccountId(account.getId()) // Self reference for withdrawals</span>
+<span class="fc" id="L313">                                .amount(amount)</span>
+<span class="fc" id="L314">                                .type(TransactionType.DEBIT)</span>
+<span class="fc" id="L315">                                .status(TransactionStatus.SUCCESS)</span>
+<span class="pc bpc" id="L316" title="1 of 2 branches missed.">                                .description(description != null ? description</span>
+<span class="nc" id="L317">                                                : &quot;Withdrawal from account &quot; + account.getAccountNumber())</span>
+<span class="fc" id="L318">                                .fromAccountBalanceBefore(balanceBefore)</span>
+<span class="fc" id="L319">                                .fromAccountBalanceAfter(account.getBalance())</span>
+<span class="fc" id="L320">                                .transactionDate(LocalDateTime.now())</span>
+<span class="fc" id="L321">                                .build();</span>
 
-<span class="fc" id="L305">                return transactionLogRepository.save(txLog);</span>
+<span class="fc" id="L323">                return transactionLogRepository.save(txLog);</span>
         }
 
         /**
          * Get transaction history for an account
          */
         public List&lt;TransactionDTO&gt; getAccountTransactionHistory(Long accountId) {
-<span class="fc" id="L312">                Account account = accountRepository.findById(accountId)</span>
-<span class="fc" id="L313">                                .orElseThrow(() -&gt; new ResourceNotFoundException(</span>
+<span class="fc" id="L330">                Account account = accountRepository.findById(accountId)</span>
+<span class="fc" id="L331">                                .orElseThrow(() -&gt; new ResourceNotFoundException(</span>
                                                 &quot;Account not found with ID: &quot; + accountId));
 
-<span class="fc" id="L316">                List&lt;TransactionLog&gt; transactions = transactionLogRepository.findByAccountId(accountId);</span>
+<span class="fc" id="L334">                List&lt;TransactionLog&gt; transactions = transactionLogRepository.findByAccountId(accountId);</span>
 
-<span class="fc" id="L318">                return transactions.stream()</span>
-<span class="fc" id="L319">                                .map(tx -&gt; convertToDTO(tx, null, null))</span>
-<span class="fc" id="L320">                                .collect(Collectors.toList());</span>
+<span class="fc" id="L336">                return transactions.stream()</span>
+<span class="fc" id="L337">                                .map(tx -&gt; convertToDTO(tx, null, null))</span>
+<span class="fc" id="L338">                                .collect(Collectors.toList());</span>
         }
 
         /**
          * Get all transactions
          */
         public List&lt;TransactionDTO&gt; getAllTransactions() {
-<span class="fc" id="L327">                return transactionLogRepository.findAll().stream()</span>
-<span class="fc" id="L328">                                .map(tx -&gt; convertToDTO(tx, null, null))</span>
-<span class="fc" id="L329">                                .collect(Collectors.toList());</span>
+<span class="fc" id="L345">                return transactionLogRepository.findAll().stream()</span>
+<span class="fc" id="L346">                                .map(tx -&gt; convertToDTO(tx, null, null))</span>
+<span class="fc" id="L347">                                .collect(Collectors.toList());</span>
         }
 
         /**
          * Get transaction by ID
          */
         public TransactionDTO getTransactionById(Long id) {
-<span class="fc" id="L336">                TransactionLog txLog = transactionLogRepository.findById(id)</span>
-<span class="fc" id="L337">                                .orElseThrow(() -&gt; new ResourceNotFoundException(</span>
+<span class="fc" id="L354">                TransactionLog txLog = transactionLogRepository.findById(id)</span>
+<span class="fc" id="L355">                                .orElseThrow(() -&gt; new ResourceNotFoundException(</span>
                                                 &quot;Transaction not found with ID: &quot; + id));
 
-<span class="fc" id="L340">                return convertToDTO(txLog, null, null);</span>
+<span class="fc" id="L358">                return convertToDTO(txLog, null, null);</span>
         }
 
         /**
          * Get failed transactions for an account
          */
         public List&lt;TransactionDTO&gt; getFailedTransactions(Long accountId) {
-<span class="fc" id="L347">                return transactionLogRepository.findFailedTransactionsByAccountId(accountId).stream()</span>
-<span class="fc" id="L348">                                .map(tx -&gt; convertToDTO(tx, null, null))</span>
-<span class="fc" id="L349">                                .collect(Collectors.toList());</span>
+<span class="fc" id="L365">                return transactionLogRepository.findFailedTransactionsByAccountId(accountId).stream()</span>
+<span class="fc" id="L366">                                .map(tx -&gt; convertToDTO(tx, null, null))</span>
+<span class="fc" id="L367">                                .collect(Collectors.toList());</span>
         }
 
         /**
@@ -354,32 +372,32 @@ public class TransactionService {
          */
         private TransactionDTO convertToDTO(TransactionLog txLog, Account fromAccount, Account toAccount) {
                 // Fetch accounts if not provided
-<span class="pc bpc" id="L357" title="1 of 4 branches missed.">                if (fromAccount == null &amp;&amp; txLog.getFromAccountId() != null) {</span>
-<span class="fc" id="L358">                        fromAccount = accountRepository.findById(txLog.getFromAccountId()).orElse(null);</span>
+<span class="pc bpc" id="L375" title="1 of 4 branches missed.">                if (fromAccount == null &amp;&amp; txLog.getFromAccountId() != null) {</span>
+<span class="fc" id="L376">                        fromAccount = accountRepository.findById(txLog.getFromAccountId()).orElse(null);</span>
                 }
-<span class="pc bpc" id="L360" title="1 of 4 branches missed.">                if (toAccount == null &amp;&amp; txLog.getToAccountId() != null) {</span>
-<span class="fc" id="L361">                        toAccount = accountRepository.findById(txLog.getToAccountId()).orElse(null);</span>
+<span class="pc bpc" id="L378" title="1 of 4 branches missed.">                if (toAccount == null &amp;&amp; txLog.getToAccountId() != null) {</span>
+<span class="fc" id="L379">                        toAccount = accountRepository.findById(txLog.getToAccountId()).orElse(null);</span>
                 }
 
-<span class="fc" id="L364">                return TransactionDTO.builder()</span>
-<span class="fc" id="L365">                                .id(txLog.getId())</span>
-<span class="fc" id="L366">                                .fromAccountId(txLog.getFromAccountId())</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">                                .fromAccountNumber(fromAccount != null ? fromAccount.getAccountNumber() : null)</span>
-<span class="fc bfc" id="L368" title="All 2 branches covered.">                                .fromAccountHolderName(fromAccount != null ? fromAccount.getHolderName() : null)</span>
-<span class="fc" id="L369">                                .toAccountId(txLog.getToAccountId())</span>
-<span class="fc bfc" id="L370" title="All 2 branches covered.">                                .toAccountNumber(toAccount != null ? toAccount.getAccountNumber() : null)</span>
-<span class="fc bfc" id="L371" title="All 2 branches covered.">                                .toAccountHolderName(toAccount != null ? toAccount.getHolderName() : null)</span>
-<span class="fc" id="L372">                                .amount(txLog.getAmount())</span>
-<span class="fc" id="L373">                                .type(txLog.getType())</span>
-<span class="fc" id="L374">                                .status(txLog.getStatus())</span>
-<span class="fc" id="L375">                                .transactionDate(txLog.getTransactionDate())</span>
-<span class="fc" id="L376">                                .description(txLog.getDescription())</span>
-<span class="fc" id="L377">                                .fromAccountBalanceBefore(txLog.getFromAccountBalanceBefore())</span>
-<span class="fc" id="L378">                                .fromAccountBalanceAfter(txLog.getFromAccountBalanceAfter())</span>
-<span class="fc" id="L379">                                .toAccountBalanceBefore(txLog.getToAccountBalanceBefore())</span>
-<span class="fc" id="L380">                                .toAccountBalanceAfter(txLog.getToAccountBalanceAfter())</span>
-<span class="fc" id="L381">                                .failureReason(txLog.getFailureReason())</span>
-<span class="fc" id="L382">                                .build();</span>
+<span class="fc" id="L382">                return TransactionDTO.builder()</span>
+<span class="fc" id="L383">                                .id(txLog.getId())</span>
+<span class="fc" id="L384">                                .fromAccountId(txLog.getFromAccountId())</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">                                .fromAccountNumber(fromAccount != null ? fromAccount.getAccountNumber() : null)</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">                                .fromAccountHolderName(fromAccount != null ? fromAccount.getHolderName() : null)</span>
+<span class="fc" id="L387">                                .toAccountId(txLog.getToAccountId())</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">                                .toAccountNumber(toAccount != null ? toAccount.getAccountNumber() : null)</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">                                .toAccountHolderName(toAccount != null ? toAccount.getHolderName() : null)</span>
+<span class="fc" id="L390">                                .amount(txLog.getAmount())</span>
+<span class="fc" id="L391">                                .type(txLog.getType())</span>
+<span class="fc" id="L392">                                .status(txLog.getStatus())</span>
+<span class="fc" id="L393">                                .transactionDate(txLog.getTransactionDate())</span>
+<span class="fc" id="L394">                                .description(txLog.getDescription())</span>
+<span class="fc" id="L395">                                .fromAccountBalanceBefore(txLog.getFromAccountBalanceBefore())</span>
+<span class="fc" id="L396">                                .fromAccountBalanceAfter(txLog.getFromAccountBalanceAfter())</span>
+<span class="fc" id="L397">                                .toAccountBalanceBefore(txLog.getToAccountBalanceBefore())</span>
+<span class="fc" id="L398">                                .toAccountBalanceAfter(txLog.getToAccountBalanceAfter())</span>
+<span class="fc" id="L399">                                .failureReason(txLog.getFailureReason())</span>
+<span class="fc" id="L400">                                .build();</span>
         }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

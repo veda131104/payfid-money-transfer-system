@@ -176,7 +176,7 @@ describe('AccountSetupComponent', () => {
     fixture.detectChanges();
     component.pinForm.patchValue({ pin: '12' });
     component.setPin();
-    expect(alertSpy).toHaveBeenCalledWith('Please enter a valid PIN (4-6 digits)');
+    expect(alertSpy).toHaveBeenCalledWith('Please enter a valid 4-digit PIN');
   });
 
   it('should alert if pins do not match', () => {

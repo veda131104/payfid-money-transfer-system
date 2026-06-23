@@ -112,13 +112,19 @@ public class TransactionService {
                                         savedTx.getId(), idempotencyKey);
 
                         // Evaluate and grant reward points for eligible transfers
+                        int pointsEarned = 0;
                         try {
-                                rewardService.evaluateAndGrantReward(savedTx.getId());
+                                com.company.mts.dto.RewardLedgerDTO reward = rewardService.evaluateAndGrantReward(savedTx.getId());
+                                if (reward != null) {
+                                        pointsEarned = reward.getPointsAwarded();
+                                }
                         } catch (Exception rewardEx) {
                                 logger.warn("Reward evaluation failed for TX {}: {}", savedTx.getId(), rewardEx.getMessage());
                         }
 
-                        return convertToDTO(savedTx, fromAccount, toAccount);
+                        TransactionDTO dto = convertToDTO(savedTx, fromAccount, toAccount);
+                        dto.setPointsEarned(pointsEarned);
+                        return dto;
 
                 } catch (Exception e) {
                         // Mark transaction as failed
@@ -213,13 +219,19 @@ public class TransactionService {
                         TransactionLog savedTx = transactionLogRepository.save(txLog);
 
                         // Evaluate reward for internal transfer
+                        int pointsEarned = 0;
                         try {
-                                rewardService.evaluateAndGrantReward(savedTx.getId());
+                                com.company.mts.dto.RewardLedgerDTO reward = rewardService.evaluateAndGrantReward(savedTx.getId());
+                                if (reward != null) {
+                                        pointsEarned = reward.getPointsAwarded();
+                                }
                         } catch (Exception rewardEx) {
                                 logger.warn("Reward evaluation failed for TX {}: {}", savedTx.getId(), rewardEx.getMessage());
                         }
 
-                        return convertToDTO(savedTx, fromAccount, toAccount);
+                        TransactionDTO dto = convertToDTO(savedTx, fromAccount, toAccount);
+                        dto.setPointsEarned(pointsEarned);
+                        return dto;
                 } else {
                         // External Debit Case
                         // Account Number Range Verification (9-18 digits)
@@ -249,13 +261,19 @@ public class TransactionService {
                         TransactionLog savedTx = transactionLogRepository.save(txLog);
 
                         // Evaluate reward for external transfer
+                        int pointsEarned = 0;
                         try {
-                                rewardService.evaluateAndGrantReward(savedTx.getId());
+                                com.company.mts.dto.RewardLedgerDTO reward = rewardService.evaluateAndGrantReward(savedTx.getId());
+                                if (reward != null) {
+                                        pointsEarned = reward.getPointsAwarded();
+                                }
                         } catch (Exception rewardEx) {
                                 logger.warn("Reward evaluation failed for TX {}: {}", savedTx.getId(), rewardEx.getMessage());
                         }
 
-                        return convertToDTO(savedTx, fromAccount, null);
+                        TransactionDTO dto = convertToDTO(savedTx, fromAccount, null);
+                        dto.setPointsEarned(pointsEarned);
+                        return dto;
                 }
         }
 

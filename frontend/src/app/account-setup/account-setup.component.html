@@ -141,27 +141,72 @@
     <div class="modal-content">
       <h2>Set Your PIN</h2>
       <form [formGroup]="pinForm">
-        <mat-form-field appearance="fill" class="full">
-          <mat-label>PIN (4-6 digits)</mat-label>
-          <input matInput type="password" placeholder="Enter PIN" formControlName="pin" />
-          @if (pinForm.get('pin')?.hasError('required') && pinForm.get('pin')?.touched) {
-          <mat-error>PIN is required</mat-error>
-          }
-          @if (pinForm.get('pin')?.hasError('minlength') || pinForm.get('pin')?.hasError('maxlength')) {
-          <mat-error>PIN must be 4-6 digits</mat-error>
-          }
-        </mat-form-field>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; text-align: center; font-weight: 500; margin-bottom: 8px; color: #555;">Enter 4-Digit PIN</label>
+          <div class="gpay-pin-container">
+            <input #realPinInput class="hidden-pin-input" [type]="pinVisible ? 'text' : 'password'" maxlength="4" pattern="[0-9]*" inputmode="numeric" formControlName="pin"
+              (focus)="isPinFocused = true" (blur)="isPinFocused = false" />
+            <div class="pin-box-wrapper" (click)="realPinInput.focus()">
+              <div class="pin-box" [class.filled]="(pinForm.get('pin')?.value || '').length > 0" [class.focused]="isPinFocused && (pinForm.get('pin')?.value || '').length === 0">
+                <span class="pin-dot" *ngIf="(pinForm.get('pin')?.value || '').length > 0">{{ pinVisible ? (pinForm.get('pin')?.value)[0] : '●' }}</span>
+              </div>
+              <div class="pin-box" [class.filled]="(pinForm.get('pin')?.value || '').length > 1" [class.focused]="isPinFocused && (pinForm.get('pin')?.value || '').length === 1">
+                <span class="pin-dot" *ngIf="(pinForm.get('pin')?.value || '').length > 1">{{ pinVisible ? (pinForm.get('pin')?.value)[1] : '●' }}</span>
+              </div>
+              <div class="pin-box" [class.filled]="(pinForm.get('pin')?.value || '').length > 2" [class.focused]="isPinFocused && (pinForm.get('pin')?.value || '').length === 2">
+                <span class="pin-dot" *ngIf="(pinForm.get('pin')?.value || '').length > 2">{{ pinVisible ? (pinForm.get('pin')?.value)[2] : '●' }}</span>
+              </div>
+              <div class="pin-box" [class.filled]="(pinForm.get('pin')?.value || '').length > 3" [class.focused]="isPinFocused && (pinForm.get('pin')?.value || '').length === 3">
+                <span class="pin-dot" *ngIf="(pinForm.get('pin')?.value || '').length > 3">{{ pinVisible ? (pinForm.get('pin')?.value)[3] : '●' }}</span>
+              </div>
+            </div>
+            @if (pinForm.get('pin')?.invalid && (pinForm.get('pin')?.dirty || pinForm.get('pin')?.touched)) {
+            <div style="color: #f44336; font-size: 0.75rem; text-align: center; margin-top: 8px;">
+              PIN must be exactly 4 digits
+            </div>
+            }
+          </div>
+          <div style="text-align: center; margin-top: -12px;">
+            <button type="button" mat-button (click)="pinVisible = !pinVisible" style="font-size: 0.85rem; color: #215a66;">
+              {{ pinVisible ? '👁️ Hide PIN' : '👁️ Show PIN' }}
+            </button>
+          </div>
+        </div>
 
-        <mat-form-field appearance="fill" class="full">
-          <mat-label>Confirm PIN</mat-label>
-          <input matInput type="password" placeholder="Confirm PIN" formControlName="confirmPin" />
-          @if (pinForm.get('confirmPin')?.hasError('required') && pinForm.get('confirmPin')?.touched) {
-          <mat-error>Confirmation is required</mat-error>
-          }
-        </mat-form-field>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; text-align: center; font-weight: 500; margin-bottom: 8px; color: #555;">Confirm 4-Digit PIN</label>
+          <div class="gpay-pin-container">
+            <input #realConfirmPinInput class="hidden-pin-input" [type]="confirmPinVisible ? 'text' : 'password'" maxlength="4" pattern="[0-9]*" inputmode="numeric" formControlName="confirmPin"
+              (focus)="isConfirmPinFocused = true" (blur)="isConfirmPinFocused = false" />
+            <div class="pin-box-wrapper" (click)="realConfirmPinInput.focus()">
+              <div class="pin-box" [class.filled]="(pinForm.get('confirmPin')?.value || '').length > 0" [class.focused]="isConfirmPinFocused && (pinForm.get('confirmPin')?.value || '').length === 0">
+                <span class="pin-dot" *ngIf="(pinForm.get('confirmPin')?.value || '').length > 0">{{ confirmPinVisible ? (pinForm.get('confirmPin')?.value)[0] : '●' }}</span>
+              </div>
+              <div class="pin-box" [class.filled]="(pinForm.get('confirmPin')?.value || '').length > 1" [class.focused]="isConfirmPinFocused && (pinForm.get('confirmPin')?.value || '').length === 1">
+                <span class="pin-dot" *ngIf="(pinForm.get('confirmPin')?.value || '').length > 1">{{ confirmPinVisible ? (pinForm.get('confirmPin')?.value)[1] : '●' }}</span>
+              </div>
+              <div class="pin-box" [class.filled]="(pinForm.get('confirmPin')?.value || '').length > 2" [class.focused]="isConfirmPinFocused && (pinForm.get('confirmPin')?.value || '').length === 2">
+                <span class="pin-dot" *ngIf="(pinForm.get('confirmPin')?.value || '').length > 2">{{ confirmPinVisible ? (pinForm.get('confirmPin')?.value)[2] : '●' }}</span>
+              </div>
+              <div class="pin-box" [class.filled]="(pinForm.get('confirmPin')?.value || '').length > 3" [class.focused]="isConfirmPinFocused && (pinForm.get('confirmPin')?.value || '').length === 3">
+                <span class="pin-dot" *ngIf="(pinForm.get('confirmPin')?.value || '').length > 3">{{ confirmPinVisible ? (pinForm.get('confirmPin')?.value)[3] : '●' }}</span>
+              </div>
+            </div>
+            @if (pinForm.get('confirmPin')?.invalid && (pinForm.get('confirmPin')?.dirty || pinForm.get('confirmPin')?.touched)) {
+            <div style="color: #f44336; font-size: 0.75rem; text-align: center; margin-top: 8px;">
+              Confirmation PIN must be exactly 4 digits
+            </div>
+            }
+          </div>
+          <div style="text-align: center; margin-top: -12px;">
+            <button type="button" mat-button (click)="confirmPinVisible = !confirmPinVisible" style="font-size: 0.85rem; color: #215a66;">
+              {{ confirmPinVisible ? '👁️ Hide Confirm PIN' : '👁️ Show Confirm PIN' }}
+            </button>
+          </div>
+        </div>
 
         <div class="actions">
-          <button mat-raised-button color="primary" (click)="setPin()">Set PIN</button>
+          <button mat-raised-button color="primary" [disabled]="pinForm.invalid" (click)="setPin()">Set PIN</button>
           <button mat-raised-button (click)="showPinSetup = false">Skip for Now</button>
         </div>
       </form>

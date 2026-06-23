@@ -16,7 +16,31 @@
       <p *ngIf="amount"><strong>Amount:</strong> ₹{{ amount }}</p>
 
       <div *ngIf="!isSuccess">
-        <input type="password" maxlength="4" placeholder="Enter 4-digit PIN" (input)="onPinInput($event)" />
+        <div class="gpay-pin-container" style="margin: 16px auto;">
+          <input #realPinInput class="hidden-pin-input" [type]="pinVisible ? 'text' : 'password'" maxlength="4" pattern="[0-9]*" inputmode="numeric" 
+            [value]="pin" (input)="onPinInput($event)" (focus)="isPinFocused = true" (blur)="isPinFocused = false" />
+          <div class="pin-box-wrapper" (click)="realPinInput.focus()">
+            <div class="pin-box" [class.filled]="pin.length > 0" [class.focused]="isPinFocused && pin.length === 0">
+              <span class="pin-dot" *ngIf="pin.length > 0">{{ pinVisible ? pin[0] : '●' }}</span>
+            </div>
+            <div class="pin-box" [class.filled]="pin.length > 1" [class.focused]="isPinFocused && pin.length === 1">
+              <span class="pin-dot" *ngIf="pin.length > 1">{{ pinVisible ? pin[1] : '●' }}</span>
+            </div>
+            <div class="pin-box" [class.filled]="pin.length > 2" [class.focused]="isPinFocused && pin.length === 2">
+              <span class="pin-dot" *ngIf="pin.length > 2">{{ pinVisible ? pin[2] : '●' }}</span>
+            </div>
+            <div class="pin-box" [class.filled]="pin.length > 3" [class.focused]="isPinFocused && pin.length === 3">
+              <span class="pin-dot" *ngIf="pin.length > 3">{{ pinVisible ? pin[3] : '●' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: -8px; margin-bottom: 16px;">
+          <button type="button" mat-button (click)="pinVisible = !pinVisible" style="font-size: 0.85rem; color: #215a66;">
+            {{ pinVisible ? '👁️ Hide PIN' : '👁️ Show PIN' }}
+          </button>
+        </div>
+
         <div class="actions">
           <button mat-flat-button color="primary" (click)="onConfirm()">Confirm</button>
           <button mat-stroked-button (click)="onBack()">Back</button>

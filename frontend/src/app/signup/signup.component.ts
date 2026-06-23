@@ -62,7 +62,7 @@ export class SignupComponent implements OnDestroy {
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(8)]],
+        password: ['', [Validators.required, Validators.minLength(9), Validators.pattern(/^(?=.*[a-zA-Z])(?=.*\d).+$/)]],
         confirmPassword: ['', [Validators.required]],
         otp: ['']
       },

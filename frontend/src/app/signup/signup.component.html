@@ -40,10 +40,11 @@
 
           <mat-form-field appearance="outline" class="field">
             <mat-label>Create new password</mat-label>
-            <input matInput type="password" placeholder="At least 8 characters" autocomplete="new-password"
+            <input matInput type="password" placeholder="Over 8 characters with letters & numbers" autocomplete="new-password"
               formControlName="password" />
             <mat-error *ngIf="form.get('password')?.hasError('required')">Password is required</mat-error>
-            <mat-error *ngIf="form.get('password')?.hasError('minlength')">Password must be at least 8 characters</mat-error>
+            <mat-error *ngIf="form.get('password')?.hasError('minlength')">Password must be over 8 characters</mat-error>
+            <mat-error *ngIf="form.get('password')?.hasError('pattern')">Password must contain both letters and numbers</mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline" class="field">

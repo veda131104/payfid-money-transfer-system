@@ -19,6 +19,8 @@ export class PinConfirmComponent {
   message: string = '';
   isLoading: boolean = false;
   isSuccess: boolean = false;
+  isPinFocused: boolean = false;
+  pinVisible: boolean = false;
 
   private readonly CORRECT_PIN = '1234';
 

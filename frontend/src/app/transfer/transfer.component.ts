@@ -35,6 +35,8 @@ export class TransferComponent {
   pinVisible: boolean = false;
   pinErrorTimer: any = null;
   userPin: string = '';
+  pointsEarned: number = 0;
+  isPinFocused: boolean = false;
   routerLinkActiveOptions = { exact: true };
 
   // Personalized data
@@ -85,16 +87,37 @@ export class TransferComponent {
 
   onAmountInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const value = input.value.replace(/[^0-9.]/g, '');
+    let value = input.value.replace(/[^0-9.]/g, '');
 
-    // Ensure only one decimal point
+    // Ensure only one decimal point and max 2 decimal places
     const parts = value.split('.');
     if (parts.length > 2) {
-      input.value = parts[0] + '.' + parts.slice(1).join('');
-    } else {
-      input.value = value;
+      value = parts[0] + '.' + parts.slice(1).join('');
     }
-    this.amount = input.value;
+    const dotIndex = value.indexOf('.');
+    if (dotIndex !== -1) {
+      const integerPart = value.substring(0, dotIndex);
+      const decimalPart = value.substring(dotIndex + 1).slice(0, 2);
+      value = `${integerPart}.${decimalPart}`;
+    }
+    input.value = value;
+    this.amount = value;
+  }
+
+  onAmountBlur(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const val = input.value.trim();
+    if (!val) return;
+
+    const num = parseFloat(val);
+    if (isNaN(num) || num <= 0) {
+      input.value = '';
+      this.amount = '';
+      return;
+    }
+    const formatted = num.toFixed(2);
+    input.value = formatted;
+    this.amount = formatted;
   }
 
   onDescriptionInput(event: Event): void {
@@ -213,6 +236,7 @@ export class TransferComponent {
         this.showPinModal = false;
         this.isLoading = false;
         this.isSuccess = true;
+        this.pointsEarned = response.pointsEarned || 0;
 
         const newTransaction: Transaction = {
           id: response.transactionId?.toString() || Date.now().toString(),
@@ -256,6 +280,7 @@ export class TransferComponent {
     this.accountNumber = '';
     this.amount = '';
     this.description = '';
+    this.pointsEarned = 0;
     const inputs = document.querySelectorAll('.transfer input');
     inputs.forEach(input => (input as HTMLInputElement).value = '');
   }

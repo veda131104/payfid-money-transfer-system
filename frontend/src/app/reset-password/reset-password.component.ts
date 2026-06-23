@@ -35,7 +35,7 @@ export class ResetPasswordComponent implements OnInit {
         private readonly router: Router
     ) {
         this.form = this.fb.nonNullable.group({
-            password: ['', [Validators.required, Validators.minLength(8)]],
+            password: ['', [Validators.required, Validators.minLength(9), Validators.pattern(/^(?=.*[a-zA-Z])(?=.*\d).+$/)]],
             confirmPassword: ['', [Validators.required]]
         }, { validators: this.passwordMatchValidator });
     }

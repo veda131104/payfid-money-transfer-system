@@ -31,6 +31,7 @@ public class TransactionDTO {
     private BigDecimal toAccountBalanceAfter;
     private String failureReason;
     private String idempotencyKey;
+    private Integer pointsEarned;
 
 
     // Constructors
@@ -140,9 +141,15 @@ public class TransactionDTO {
             this.toAccountBalanceAfter = toAccountBalanceAfter;
             return this;
         }
+        private Integer pointsEarned;
 
         public Builder failureReason(String failureReason) {
             this.failureReason = failureReason;
+            return this;
+        }
+
+        public Builder pointsEarned(Integer pointsEarned) {
+            this.pointsEarned = pointsEarned;
             return this;
         }
 
@@ -165,6 +172,7 @@ public class TransactionDTO {
             dto.toAccountBalanceBefore = this.toAccountBalanceBefore;
             dto.toAccountBalanceAfter = this.toAccountBalanceAfter;
             dto.failureReason = this.failureReason;
+            dto.pointsEarned = this.pointsEarned;
             return dto;
         }
     }

@@ -44,8 +44,9 @@ public class TransferController {
 <span class="fc" id="L44">                transaction.getAmount(),</span>
 <span class="fc" id="L45">                transaction.getStatus().toString(),</span>
 <span class="fc" id="L46">                transaction.getIdempotencyKey());</span>
+<span class="fc" id="L47">        response.setPointsEarned(transaction.getPointsEarned());</span>
 
-<span class="fc" id="L48">        return ResponseEntity.status(HttpStatus.CREATED).body(response);</span>
+<span class="fc" id="L49">        return ResponseEntity.status(HttpStatus.CREATED).body(response);</span>
     }
 
     /**
@@ -56,20 +57,21 @@ public class TransferController {
     public ResponseEntity&lt;TransferResponse&gt; executeTransferByAccountNumber(
             @Valid @RequestBody TransferByAccountNumberRequest request) {
 
-<span class="fc" id="L59">        TransactionDTO transaction = transactionService.executeTransferByAccountNumber(</span>
-<span class="fc" id="L60">                request.getFromAccountNumber(),</span>
-<span class="fc" id="L61">                request.getToAccountNumber(),</span>
-<span class="fc" id="L62">                request.getAmount(),</span>
+<span class="fc" id="L60">        TransactionDTO transaction = transactionService.executeTransferByAccountNumber(</span>
+<span class="fc" id="L61">                request.getFromAccountNumber(),</span>
+<span class="fc" id="L62">                request.getToAccountNumber(),</span>
+<span class="fc" id="L63">                request.getAmount(),</span>
                 &quot;Transfer from frontend&quot;);
 
-<span class="fc" id="L65">        TransferResponse response = new TransferResponse(</span>
+<span class="fc" id="L66">        TransferResponse response = new TransferResponse(</span>
                 &quot;Transfer completed successfully&quot;,
-<span class="fc" id="L67">                transaction.getId(),</span>
-<span class="fc" id="L68">                transaction.getAmount(),</span>
-<span class="fc" id="L69">                transaction.getStatus().toString(),</span>
+<span class="fc" id="L68">                transaction.getId(),</span>
+<span class="fc" id="L69">                transaction.getAmount(),</span>
+<span class="fc" id="L70">                transaction.getStatus().toString(),</span>
                 null);
+<span class="fc" id="L72">        response.setPointsEarned(transaction.getPointsEarned());</span>
 
-<span class="fc" id="L72">        return ResponseEntity.status(HttpStatus.CREATED).body(response);</span>
+<span class="fc" id="L74">        return ResponseEntity.status(HttpStatus.CREATED).body(response);</span>
     }
 
     /**
@@ -78,8 +80,8 @@ public class TransferController {
      */
     @GetMapping
     public ResponseEntity&lt;List&lt;TransactionDTO&gt;&gt; getAllTransactions() {
-<span class="fc" id="L81">        List&lt;TransactionDTO&gt; transactions = transactionService.getAllTransactions();</span>
-<span class="fc" id="L82">        return ResponseEntity.ok(transactions);</span>
+<span class="fc" id="L83">        List&lt;TransactionDTO&gt; transactions = transactionService.getAllTransactions();</span>
+<span class="fc" id="L84">        return ResponseEntity.ok(transactions);</span>
     }
 
     /**
@@ -88,8 +90,8 @@ public class TransferController {
      */
     @GetMapping(&quot;/{id}&quot;)
     public ResponseEntity&lt;TransactionDTO&gt; getTransactionById(@PathVariable Long id) {
-<span class="fc" id="L91">        TransactionDTO transaction = transactionService.getTransactionById(id);</span>
-<span class="fc" id="L92">        return ResponseEntity.ok(transaction);</span>
+<span class="fc" id="L93">        TransactionDTO transaction = transactionService.getTransactionById(id);</span>
+<span class="fc" id="L94">        return ResponseEntity.ok(transaction);</span>
     }
 
     /**
@@ -100,14 +102,14 @@ public class TransferController {
     public ResponseEntity&lt;TransactionHistoryResponse&gt; getAccountTransactionHistory(
             @PathVariable Long accountId) {
 
-<span class="fc" id="L103">        List&lt;TransactionDTO&gt; transactions = transactionService.getAccountTransactionHistory(accountId);</span>
+<span class="fc" id="L105">        List&lt;TransactionDTO&gt; transactions = transactionService.getAccountTransactionHistory(accountId);</span>
 
-<span class="fc" id="L105">        TransactionHistoryResponse response = new TransactionHistoryResponse(</span>
+<span class="fc" id="L107">        TransactionHistoryResponse response = new TransactionHistoryResponse(</span>
                 accountId,
-<span class="fc" id="L107">                transactions.size(),</span>
+<span class="fc" id="L109">                transactions.size(),</span>
                 transactions);
 
-<span class="fc" id="L110">        return ResponseEntity.ok(response);</span>
+<span class="fc" id="L112">        return ResponseEntity.ok(response);</span>
     }
 
     /**
@@ -116,8 +118,8 @@ public class TransferController {
      */
     @GetMapping(&quot;/account/{accountId}/failed&quot;)
     public ResponseEntity&lt;List&lt;TransactionDTO&gt;&gt; getFailedTransactions(@PathVariable Long accountId) {
-<span class="fc" id="L119">        List&lt;TransactionDTO&gt; transactions = transactionService.getFailedTransactions(accountId);</span>
-<span class="fc" id="L120">        return ResponseEntity.ok(transactions);</span>
+<span class="fc" id="L121">        List&lt;TransactionDTO&gt; transactions = transactionService.getFailedTransactions(accountId);</span>
+<span class="fc" id="L122">        return ResponseEntity.ok(transactions);</span>
     }
 
     // ===============================
@@ -130,56 +132,65 @@ public class TransferController {
         private java.math.BigDecimal amount;
         private String status;
         private String idempotencyKey;
+        private Integer pointsEarned;
 
         public TransferResponse(String message, Long transactionId, java.math.BigDecimal amount,
-<span class="fc" id="L135">                String status, String idempotencyKey) {</span>
-<span class="fc" id="L136">            this.message = message;</span>
-<span class="fc" id="L137">            this.transactionId = transactionId;</span>
-<span class="fc" id="L138">            this.amount = amount;</span>
-<span class="fc" id="L139">            this.status = status;</span>
-<span class="fc" id="L140">            this.idempotencyKey = idempotencyKey;</span>
-<span class="fc" id="L141">        }</span>
+<span class="fc" id="L138">                String status, String idempotencyKey) {</span>
+<span class="fc" id="L139">            this.message = message;</span>
+<span class="fc" id="L140">            this.transactionId = transactionId;</span>
+<span class="fc" id="L141">            this.amount = amount;</span>
+<span class="fc" id="L142">            this.status = status;</span>
+<span class="fc" id="L143">            this.idempotencyKey = idempotencyKey;</span>
+<span class="fc" id="L144">        }</span>
+
+        public Integer getPointsEarned() {
+<span class="fc" id="L147">            return pointsEarned;</span>
+        }
+
+        public void setPointsEarned(Integer pointsEarned) {
+<span class="fc" id="L151">            this.pointsEarned = pointsEarned;</span>
+<span class="fc" id="L152">        }</span>
 
         // Getters and Setters
         public String getMessage() {
-<span class="fc" id="L145">            return message;</span>
+<span class="fc" id="L156">            return message;</span>
         }
 
         public void setMessage(String message) {
-<span class="fc" id="L149">            this.message = message;</span>
-<span class="fc" id="L150">        }</span>
+<span class="fc" id="L160">            this.message = message;</span>
+<span class="fc" id="L161">        }</span>
 
         public Long getTransactionId() {
-<span class="fc" id="L153">            return transactionId;</span>
+<span class="fc" id="L164">            return transactionId;</span>
         }
 
         public void setTransactionId(Long transactionId) {
-<span class="fc" id="L157">            this.transactionId = transactionId;</span>
-<span class="fc" id="L158">        }</span>
+<span class="fc" id="L168">            this.transactionId = transactionId;</span>
+<span class="fc" id="L169">        }</span>
 
         public java.math.BigDecimal getAmount() {
-<span class="fc" id="L161">            return amount;</span>
+<span class="fc" id="L172">            return amount;</span>
         }
 
         public void setAmount(java.math.BigDecimal amount) {
-<span class="fc" id="L165">            this.amount = amount;</span>
-<span class="fc" id="L166">        }</span>
+<span class="fc" id="L176">            this.amount = amount;</span>
+<span class="fc" id="L177">        }</span>
 
         public String getStatus() {
-<span class="fc" id="L169">            return status;</span>
+<span class="fc" id="L180">            return status;</span>
         }
 
         public void setStatus(String status) {
-<span class="fc" id="L173">            this.status = status;</span>
-<span class="fc" id="L174">        }</span>
+<span class="fc" id="L184">            this.status = status;</span>
+<span class="fc" id="L185">        }</span>
 
         public String getIdempotencyKey() {
-<span class="fc" id="L177">            return idempotencyKey;</span>
+<span class="fc" id="L188">            return idempotencyKey;</span>
         }
 
         public void setIdempotencyKey(String idempotencyKey) {
-<span class="fc" id="L181">            this.idempotencyKey = idempotencyKey;</span>
-<span class="fc" id="L182">        }</span>
+<span class="fc" id="L192">            this.idempotencyKey = idempotencyKey;</span>
+<span class="fc" id="L193">        }</span>
     }
 
     public static class TransactionHistoryResponse {
@@ -188,36 +199,36 @@ public class TransferController {
         private List&lt;TransactionDTO&gt; transactions;
 
         public TransactionHistoryResponse(Long accountId, int totalTransactions,
-<span class="fc" id="L191">                List&lt;TransactionDTO&gt; transactions) {</span>
-<span class="fc" id="L192">            this.accountId = accountId;</span>
-<span class="fc" id="L193">            this.totalTransactions = totalTransactions;</span>
-<span class="fc" id="L194">            this.transactions = transactions;</span>
-<span class="fc" id="L195">        }</span>
+<span class="fc" id="L202">                List&lt;TransactionDTO&gt; transactions) {</span>
+<span class="fc" id="L203">            this.accountId = accountId;</span>
+<span class="fc" id="L204">            this.totalTransactions = totalTransactions;</span>
+<span class="fc" id="L205">            this.transactions = transactions;</span>
+<span class="fc" id="L206">        }</span>
 
         // Getters and Setters
         public Long getAccountId() {
-<span class="fc" id="L199">            return accountId;</span>
+<span class="fc" id="L210">            return accountId;</span>
         }
 
         public void setAccountId(Long accountId) {
-<span class="fc" id="L203">            this.accountId = accountId;</span>
-<span class="fc" id="L204">        }</span>
+<span class="fc" id="L214">            this.accountId = accountId;</span>
+<span class="fc" id="L215">        }</span>
 
         public int getTotalTransactions() {
-<span class="fc" id="L207">            return totalTransactions;</span>
+<span class="fc" id="L218">            return totalTransactions;</span>
         }
 
         public void setTotalTransactions(int totalTransactions) {
-<span class="fc" id="L211">            this.totalTransactions = totalTransactions;</span>
-<span class="fc" id="L212">        }</span>
+<span class="fc" id="L222">            this.totalTransactions = totalTransactions;</span>
+<span class="fc" id="L223">        }</span>
 
         public List&lt;TransactionDTO&gt; getTransactions() {
-<span class="fc" id="L215">            return transactions;</span>
+<span class="fc" id="L226">            return transactions;</span>
         }
 
         public void setTransactions(List&lt;TransactionDTO&gt; transactions) {
-<span class="fc" id="L219">            this.transactions = transactions;</span>
-<span class="fc" id="L220">        }</span>
+<span class="fc" id="L230">            this.transactions = transactions;</span>
+<span class="fc" id="L231">        }</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

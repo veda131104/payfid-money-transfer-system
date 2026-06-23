@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.company.mts.config.SecurityConfigTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.262 s -- in com.company.mts.config.SecurityConfigTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.19 s -- in com.company.mts.config.SecurityConfigTest
