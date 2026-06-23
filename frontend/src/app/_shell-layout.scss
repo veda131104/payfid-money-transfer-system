@@ -1,10 +1,28 @@
-// Shared fintech SaaS shell â€” sidebar + header layout
+// Shared fintech SaaS shell — sidebar + header layout
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');
+
+/* Spacing ladder */
+$spacing-8: 8px;
+$spacing-12: 12px;
+$spacing-16: 16px;
+$spacing-24: 24px;
+$spacing-32: 32px;
+$spacing-48: 48px;
+
+:root {
+  --sp-8: #{$spacing-8};
+  --sp-12: #{$spacing-12};
+  --sp-16: #{$spacing-16};
+  --sp-24: #{$spacing-24};
+  --sp-32: #{$spacing-32};
+  --sp-48: #{$spacing-48};
+}
 
 :host {
   display: block;
   min-height: 100vh;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
   color: #111827;
   animation: pageFadeIn 0.22s ease-out;
 }
@@ -290,9 +308,23 @@
   background: #ffffff;
   border-radius: 14px;
   padding: 1.25rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(22, 42, 52, 0.04);
-  border: 1px solid #e8eaed;
+  /* subtle increased shadow variance */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 6px 20px rgba(22,42,52,0.08);
+  /* subtle border tint */
+  border: 1px solid rgba(0,0,0,0.05);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 12px 30px rgba(22,42,52,0.12);
+}
+
+
+
+
+
+
 
 .card-header {
   display: flex;
@@ -627,9 +659,10 @@
 .payment-row {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 1rem;
+  gap: var(--sp-16);
   align-items: center;
-  padding: 0.65rem 0.75rem;
+  padding: var(--sp-8) var(--sp-12);
+  min-height: var(--sp-48);
   border-radius: 10px;
   border-bottom: 1px solid #f1f5f9;
   transition: background 160ms ease-in-out;
@@ -641,6 +674,31 @@
   &:last-child {
     border-bottom: none;
   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.payment-row .payment-party,
+.payment-row .status-chip,
+.payment-row .payment-amount,
+.payment-row .payment-time {
+  line-height: 1.2;
 }
 
 .payment-party-cell {

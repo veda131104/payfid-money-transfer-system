@@ -169,7 +169,18 @@
         </div>
       </div>
 
-      <!-- ── BOTTOM ROW: Activity Feed + Quick Actions ── -->
+        <!-- Reward Summary Card -->
+        <mat-card class="card reward-summary" *ngIf="rewardSummary">
+          <div class="card-header">
+            <h2>Rewards</h2>
+          </div>
+          <div class="reward-details">
+            <p class="points">{{ rewardSummary.totalPoints | number }} pts</p>
+            <p class="updated">Updated {{ rewardSummary.updatedAt | date:'shortDate' }}</p>
+          </div>
+        </mat-card>
+
+        <!-- ── BOTTOM ROW: Activity Feed + Quick Actions ── -->
       <div class="db-row">
         <div class="activity-feed-card">
           <div class="card-header">

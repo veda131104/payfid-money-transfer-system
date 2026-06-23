@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { AuthService } from '../services/auth.service';
 import { AccountSetupService } from '../services/account-setup.service';
 import { TransactionService, Transaction } from '../services/transaction.service';
+import { RewardService } from '../services/reward.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,6 +20,7 @@ export class DashboardComponent implements OnInit {
   private authService = inject(AuthService);
   private accountSetupService = inject(AccountSetupService);
   private transactionService = inject(TransactionService);
+  private rewardService = inject(RewardService);
 
   routerLinkActiveOptions = { exact: true };
   userName = 'User';
@@ -28,7 +30,8 @@ export class DashboardComponent implements OnInit {
   recentTransactions: Transaction[] = [];
   isFirstLogin = false;
 
-  activityLogs: { id: string; type: string; title: string; desc: string; time: string }[] = [];
+  activityLogs: { id: string; type: string; title: string; desc: string; time: string; rawDate: string }[] = [];
+  rewardSummary?: any;
 
   cardDetails = {
     number: '**** **** **** ****',
@@ -91,6 +94,8 @@ export class DashboardComponent implements OnInit {
         this.recentTransactions = txns.slice(0, 5);
         this.calculateMetrics(txns);
         this.deriveActivityLogs(txns);
+        this.fetchRewards(accountId);
+
         this.cdr.detectChanges();
       }
     });
@@ -138,8 +143,31 @@ export class DashboardComponent implements OnInit {
       });
       const desc = `${formatted} · Ref: ${txn.referenceId}`;
 
-      return { id: txn.id, type, title, desc, time: this.getRelativeTime(txn.date) };
+      return { id: txn.id, type, title, desc, time: this.getRelativeTime(txn.date), rawDate: new Date(txn.date).toISOString() };
     });
+  }
+
+  /** Fetch reward ledger entries and add them to the activity feed */
+  private fetchRewards(accountId: number): void {
+    this.rewardService.getRewardHistory(accountId).subscribe({
+      next: (ledger) => {
+        const rewardLogs = ledger.map(entry => {
+          const type = entry.pointsAwarded >= 0 ? 'success' : 'danger';
+          const title = entry.pointsAwarded >= 0 ? `Earned ${entry.pointsAwarded} points` : `Redeemed ${-entry.pointsAwarded} points`;
+          const desc = entry.description || 'Reward activity';
+          const time = this.getRelativeTime(entry.grantedAt);
+          return { id: `reward-${entry.id}`, type, title, desc, time, rawDate: new Date(entry.grantedAt).toISOString() };
+        });
+        this.activityLogs = [...this.activityLogs, ...rewardLogs];
+        this.sortActivityLogs();
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Reward history load error:', err)
+    });
+  }
+
+  private sortActivityLogs(): void {
+    this.activityLogs.sort((a, b) => new Date(b.rawDate).getTime() - new Date(a.rawDate).getTime());
   }
 
   /** Converts a date into a human-readable relative string (e.g. "5 mins ago"). */
