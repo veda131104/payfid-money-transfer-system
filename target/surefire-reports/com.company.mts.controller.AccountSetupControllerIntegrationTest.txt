@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.company.mts.controller.AccountSetupControllerIntegrationTest
 -------------------------------------------------------------------------------
-Tests run: 18, Failures: 6, Errors: 0, Skipped: 0, Time elapsed: 8.332 s <<< FAILURE! -- in com.company.mts.controller.AccountSetupControllerIntegrationTest
-com.company.mts.controller.AccountSetupControllerIntegrationTest.create_NewDetails_Success -- Time elapsed: 0.170 s <<< FAILURE!
+Tests run: 18, Failures: 6, Errors: 0, Skipped: 0, Time elapsed: 7.108 s <<< FAILURE! -- in com.company.mts.controller.AccountSetupControllerIntegrationTest
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_NewDetails_Success -- Time elapsed: 0.064 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<201> but was:<400>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
@@ -13,7 +13,7 @@ java.lang.AssertionError: Status expected:<201> but was:<400>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 
-com.company.mts.controller.AccountSetupControllerIntegrationTest.create_ExistingDetails_Reuses -- Time elapsed: 0.070 s <<< FAILURE!
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_ExistingDetails_Reuses -- Time elapsed: 0.001 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<201> but was:<400>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
@@ -24,7 +24,7 @@ java.lang.AssertionError: Status expected:<201> but was:<400>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 
-com.company.mts.controller.AccountSetupControllerIntegrationTest.create_DataIntegrityViolation_ReturnsConflict -- Time elapsed: 0.008 s <<< FAILURE!
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_DataIntegrityViolation_ReturnsConflict -- Time elapsed: 0.010 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<409> but was:<400>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
@@ -35,7 +35,7 @@ java.lang.AssertionError: Status expected:<409> but was:<400>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 
-com.company.mts.controller.AccountSetupControllerIntegrationTest.create_ExistingDetailsConflict_ReturnsConflict -- Time elapsed: 0.046 s <<< FAILURE!
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_ExistingDetailsConflict_ReturnsConflict -- Time elapsed: 0.010 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<409> but was:<400>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
@@ -46,7 +46,7 @@ java.lang.AssertionError: Status expected:<409> but was:<400>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 
-com.company.mts.controller.AccountSetupControllerIntegrationTest.create_UpiSuffixResolutionTests -- Time elapsed: 0.035 s <<< FAILURE!
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_UpiSuffixResolutionTests -- Time elapsed: 0.034 s <<< FAILURE!
 java.lang.AssertionError: Status expected:<201> but was:<400>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)
@@ -57,7 +57,7 @@ java.lang.AssertionError: Status expected:<201> but was:<400>
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 
-com.company.mts.controller.AccountSetupControllerIntegrationTest.create_MissingUserName_ReturnsBadRequest -- Time elapsed: 0.035 s <<< FAILURE!
+com.company.mts.controller.AccountSetupControllerIntegrationTest.create_MissingUserName_ReturnsBadRequest -- Time elapsed: 0.007 s <<< FAILURE!
 java.lang.AssertionError: JSON path "$.message" expected:<User not logged in or session expired. Please log in and try again.> but was:<Email verification required. Please verify the OTP sent to your email before completing setup.>
 	at org.springframework.test.util.AssertionErrors.fail(AssertionErrors.java:59)
 	at org.springframework.test.util.AssertionErrors.assertEquals(AssertionErrors.java:122)

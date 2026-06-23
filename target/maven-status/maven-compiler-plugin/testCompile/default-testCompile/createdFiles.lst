@@ -6,6 +6,7 @@ com\company\mts\controller\RewardControllerIntegrationTest.class
 com\company\mts\service\RewardServiceTest.class
 com\company\mts\controller\AuthControllerIntegrationTest.class
 com\company\mts\controller\AccountSetupControllerIntegrationTest.class
+com\company\mts\entity\AccountTest.class
 com\company\mts\MainTest.class
 com\company\mts\service\AccountServiceTest.class
 com\company\mts\controller\TransferControllerIntegrationTest.class
